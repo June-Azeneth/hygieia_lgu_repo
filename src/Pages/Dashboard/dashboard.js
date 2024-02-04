@@ -12,56 +12,6 @@ import total_users from '../../Assets/total_users.png'
 
 function Dashboard() {
   return (
-    // <IconContext.Provider value={{ color: '#5F8604' }}>
-    //   <div className="container m-0 sm-">
-    //     <Container className="m-0 p-0">
-    //       <Row>
-    //         <Col sm={12} md={6} lg={3}>
-    //           <div className="d-flex flex-column ">
-    //             <h6>User Summary</h6>
-    //             <div className={`${styles.card} mb-2`} >
-    //               <img className="" src={newStores} alt="" />
-    //               <div className="d-flex flex-column">
-    //                 <span>New Stores</span>
-    //                 <span>0</span>
-    //               </div>
-    //             </div>
-    //             <div className={`${styles.card} mb-2`}>
-    //               <img className="" src={newcustomer} alt="" />
-    //               <div className="d-flex flex-column">
-    //                 <span>New Customers</span>
-    //                 <span>0</span>
-    //               </div>
-    //             </div>
-    //             <div className={`${styles.card} mb-2`}>
-    //               <img className="" src={total_users} alt="" />
-    //               <div className="d-flex flex-column">
-    //                 <span>Total Users</span>
-    //                 <span>0</span>
-    //               </div>
-    //             </div>
-    //           </div>
-    //         </Col>
-    //         <Col>
-    //           <div className="d-flex flex-column">
-    //             <h6>Upcoming Pickups</h6>
-    //             <div className="overflow-hidden d-flex flex-column ">
-    //               <div className={`${styles.card} mb-2`}>
-    //                 <img className="" src={total_users} alt="" />
-    //                 <div className="d-flex flex-column">
-    //                   <span>Total Users</span>
-    //                   <span>0</span>
-    //                 </div>
-    //               </div>
-    //             </div>
-    //           </div>
-    //         </Col>
-    //       </Row>
-    //     </Container>
-
-    //   </div>
-    // </IconContext.Provider>
-
     <div className='p-5'>
       <div className="flex flex-col gap-3 lg:w-96">
         <p>User Summary</p>
