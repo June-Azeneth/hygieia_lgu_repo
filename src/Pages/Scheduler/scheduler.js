@@ -2,7 +2,7 @@ import React from "react";
 
 function Scheduler() {
     return (
-      <div className="container">
+      <div className="">
         <h1>Scheduler Page</h1>
       </div>
     );
