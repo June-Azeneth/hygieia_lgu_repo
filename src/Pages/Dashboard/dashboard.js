@@ -38,6 +38,14 @@ function Dashboard() {
             <p className="text-2xl font-bold">0</p>
           </div>
         </div>
+
+        <div className="bg-white rounded-md flex p-3">
+          <img src={NewStores} alt='...' />
+          <div className="flex flex-col ml-4 justify-center">
+            <p>Total Earnings</p>
+            <p className="text-2xl font-bold">0</p>
+          </div>
+        </div>
       </div>
     </div>
   );
