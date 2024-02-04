@@ -18,21 +18,24 @@ function Navbar() {
     const currentPage = sidebarData.find(item => item.path === location.pathname);
 
     return (
-        <>
-            <IconContext.Provider value={{ color: '#30381e' }}>
-                <div className="navbar">
-                    <div className="menu-bars">
-                        <Link to="#">
-                            <FaIcons.FaBars onClick={showSideBar} className=""/>
-                        </Link>
-                        <span className='page-title'>{currentPage ? currentPage.title : 'Unknown Page'}</span>
+        <div className=''>
+            <div>
+                <IconContext.Provider value={{ color: '#30381e' }}>
+                    <div className="navbar ">
+                        <div className="menu-bars">
+                            <Link to="#">
+                                <FaIcons.FaBars onClick={showSideBar} className="" />
+                            </Link>
+                            <span className='page-title'>{currentPage ? currentPage.title : 'Unknown Page'}</span>
+                        </div>
+                        <div className='current-user pr-2'>
+                            <span className='user-name'>UserName</span>
+                            <span className='lgu-name'>LGU name</span>
+                        </div>
                     </div>
-                    <div className='current-user'>
-                        <span className='user-name'>UserName</span>
-                        <span className='lgu-name'>LGU name</span>
-                    </div>
-                </div>
-            </IconContext.Provider>
+                </IconContext.Provider>
+            </div>
+
             <IconContext.Provider value={{ color: '#fff' }}>
                 <nav className={sideBar ? 'nav-menu active' : 'nav-menu'}>
                     <ul className='nav-menu-items' onClick={showSideBar}>
@@ -54,7 +57,7 @@ function Navbar() {
                     </ul>
                 </nav>
             </IconContext.Provider>
-        </>
+        </div>
     )
 }
 

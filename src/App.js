@@ -9,7 +9,7 @@ import Storelist from './Pages/StoreManagement/StoreList/storelist';
 
 function App() {
   return (
-    <div className="">
+    <div>
       <Router>
         <Navbar />
         <Routes>
