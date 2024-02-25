@@ -6,20 +6,31 @@ import Scheduler from './Pages/Scheduler/scheduler';
 import Reports from './Pages/Reports/reports';
 import Requests from './Pages/Requests/requests';
 import Storelist from './Pages/StoreManagement/StoreList/storelist';
+import Login from './Pages/Login/login';
 
 function App() {
   return (
     <div>
-      <Router>
-        <Navbar />
-        <Routes>
-          <Route path='/home' element={<Dashboard />} />
-          <Route path='/scheduler' element={<Scheduler />} />
-          <Route path='/reports' element={<Reports />} />
-          <Route path='/requests' element={<Requests />} />
-          <Route path='/store' element={<Storelist />} />
-        </Routes>
-      </Router>
+     <Router>
+      <Routes>
+        <Route path='/' element={<Login />} />
+        <Route
+          path='/*'
+          element={
+            <>
+              <Navbar />
+              <Routes>
+                <Route path='/home' element={<Dashboard />} />
+                <Route path='/scheduler' element={<Scheduler />} />
+                <Route path='/reports' element={<Reports />} />
+                <Route path='/requests' element={<Requests />} />
+                <Route path='/store' element={<Storelist />} />
+              </Routes>
+            </>
+          }
+        />
+      </Routes>
+    </Router>
     </div>
   );
 }

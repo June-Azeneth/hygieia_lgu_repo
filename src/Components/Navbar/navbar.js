@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import * as FaIcons from "react-icons/fa";
-import * as IoIcons from "react-icons/io"
-import * as GiIcons from "react-icons/gi"
-
 import { sidebarData } from "./sidebarData"
-
 import { IconContext } from 'react-icons';
+
+import Logo from '../../Assets/logo.png'
 
 import './Navbar.css';
 
 function Navbar() {
+    const [currentUser, setCurrentUser] = useState("LGU Name")
     const [sideBar, setSideBar] = useState(false);
     const showSideBar = () => setSideBar(!sideBar);
 
@@ -18,15 +17,36 @@ function Navbar() {
     const currentPage = sidebarData.find(item => item.path === location.pathname);
 
     return (
-        <div className=''>
-            <div>
+        <div className='relative'>
+            <div className='hidden md:flex'>
+                <IconContext.Provider value={{ color: '#fff' }}>
+                    <nav className='absolute top-0 left-0 w-16 h-screen bg-green'>
+                        <Link to="#">
+                            <FaIcons.FaBars onClick={showSideBar} className=" w-full mt-3" />
+                        </Link>
+                        <ul className='flex flex-col items-center gap-1 mt-8'>
+                            {sidebarData.map((item, index) => {
+                                return (
+                                    <li key={index} className='hover:bg-darkGreen p-3 rounded-md'>
+                                        <Link to={item.path}>
+                                            {item.icon}
+                                        </Link>
+                                    </li>
+                                )
+                            })}
+                        </ul>
+                    </nav>
+                </IconContext.Provider>
+            </div>
+
+            <div className='md:pl-16'>
                 <IconContext.Provider value={{ color: '#30381e' }}>
                     <div className="navbar ">
                         <div className="menu-bars">
-                            <Link to="#">
+                            <Link to="#" className='flex md:hidden'>
                                 <FaIcons.FaBars onClick={showSideBar} className="" />
                             </Link>
-                            <span className='page-title'>{currentPage ? currentPage.title : 'Unknown Page'}</span>
+                            <span className='page-title '>{currentPage ? currentPage.title : 'Unknown Page'}</span>
                         </div>
                         <div className='current-user pr-2'>
                             <span className='user-name'>UserName</span>
@@ -40,8 +60,9 @@ function Navbar() {
                 <nav className={sideBar ? 'nav-menu active' : 'nav-menu'}>
                     <ul className='nav-menu-items' onClick={showSideBar}>
                         <li className='navbar-toggle'>
-                            <Link to="#" className="logo">
-                                <GiIcons.GiWaterRecycling />
+                            <Link to="#" className="w-full flex-col flex items-center text-white font-bold tracking-widest gap-2">
+                                <img src={Logo} alt="logo" className='w-12' />
+                                <p>{currentUser}</p>
                             </Link>
                         </li>
                         {sidebarData.map((item, index) => {
