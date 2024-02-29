@@ -1,33 +1,73 @@
-// import {db} from '../firebase_file'
-import { initializeApp } from 'firebase/app';
-import { getFirestore, query, getDocs, collection } from "firebase/firestore";
+import { query, getDocs, setDoc, collection, doc, updateDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
-const firebaseConfig = {
-    apiKey: "AIzaSyARkbDyJ8-fTwTSBmFhzvQecRDe4bVxPaY",
-    authDomain: "hygieiadb-44a6b.firebaseapp.com",
-    projectId: "hygieiadb-44a6b",
-    storageBucket: "hygieiadb-44a6b.appspot.com",
-    messagingSenderId: "824643133220",
-    appId: "1:824643133220:web:e1f09dca55032a63099db1",
-    measurementId: "G-Z4ZXQE12XL"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+import { firestore, auth } from '../../Helpers/Utils/Firebase'
+import { currentDateTimestamp } from '../../Helpers/Utils/Common'
 
 export const getStores = async () => {
     try {
-        const storeCollection = collection(db, 'store_account_requests');
+        const storeCollection = collection(firestore, 'store_account_requests');
         const storeQuery = query(storeCollection);
 
         const querySnapshot = await getDocs(storeQuery);
-         const data = querySnapshot.docs.map(doc => ({
+        const data = querySnapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
         }));
         return data;
     } catch (error) {
-        console.error('Error getting data from Firebase: ', error);
+
         return [];
+    }
+}
+
+export const sendEmail = async (accountData) => {
+    try {
+
+    }
+    catch {
+
+    }
+}
+
+export const registerStore = async (documentId, email) => {
+    try {
+        const documentRef = doc(firestore, 'store_account_requests', documentId);
+        const credentials = {
+            email: email,
+            password: '123456'
+        }
+        createUserWithEmailAndPassword(auth, credentials.email, credentials.password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+            });
+        await setDoc(documentRef, { dateJoined: currentDateTimestamp }, { merge: true });
+    } catch {
+
+    }
+}
+
+export const updateStoreStatus = async (documentId, newValue) => {
+    try {
+        const documentRef = doc(firestore, 'store_account_requests', documentId);
+
+        await updateDoc(documentRef, {
+            status: newValue
+        });
+    } catch (error) {
+    }
+};
+
+export const setReasonForRejection = async (documentId, reason) => {
+    try {
+        const documentRef = doc(firestore, 'store_account_requests', documentId);
+        await setDoc(documentRef, { reason: reason }, { merge: true });
+    }
+    catch {
+
     }
 }

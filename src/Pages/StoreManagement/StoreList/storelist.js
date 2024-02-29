@@ -8,7 +8,12 @@ import Modal from '@mui/material/Modal';
 import { IoCloseCircleOutline } from "react-icons/io5";
 import axios from 'axios';
 
-import { getStores } from '../../../Helpers/Repository/Store'
+import {
+    getStores,
+    registerStore,
+    updateStoreStatus,
+    setReasonForRejection
+} from '../../../Helpers/Repository/Store'
 import {
     formatDate,
     TabPanel,
@@ -16,11 +21,11 @@ import {
     showNoDataView,
 } from '../../../Helpers/Utils/Common'
 
-
 import '../storemanagement.css';
 
 function StoreList() {
     const [loading, setLoading] = useState(true);
+    const [isloading, setIsLoading] = useState(false);
     const [data, setData] = useState([]);
     const [page, setPage] = useState(0);
     const rowsPerPage = 10;
@@ -32,6 +37,7 @@ function StoreList() {
     const [subject, setSubject] = useState('')
     const [email, setEmail] = useState('')
     const [message, setMessage] = useState(``);
+    const [reason, setReason] = useState('')
 
     const [isImageEnlarged, setIsImageEnlarged] = useState(false);
 
@@ -49,6 +55,15 @@ function StoreList() {
     const handleSubjectChange = (event) => {
         setSubject(event.target.value); // Update the email state with the new value
     };
+
+    const handleReasonChange = (event) => {
+        setReason(event.target.value); // Update the email state with the new value
+    };
+
+    const clearFields = () => {
+        setMessage("")
+        setReason("")
+    }
 
     //for decision modal
 
@@ -95,10 +110,12 @@ function StoreList() {
                         <td>{item.storeName}</td>
                         <td>{item.storeEmail}</td>
                         <td>{item.storeOwner}</td>
-                        <td>{formatDate(item.approvedOn)}</td>
-                        <td>{item.status}</td>
-                        <td className="flex gap-3 justify-center">
-                            <button className='bg-green px-4 py-1 text-white rounded-md'>View</button>
+                        <td>{formatDate(item.dateJoined)}</td>
+                        <td className='text-green'>{item.status}</td>
+                        <td>
+                            <div className='flex justify-center'>
+                                <button className='bg-green px-4 py-1 text-white rounded-md'>View</button>
+                            </div>
                         </td>
                     </>
                 );
@@ -110,8 +127,8 @@ function StoreList() {
                         <td>{item.storeEmail}</td>
                         <td>{item.storeOwner}</td>
                         <td>{formatDate(item.dateSubmitted)}</td>
-                        <td>{item.status}</td>
-                        <td className="flex gap-3 justify-center">
+                        <td className='text-orange'>{item.status}</td>
+                        <td>
                             <button className='bg-green px-4 py-1 text-white rounded-md' onClick={() => handleReviewButtonClick(item)}>Review</button>
                         </td>
                     </>
@@ -124,11 +141,13 @@ function StoreList() {
                         <td>{item.storeEmail}</td>
                         <td>{item.storeOwner}</td>
                         <td>{formatDate(item.dateSubmitted)}</td>
-                        <td>{item.status}</td>
+                        <td className='text-red'>{item.status}</td>
                         <td>{item.reason}</td>
-                        <td className="flex gap-3 justify-center">
-                            <button className='bg-green px-4 py-1 text-white rounded-md'>View</button>
-                            <button className='bg-orange px-4 py-1 text-white rounded-md'>Accept</button>
+                        <td>
+                            <div className="flex gap-3 justify-center w-full h-full">
+                                <button className='bg-green px-4 py-1 text-white rounded-md'>View</button>
+                                <button className='bg-orange px-4 py-1 text-white rounded-md'>Accept</button>
+                            </div>
                         </td>
                     </>
                 );
@@ -187,22 +206,50 @@ function StoreList() {
 
     useEffect(() => {
         if (decision === 'approve') {
-            setMessage(`Welcome Aboard! \n\nYour account is now approved. You may use these credentials to open your account. \n\nEmail: ${selectedRowData.storeEmail} \nPassword: 12345 \n\n `);
+            setMessage(`Welcome Aboard! \n\nYour account is now approved. You may use these credentials to open your account. \n\nEmail: ${selectedRowData.storeEmail} \nPassword: 123456 \n\nYou may leave the password as is, but we recommend that you change it to a more secure password once you have logged in to your account. \n\nThank you and welcome! \n\nLGU NAME HERE`);
         } else {
             setMessage(``)
         }
     }, [email, decision]);
 
-    const handleSubmit = async (e) => {
+    const handleApproveSubmit = async (e) => {
         try {
+            setIsLoading(true)
             const emailContent = {
                 to: email,
                 subject: subject,
                 text: message
             };
             await axios.post('https://hygieia-back-end-node.onrender.com/send-email', emailContent);
+            setIsLoading(false)
+            setIsDecisionModalOpen(false)
+            registerStore(selectedRowData.id, email)
+            updateStoreStatus(selectedRowData.id, 'active')
+            clearFields()
+            alert('Email sent successfuly \nStore account created');
+        } catch (error) {
+            setIsLoading(false)
+            alert('Failed to send email');
+        }
+    };
+
+    const handleRejectSubmit = async (e) => {
+        try {
+            setIsLoading(true)
+            const emailContent = {
+                to: email,
+                subject: subject,
+                text: message
+            };
+            await axios.post('https://hygieia-back-end-node.onrender.com/send-email', emailContent);
+            updateStoreStatus(selectedRowData.id, 'rejected')
+            setReasonForRejection(selectedRowData.id, reason)
+            setIsLoading(false)
+            setIsDecisionModalOpen(false)
+            clearFields()
             alert('Email sent successfuly');
         } catch (error) {
+            setIsLoading(false)
             alert('Failed to send email');
         }
     };
@@ -225,7 +272,7 @@ function StoreList() {
                         <div className='w-full h-full flex justify-center p-10'>{showNoDataView()}</div>
                     ) : (
                         <div>
-                            <div>
+                            <div className='table-container'>
                                 <Table columns={columns} data={filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)} renderRow={renderRow} />
                             </div>
                             <TablePagination
@@ -275,7 +322,9 @@ function StoreList() {
                         <div className='w-full h-full flex justify-center p-10'>{showNoDataView()}</div>
                     ) : (
                         <div>
-                            <Table columns={columns} data={filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)} renderRow={renderRow} />
+                            <div className='table-container'>
+                                <Table columns={columns} data={filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)} renderRow={renderRow} />
+                            </div>
                             <TablePagination
                                 rowsPerPageOptions={[]}
                                 component="div"
@@ -357,11 +406,12 @@ function StoreList() {
                                             onChange={handleMessageChange}
                                             className='w-full bg-gray-100 border border-gray-200 p-2 h-72 mt-3'
                                         />
-                                        <div className="flex flex-row w-full justify-end gap-2">
+                                        <div className="flex flex-row w-full justify-end gap-2 items-center">
+                                            {isloading && showLoader()}
                                             <button
                                                 type='button'
-                                                onClick={handleSubmit}
-                                                className='px-5 text-white rounded-md py-2 bg-green'>Send</button>
+                                                onClick={handleApproveSubmit}
+                                                className='px-5 ms-2 text-white rounded-md py-2 bg-green'>Send and Create Store Account</button>
                                             <button
                                                 className='px-3 text-white rounded-md py-2 bg-red'
                                                 onClick={() => setIsDecisionModalOpen(false)}>Cancel</button>
@@ -387,17 +437,29 @@ function StoreList() {
                                                 className='w-full ms-1 border border-gray-200 bg-gray-100 ps-2'
                                             />
                                         </div>
+
+                                        <div className='flex flex-row'>
+                                            <p>Reason:</p>
+                                            <input
+                                                type="text"
+                                                value={reason}
+                                                onChange={handleReasonChange}
+                                                className='w-full ms-1 border border-gray-200 bg-gray-100 ps-2'
+                                            />
+                                        </div>
+
                                         <textarea
                                             value={message}
                                             placeholder='State the reason for rejection'
                                             onChange={handleMessageChange}
                                             className='w-full bg-gray-100 border border-gray-200 p-2 h-72 mt-3'
                                         />
-                                        <div className="flex flex-row w-full justify-end gap-2">
+                                        <div className="flex flex-row w-full justify-end gap-2 items-center">
+                                            {isloading && showLoader()}
                                             <button
                                                 type='button'
-                                                onClick={handleSubmit}
-                                                className='px-5 text-white rounded-md py-2 bg-green'>Send</button>
+                                                onClick={handleRejectSubmit}
+                                                className='px-5 text-white ms-3 rounded-md py-2 bg-green'>Send</button>
                                             <button
                                                 className='px-3 text-white rounded-md py-2 bg-red'
                                                 onClick={() => setIsDecisionModalOpen(false)}>Cancel</button>
@@ -407,8 +469,9 @@ function StoreList() {
                             )}
                         </div>
                     </div>
-                )}
-            </Modal>
+                )
+                }
+            </Modal >
         </div >
     );
 }

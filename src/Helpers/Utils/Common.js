@@ -1,9 +1,12 @@
 import Box from '@mui/material/Box';
 import NoData from '../../Assets/no_data.png'
-import { PulseLoader } from 'react-spinners';
+import { PulseLoader, BeatLoader } from 'react-spinners';
 import { FaPaperPlane } from "react-icons/fa";
 import { GoAlertFill } from "react-icons/go";
 import Modal from '@mui/material/Modal';
+import { Timestamp } from 'firebase/firestore';
+
+export const currentDateTimestamp = Timestamp.now();
 
 export function formatDate(timestamp) {
     return new Date(timestamp?.seconds * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -31,7 +34,7 @@ export function TabPanel(props) {
 export function showLoader() {
     return (
         <PulseLoader
-            color="#2E5504"
+            color="#5F8604"
         />
     );
 }
@@ -45,13 +48,10 @@ export function showNoDataView() {
     )
 }
 
-// export function emailSentSuccessfully() {
-//     return (
-//         <Modal>
-//             <div className='flex justify-center mt-4 flex-row'>
-//                 <p>Email Send Successfuly</p>
-//                 <FaPaperPlane />
-//             </div>
-//         </Modal>
-//     )
-// }
+export function emailSentSuccessfully() {
+    return (
+        <BeatLoader
+            color="#5F8604"
+        />
+    )
+}

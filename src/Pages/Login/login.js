@@ -50,10 +50,6 @@ function Login() {
     catch (e) {
       toast.error("An error occured:" + e)
     }
-
-    // If all validations pass, submit the form
-    console.log("Email:", email);
-    console.log("Password:", password);
   };
 
   return (

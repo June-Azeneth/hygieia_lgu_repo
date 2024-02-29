@@ -17,8 +17,6 @@ function Dashboard() {
   ];
 
   const handleViewClick = (customerId) => {
-    // Handle the view button click, for example, navigate to a new page with the customer's ID
-    console.log('View button clicked for customer ID:', customerId);
   };
 
   return (
