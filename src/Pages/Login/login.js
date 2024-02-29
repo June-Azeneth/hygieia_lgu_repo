@@ -5,8 +5,8 @@ import 'react-toastify/dist/ReactToastify.css';
 // import { firestore } from "../../firebase";
 // import { collection, addDoc } from "firebase/firestore";
 
-import { Auth } from "firebase/auth";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+// import { Auth } from "firebase/auth";
+// import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 //assets
 import Photo from '../../Assets/waste-management.png'

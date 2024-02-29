@@ -10,7 +10,7 @@ import Login from './Pages/Login/login';
 
 function App() {
   return (
-    <div>
+    <div className='h-screen'>
      <Router>
       <Routes>
         <Route path='/' element={<Login />} />

@@ -24,7 +24,6 @@ function Dashboard() {
   return (
     <div className='p-5 md:pl-24'>
       <div className="flex flex-col md:flex-row gap-5">
-
         <div className="flex flex-col gap-3 lg:w-80">
           <p>User Summary</p>
           <div className="bg-white rounded-md flex p-3">
@@ -94,10 +93,10 @@ function Dashboard() {
         </tbody>
       </table>
 
-      <div className="flex text-center mt-5 h-72">
+      {/* <div className="flex text-center mt-5 h-72">
         <div className="w-full p-4 h-full bg-white">PIE CHART</div>
         <div className="w-full p-4 h-full bg-white">LINE GRAP</div>
-      </div>
+      </div> */}
     </div>
   );
 }

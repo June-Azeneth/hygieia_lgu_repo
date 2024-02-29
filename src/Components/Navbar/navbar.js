@@ -9,7 +9,7 @@ import Logo from '../../Assets/logo.png'
 import './Navbar.css';
 
 function Navbar() {
-    const [currentUser, setCurrentUser] = useState("LGU Name")
+    const [currentUser, setCurrentUser] = useState("Admin")
     const [sideBar, setSideBar] = useState(false);
     const showSideBar = () => setSideBar(!sideBar);
 
@@ -17,7 +17,7 @@ function Navbar() {
     const currentPage = sidebarData.find(item => item.path === location.pathname);
 
     return (
-        <div className='relative'>
+        <div className='relative z-50'>
             <div className='hidden md:flex'>
                 <IconContext.Provider value={{ color: '#fff' }}>
                     <nav className='absolute top-0 left-0 w-16 h-screen bg-green'>
@@ -41,7 +41,7 @@ function Navbar() {
 
             <div className='md:pl-16'>
                 <IconContext.Provider value={{ color: '#30381e' }}>
-                    <div className="navbar ">
+                    <div className="navbar w-screen">
                         <div className="menu-bars">
                             <Link to="#" className='flex md:hidden'>
                                 <FaIcons.FaBars onClick={showSideBar} className="" />
