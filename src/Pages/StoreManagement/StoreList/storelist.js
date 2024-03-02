@@ -38,7 +38,8 @@ function StoreList() {
     const [email, setEmail] = useState('')
     const [message, setMessage] = useState(``);
     const [reason, setReason] = useState('')
-
+    const [filter, setFilteredData] = useState([]);
+    const [searchQuery, setSearchQuery] = useState(''); 
     const [isImageEnlarged, setIsImageEnlarged] = useState(false);
 
     const handleImageClick = () => {
@@ -254,9 +255,31 @@ function StoreList() {
         }
     };
 
+    useEffect(() => {
+        filterData();
+    }, [searchQuery, filteredData]);
+
+    const filterData = () => {
+        const filtered = data.filter(item => {
+            // Filter based on your criteria, e.g., item.storeName.includes(searchQuery)
+            // You can adjust this to match your search requirements
+            return item.storeName.toLowerCase().includes(searchQuery.toLowerCase());
+        });
+        setFilteredData(filtered);
+    };
+
+    const handleSearchInputChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
 
     return (
         <div className="p-5 md:pl-24 overflow-hidden">
+            {/* <input
+                type="text"
+                value={searchQuery}
+                onChange={handleSearchInputChange}
+                placeholder="Search by store name..."
+            /> */}
             <Box sx={{ width: '100%' }}>
                 <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
                     <Tab label="Active" value="Active" />

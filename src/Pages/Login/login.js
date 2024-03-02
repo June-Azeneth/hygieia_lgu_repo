@@ -88,6 +88,7 @@ function Login() {
             </div>
             <button type="submit" className="bg-green text-white rounded-md py-1 mx-24">Login</button>
           </form>
+          <a href='/home'>FOR GOTHAM!</a>
         </div>
         <ToastContainer />
       </div>
