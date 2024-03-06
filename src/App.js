@@ -6,7 +6,7 @@ import Scheduler from './Pages/Scheduler/scheduler';
 import Reports from './Pages/Reports/reports';
 import Requests from './Pages/Requests/requests';
 import Storelist from './Pages/StoreManagement/StoreList/storelist';
-import Login from './Pages/Login/login';
+import Login from './Pages/Login/Login';
 
 function App() {
   return (

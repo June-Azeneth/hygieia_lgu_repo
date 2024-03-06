@@ -1,12 +1,12 @@
 import { query, getDocs, setDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 
-import { firestore, auth } from '../../Helpers/Utils/Firebase'
-import { currentDateTimestamp } from '../../Helpers/Utils/Common'
+import { firestore, auth } from '../Utils/Firebase'
+import { currentDateTimestamp } from '../Utils/Common'
 
 export const getStores = async () => {
     try {
-        const storeCollection = collection(firestore, 'store_account_requests');
+        const storeCollection = collection(firestore, 'store');
         const storeQuery = query(storeCollection);
 
         const querySnapshot = await getDocs(storeQuery);
@@ -16,23 +16,13 @@ export const getStores = async () => {
         }));
         return data;
     } catch (error) {
-
         return [];
-    }
-}
-
-export const sendEmail = async (accountData) => {
-    try {
-
-    }
-    catch {
-
     }
 }
 
 export const registerStore = async (documentId, email) => {
     try {
-        const documentRef = doc(firestore, 'store_account_requests', documentId);
+        const documentRef = doc(firestore, 'store', documentId);
         const credentials = {
             email: email,
             password: '123456'
@@ -53,7 +43,7 @@ export const registerStore = async (documentId, email) => {
 
 export const updateStoreStatus = async (documentId, newValue) => {
     try {
-        const documentRef = doc(firestore, 'store_account_requests', documentId);
+        const documentRef = doc(firestore, 'store', documentId);
 
         await updateDoc(documentRef, {
             status: newValue
@@ -64,7 +54,7 @@ export const updateStoreStatus = async (documentId, newValue) => {
 
 export const setReasonForRejection = async (documentId, reason) => {
     try {
-        const documentRef = doc(firestore, 'store_account_requests', documentId);
+        const documentRef = doc(firestore, 'store', documentId);
         await setDoc(documentRef, { reason: reason }, { merge: true });
     }
     catch {

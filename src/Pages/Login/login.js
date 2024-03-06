@@ -1,9 +1,19 @@
 import { React, useState } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {signInUser} from '../../Helpers/Repository/Login';
 
- 
+// import { firestore } from "../../firebase";
+// import { collection, addDoc } from "firebase/firestore";
+
+// import { Auth } from "firebase/auth";
+// import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  signInUser,
+  userDetails
+}
+  from '../../Helpers/Repository/LoginRepo'
+
+//assets
 import Photo from '../../Assets/waste-management.png'
 import { FaUser } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
@@ -41,7 +51,7 @@ function Login() {
 
     try {
       signInUser(email, password)
-      
+      userDetails()
     }
     catch (e) {
       toast.error("An error occured:" + e)
@@ -84,7 +94,7 @@ function Login() {
             </div>
             <button type="submit" className="bg-green text-white rounded-md py-1 mx-24">Login</button>
           </form>
-          <a href='/home'>FOR GOTHAM!</a>
+          {/* <a href='/home'>FOR GOTHAM!</a> */}
         </div>
         <ToastContainer />
       </div>

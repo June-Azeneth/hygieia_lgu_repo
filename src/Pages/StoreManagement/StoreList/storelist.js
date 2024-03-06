@@ -13,7 +13,7 @@ import {
     registerStore,
     updateStoreStatus,
     setReasonForRejection
-} from '../../../Helpers/Repository/Store'
+} from '../../../Helpers/Repository/StoreRepo'
 import {
     formatDate,
     TabPanel,
@@ -388,12 +388,12 @@ function StoreList() {
                                 <div className='flex flex-row gap-2 h-[20rem] mt-5'>
                                     <img
                                         className='w-full h-full object-cover cursor-pointer'
-                                        src={selectedRowData.validId}
+                                        src={selectedRowData.validIdFront}
                                         onClick={handleImageClick} alt=""
                                     />
                                     <img
                                         className='w-full h-full object-cover cursor-pointer'
-                                        src={selectedRowData.validId}
+                                        src={selectedRowData.validIdBack}
                                         onClick={handleImageClick} alt=""
                                     />
                                 </div>
