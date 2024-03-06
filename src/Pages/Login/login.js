@@ -1,14 +1,9 @@
 import { React, useState } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {signInUser} from '../../Helpers/Repository/Login';
 
-// import { firestore } from "../../firebase";
-// import { collection, addDoc } from "firebase/firestore";
-
-// import { Auth } from "firebase/auth";
-// import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-
-//assets
+ 
 import Photo from '../../Assets/waste-management.png'
 import { FaUser } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
@@ -45,6 +40,7 @@ function Login() {
     }
 
     try {
+      signInUser(email, password)
       
     }
     catch (e) {
