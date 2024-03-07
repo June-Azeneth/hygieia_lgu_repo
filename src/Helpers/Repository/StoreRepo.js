@@ -4,6 +4,8 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { firestore, auth } from '../Utils/Firebase'
 import { currentDateTimestamp } from '../Utils/Common'
 
+let uid = ""
+
 export const getStores = async () => {
     try {
         const storeCollection = collection(firestore, 'store');
@@ -27,37 +29,33 @@ export const registerStore = async (documentId, email) => {
             email: email,
             password: '123456'
         }
-        createUserWithEmailAndPassword(auth, credentials.email, credentials.password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-            })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-            });
-        await setDoc(documentRef, { dateJoined: currentDateTimestamp }, { merge: true });
-    } catch {
+        const userCredential = await createUserWithEmailAndPassword(auth, credentials.email, credentials.password);
+        const user = userCredential.user;
+        uid = user.uid;
 
+        await setDoc(documentRef, { 
+            dateJoined: currentDateTimestamp,
+            status: "active",
+            storeId: uid
+         }, { merge: true });
+        
+    } catch (error) {
+        console.error("Error registering store:", error);
+        throw error;
     }
 }
 
-export const updateStoreStatus = async (documentId, newValue) => {
+export const rejectStoreApplication = async (documentId, reason) => {
     try {
         const documentRef = doc(firestore, 'store', documentId);
-
-        await updateDoc(documentRef, {
-            status: newValue
-        });
-    } catch (error) {
+        await setDoc(documentRef, { 
+            reason: reason,
+            dateRejected: currentDateTimestamp,
+            status: "rejected"
+        }, { merge: true });
     }
-};
-
-export const setReasonForRejection = async (documentId, reason) => {
-    try {
-        const documentRef = doc(firestore, 'store', documentId);
-        await setDoc(documentRef, { reason: reason }, { merge: true });
-    }
-    catch {
-
+    catch (error) {
+        console.error("Error setting reason for rejection:", error);
+        throw error;
     }
 }

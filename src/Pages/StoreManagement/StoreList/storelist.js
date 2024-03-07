@@ -11,8 +11,7 @@ import axios from 'axios';
 import {
     getStores,
     registerStore,
-    updateStoreStatus,
-    setReasonForRejection
+    rejectStoreApplication
 } from '../../../Helpers/Repository/StoreRepo'
 import {
     formatDate,
@@ -141,7 +140,7 @@ function StoreList() {
                         <td>{item.name}</td>
                         <td>{item.email}</td>
                         <td>{item.owner}</td>
-                        <td>{formatDate(item.dateSubmitted)}</td>
+                        <td>{formatDate(item.dateRejected)}</td>
                         <td className='text-red'>{item.status}</td>
                         <td>{item.reason}</td>
                         <td>
@@ -215,45 +214,45 @@ function StoreList() {
 
     const handleApproveSubmit = async (e) => {
         try {
-            setIsLoading(true)
+            setIsLoading(true);
             const emailContent = {
                 to: email,
                 subject: subject,
                 text: message
             };
             await axios.post('https://hygieia-back-end-node.onrender.com/send-email', emailContent);
-            setIsLoading(false)
-            setIsDecisionModalOpen(false)
-            registerStore(selectedRowData.id, email)
-            updateStoreStatus(selectedRowData.id, 'active')
-            clearFields()
-            alert('Email sent successfuly \nStore account created');
+            registerStore(selectedRowData.id, email);
+            setIsLoading(false);
+            setIsDecisionModalOpen(false);
+            setIsModalOpen(false);
+            clearFields();
+            alert('Email sent successfully \nStore account created');
         } catch (error) {
-            setIsLoading(false)
+            setIsLoading(false);
             alert('Failed to send email');
         }
     };
-
+    
     const handleRejectSubmit = async (e) => {
         try {
-            setIsLoading(true)
+            setIsLoading(true);
             const emailContent = {
                 to: email,
                 subject: subject,
                 text: message
             };
             await axios.post('https://hygieia-back-end-node.onrender.com/send-email', emailContent);
-            updateStoreStatus(selectedRowData.id, 'rejected')
-            setReasonForRejection(selectedRowData.id, reason)
-            setIsLoading(false)
-            setIsDecisionModalOpen(false)
-            clearFields()
-            alert('Email sent successfuly');
+            rejectStoreApplication(selectedRowData.id, message)
+            setIsLoading(false);
+            setIsDecisionModalOpen(false);
+            setIsModalOpen(false);
+            clearFields();
+            alert('Email sent successfully');
         } catch (error) {
-            setIsLoading(false)
+            setIsLoading(false);
             alert('Failed to send email');
         }
-    };
+    };    
 
     useEffect(() => {
         filterData();
@@ -263,7 +262,7 @@ function StoreList() {
         const filtered = data.filter(item => {
             // Filter based on your criteria, e.g., item.storeName.includes(searchQuery)
             // You can adjust this to match your search requirements
-            return item.name.toLowerCase().includes(searchQuery.toLowerCase());
+            // return item.name.toLowerCase().includes(searchQuery.toLowerCase());
         });
         setFilteredData(filtered);
     };
@@ -461,7 +460,7 @@ function StoreList() {
                                             />
                                         </div>
 
-                                        <div className='flex flex-row'>
+                                        {/* <div className='flex flex-row'>
                                             <p>Reason:</p>
                                             <input
                                                 type="text"
@@ -469,11 +468,11 @@ function StoreList() {
                                                 onChange={handleReasonChange}
                                                 className='w-full ms-1 border border-gray-200 bg-gray-100 ps-2'
                                             />
-                                        </div>
+                                        </div> */}
 
                                         <textarea
                                             value={message}
-                                            placeholder='State the reason for rejection'
+                                            placeholder='State the reason for rejection in detail'
                                             onChange={handleMessageChange}
                                             className='w-full bg-gray-100 border border-gray-200 p-2 h-72 mt-3'
                                         />
