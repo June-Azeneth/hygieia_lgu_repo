@@ -108,9 +108,9 @@ function StoreList() {
                 return (
                     <>
                         <td>{item.id}</td>
-                        <td>{item.storeName}</td>
-                        <td>{item.storeEmail}</td>
-                        <td>{item.storeOwner}</td>
+                        <td>{item.name}</td>
+                        <td>{item.email}</td>
+                        <td>{item.owner}</td>
                         <td>{formatDate(item.dateJoined)}</td>
                         <td className='text-green'>{item.status}</td>
                         <td>
@@ -124,9 +124,9 @@ function StoreList() {
                 return (
                     <>
                         <td>{item.id}</td>
-                        <td>{item.storeName}</td>
-                        <td>{item.storeEmail}</td>
-                        <td>{item.storeOwner}</td>
+                        <td>{item.name}</td>
+                        <td>{item.email}</td>
+                        <td>{item.owner}</td>
                         <td>{formatDate(item.dateSubmitted)}</td>
                         <td className='text-orange'>{item.status}</td>
                         <td>
@@ -138,9 +138,9 @@ function StoreList() {
                 return (
                     <>
                         <td>{item.id}</td>
-                        <td>{item.storeName}</td>
-                        <td>{item.storeEmail}</td>
-                        <td>{item.storeOwner}</td>
+                        <td>{item.name}</td>
+                        <td>{item.email}</td>
+                        <td>{item.owner}</td>
                         <td>{formatDate(item.dateSubmitted)}</td>
                         <td className='text-red'>{item.status}</td>
                         <td>{item.reason}</td>
@@ -186,7 +186,7 @@ function StoreList() {
     const handleReviewButtonClick = (rowData) => {
         setSelectedRowData(rowData);
         setIsModalOpen(true);
-        setEmail(rowData.storeEmail)
+        setEmail(rowData.email)
     };
 
     const handleAcceptButtonClick = () => {
@@ -207,7 +207,7 @@ function StoreList() {
 
     useEffect(() => {
         if (decision === 'approve') {
-            setMessage(`Welcome Aboard! \n\nYour account is now approved. You may use these credentials to open your account. \n\nEmail: ${selectedRowData.storeEmail} \nPassword: 123456 \n\nYou may leave the password as is, but we recommend that you change it to a more secure password once you have logged in to your account. \n\nThank you and welcome! \n\nLGU NAME HERE`);
+            setMessage(`Welcome Aboard! \n\nYour account is now approved. You may use these credentials to open your account. \n\nEmail: ${selectedRowData.email} \nPassword: 123456 \n\nYou may leave the password as is, but we recommend that you change it to a more secure password once you have logged in to your account. \n\nThank you and welcome! \n\nLGU NAME HERE`);
         } else {
             setMessage(``)
         }
@@ -263,7 +263,7 @@ function StoreList() {
         const filtered = data.filter(item => {
             // Filter based on your criteria, e.g., item.storeName.includes(searchQuery)
             // You can adjust this to match your search requirements
-            return item.storeName.toLowerCase().includes(searchQuery.toLowerCase());
+            return item.name.toLowerCase().includes(searchQuery.toLowerCase());
         });
         setFilteredData(filtered);
     };
@@ -374,8 +374,8 @@ function StoreList() {
                                 <div className='flex flex-row justify-between'>
                                     <div className="w-full">
                                         <p className='font-bold'>ID: {selectedRowData.id}</p>
-                                        <p>Shop Name: {selectedRowData.storeName}</p>
-                                        <p>Owner: {selectedRowData.storeOwner}</p>
+                                        <p>Shop Name: {selectedRowData.name}</p>
+                                        <p>Owner: {selectedRowData.owner}</p>
                                         <p>Address: {Object.values(selectedRowData.address).join(', ')}</p>
                                         <p>Submitted On: {formatDate(selectedRowData.dateSubmitted)}</p>
                                         <p>Valid Id: {selectedRowData.idType}</p>
@@ -413,7 +413,7 @@ function StoreList() {
                                         <span className="w-7 h-auto cursor-pointer" onClick={() => setIsDecisionModalOpen(false)}><IoCloseCircleOutline className="w-full h-full" /></span>
                                     </div>
                                     <form action="" className='w-full p-4'>
-                                        <p>To: {selectedRowData.storeEmail}</p>
+                                        <p>To: {selectedRowData.email}</p>
                                         <p>From: LGU Name Here</p>
                                         <div className='flex flex-row'>
                                             <p>Subject:</p>
@@ -449,7 +449,7 @@ function StoreList() {
                                         <span className="w-7 h-auto cursor-pointer" onClick={() => setIsDecisionModalOpen(false)}><IoCloseCircleOutline className="w-full h-full" /></span>
                                     </div>
                                     <form className='w-full p-4'>
-                                        <p>To: {selectedRowData.storeEmail}</p>
+                                        <p>To: {selectedRowData.email}</p>
                                         <p>From: LGU Name Here</p>
                                         <div className='flex flex-row'>
                                             <p>Subject:</p>
