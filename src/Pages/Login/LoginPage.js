@@ -1,7 +1,7 @@
 import { React, useState } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { useAuth } from '../../Helpers/Context/AuthContext'
 
@@ -85,7 +85,9 @@ function Login() {
               />
               <RiLockPasswordFill className='absolute top-0 text-darkGreen h-full left-3' />
             </div>
-            <button type="submit" className="bg-oliveGreen hover:bg-green mt-3 text-white rounded-md py-2 mx-24">Login</button>
+            <div className="flex justify-center">
+              <button type="submit" className="bg-oliveGreen hover:bg-green mt-3 text-white rounded-md py-2 w-32">Login</button>
+            </div>
           </form>
         </div>
         <ToastContainer />
