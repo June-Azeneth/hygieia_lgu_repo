@@ -10,7 +10,9 @@ module.exports = {
         mutedGreen: '#8DBF58',
         red: '#D40707',
         orange: '#C85107',
-        calmGray: '#F0F0F0'
+        calmGray: '#F0F0F0',
+        mutedFlesh: "#ECE5D5",
+        oliveGreen: '#617C49'
       }
     },
   },

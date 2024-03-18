@@ -1,5 +1,4 @@
 import React from "react";
-
 import NewStores from '../../Assets/newstores.png'
 
 function Dashboard() {

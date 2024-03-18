@@ -1,26 +1,42 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import * as FaIcons from "react-icons/fa";
 import { sidebarData } from "./sidebarData"
 import { IconContext } from 'react-icons';
+import { useAuth } from '../../Helpers/Context/AuthContext'
+import { IoLogOut } from "react-icons/io5";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-import Logo from '../../Assets/logo.png'
+import Logo from '../../Assets/logo_final.png'
 
 import './Navbar.css';
 
 function Navbar() {
-    const [currentUser, setCurrentUser] = useState("Admin")
+    const { logout, userDetails } = useAuth()
+    const [user, setUser] = useState(userDetails ? userDetails.name : "Unauthenticated Access");
     const [sideBar, setSideBar] = useState(false);
     const showSideBar = () => setSideBar(!sideBar);
-
+    const navigate = useNavigate()
     const location = useLocation();
     const currentPage = sidebarData.find(item => item.path === location.pathname);
 
+    async function handleLogout() {
+        try {
+            await logout()
+            navigate("/")
+        }
+        catch (e) {
+            toast.error("An error occured: " + e)
+        }
+    }
+
     return (
         <div className='relative z-50'>
+            <ToastContainer />
             <div className='hidden md:flex'>
                 <IconContext.Provider value={{ color: '#fff' }}>
-                    <nav className='absolute top-0 left-0 w-16 h-screen bg-green'>
+                    <nav className='absolute top-0 left-0 w-16 h-screen bg-oliveGreen'>
                         <Link to="#">
                             <FaIcons.FaBars onClick={showSideBar} className=" w-full mt-3" />
                         </Link>
@@ -34,6 +50,9 @@ function Navbar() {
                                     </li>
                                 )
                             })}
+                            <Link to="#" className='hover:bg-darkGreen p-3 rounded-md' >
+                                <IoLogOut />                                
+                            </Link>
                         </ul>
                     </nav>
                 </IconContext.Provider>
@@ -60,21 +79,25 @@ function Navbar() {
                 <nav className={sideBar ? 'nav-menu active' : 'nav-menu'}>
                     <ul className='nav-menu-items' onClick={showSideBar}>
                         <li className='navbar-toggle'>
-                            <Link to="#" className="w-full flex-col flex items-center text-white font-bold tracking-widest gap-2">
-                                <img src={Logo} alt="logo" className='w-12' />
-                                <p>{currentUser}</p>
+                            <Link to="#" className="w-full text-center flex-col flex items-center text-white font-bold tracking-widest gap-2">
+                                <img src={Logo} alt="logo" className='w-20 bg-white rounded-md' />
+                                <p>{user}</p>
                             </Link>
                         </li>
-                        {sidebarData.map((item, index) => {
-                            return (
-                                <li key={index} className={item.cName}>
-                                    <Link to={item.path}>
-                                        {item.icon}
-                                        <span>{item.title}</span>
-                                    </Link>
-                                </li>
-                            )
-                        })}
+                        {sidebarData.map((item, index) => (
+                            <li key={index} className={item.cName}>
+                                <Link to={item.path}>
+                                    {item.icon}
+                                    <span>{item.title}</span>
+                                </Link>
+                            </li>
+                        ))}
+                        <li onClick={handleLogout} className="nav-text">
+                            <Link to="#">
+                                <IoLogOut />
+                                <span className='text-white'>Logout</span>
+                            </Link>
+                        </li>
                     </ul>
                 </nav>
             </IconContext.Provider>

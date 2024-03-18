@@ -1,26 +1,20 @@
 import { React, useState } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {useNavigate} from 'react-router-dom'
 
-// import { firestore } from "../../firebase";
-// import { collection, addDoc } from "firebase/firestore";
-
-// import { Auth } from "firebase/auth";
-// import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import {
-  signInUser,
-  userDetails
-}
-  from '../../Helpers/Repository/LoginRepo'
+import { useAuth } from '../../Helpers/Context/AuthContext'
 
 //assets
-import Photo from '../../Assets/waste-management.png'
+import Logo from '../../Assets/logo_final.png'
 import { FaUser } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate()
+
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
@@ -30,10 +24,11 @@ function Login() {
     setPassword(event.target.value);
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const { login } = useAuth()
 
-    // signInWithEmailAndPass(authentication, email, password)
+
+  async function handleSubmit(event) {
+    event.preventDefault();
 
     // Validation logic
     if (!email && !password) {
@@ -50,8 +45,9 @@ function Login() {
     }
 
     try {
-      signInUser(email, password)
-      userDetails()
+      await login(email, password)
+      toast.success("Logged in successfully!")
+      navigate('/home')
     }
     catch (e) {
       toast.error("An error occured:" + e)
@@ -60,13 +56,10 @@ function Login() {
 
   return (
     <div className="flex flex-col justify-center items-center h-screen md:flex-row">
-      <div className="w-full p-5 flex flex-col justify-center items-center">
-        <p>Hygieia LGU</p>
-        <img src={Photo} alt="waste-management" className="w-full" />
-      </div>
-      <div className="w-full justify-center items-center flex text-center px-10">
+      <div className="w-full justify-center items-center flex text-center px-10 max-w-screen-sm">
         <div className="bg-white rounded-md border ring-gray-50 w-full px-20 py-10">
-          <p className="mb-6 font-bold text-green tracking-widest">Welcome Back!</p>
+          <img src={Logo} alt="waste-management" className="w-28 h-28 mx-auto" />
+          <p className="mb-6 font-bold text-green tracking-widest">Hygieia Web Service</p>
           <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
             <div className="relative">
               <input
@@ -92,9 +85,8 @@ function Login() {
               />
               <RiLockPasswordFill className='absolute top-0 text-darkGreen h-full left-3' />
             </div>
-            <button type="submit" className="bg-green text-white rounded-md py-1 mx-24">Login</button>
+            <button type="submit" className="bg-oliveGreen hover:bg-green mt-3 text-white rounded-md py-2 mx-24">Login</button>
           </form>
-          {/* <a href='/home'>FOR GOTHAM!</a> */}
         </div>
         <ToastContainer />
       </div>
