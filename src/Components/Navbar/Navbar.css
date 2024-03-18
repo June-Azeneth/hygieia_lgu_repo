@@ -75,12 +75,12 @@
     height: 100%;
     display: flex;
     align-items: center;
-    border-radius: 2rem;
+    border-radius: 0.5rem;
     padding-left: 1rem;
 }
 
 .nav-text a:hover{
-    @apply bg-darkGreen;
+    @apply bg-mutedGreen;
 }
 
 .nav-menu-items{

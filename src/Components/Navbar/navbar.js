@@ -36,22 +36,23 @@ function Navbar() {
             <ToastContainer />
             <div className='hidden md:flex'>
                 <IconContext.Provider value={{ color: '#fff' }}>
-                    <nav className='absolute top-0 left-0 w-16 h-screen bg-oliveGreen'>
-                        <Link to="#">
+                    <nav className='absolute top-0 left-0 w-16 h-screen bg-oliveGreen '>
+                        {/* <Link to="#">
                             <FaIcons.FaBars onClick={showSideBar} className=" w-full mt-3" />
-                        </Link>
+                        </Link> */}
+                        <img src={Logo} alt="logo" className='w-10 bg-white rounded-md mx-auto mt-1 cursor-pointer' onClick={showSideBar}/>
                         <ul className='flex flex-col items-center gap-1 mt-8'>
                             {sidebarData.map((item, index) => {
                                 return (
-                                    <li key={index} className='hover:bg-darkGreen p-3 rounded-md'>
+                                    <li key={index} className='hover:bg-mutedGreen p-3 rounded-md'>
                                         <Link to={item.path}>
                                             {item.icon}
                                         </Link>
                                     </li>
                                 )
                             })}
-                            <Link to="#" className='hover:bg-darkGreen p-3 rounded-md' >
-                                <IoLogOut />                                
+                            <Link to="#" className='hover:bg-mutedGreen p-3 rounded-md' onClick={handleLogout}>
+                                <IoLogOut />
                             </Link>
                         </ul>
                     </nav>
