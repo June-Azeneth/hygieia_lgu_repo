@@ -1,14 +1,16 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Navbar from './Components/Navbar/navbar';
-import Dashboard from './Pages/Dashboard/dashboard';
-import Scheduler from './Pages/Scheduler/scheduler';
-import Reports from './Pages/Reports/reports';
-import Requests from './Pages/Requests/requests';
-import Storelist from './Pages/StoreManagement/StoreList/storelist';
+import Navbar from './Components/Navbar/Navbar';
+import Dashboard from './Pages/Dashboard/Dashboard';
+import Scheduler from './Pages/Scheduler/Scheduler';
+import Reports from './Pages/Reports/Reports';
+import Requests from './Pages/Requests/Requests';
+// import {StoresList} from './Pages/StoreManagement/StoreList/StoresList';
 import Login from './Pages/Login/LoginPage';
 import { AuthProvider } from './Helpers/Context/AuthContext';
 import PrivateRoute from './Components/PrivateRoute';
+import List from './Pages/StoreManagement/StoreList/List.'
+import Transactions from './Pages/Transaction/Transactions';
 
 function App() {
   return (
@@ -23,11 +25,12 @@ function App() {
                 <Navbar />
                 <Routes>
                   <Route element={<PrivateRoute />}>
-                    <Route path="/home" element={<Dashboard/>} />
+                    <Route path="/home" element={<Dashboard />} />
+                    <Route path='/transactions' element={<Transactions />} />
                     <Route path='/scheduler' element={<Scheduler />} />
                     <Route path='/reports' element={<Reports />} />
                     <Route path='/requests' element={<Requests />} />
-                    <Route path='/store' element={<Storelist />} />
+                    <Route path='/store' element={<List />} />
                   </Route>
                 </Routes>
               </>

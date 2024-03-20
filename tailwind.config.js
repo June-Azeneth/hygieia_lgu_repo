@@ -12,7 +12,9 @@ module.exports = {
         orange: '#C85107',
         calmGray: '#F0F0F0',
         mutedFlesh: "#ECE5D5",
-        oliveGreen: '#617C49'
+        oliveGreen: '#617C49',
+
+        darkGray : '#323232'
       }
     },
   },

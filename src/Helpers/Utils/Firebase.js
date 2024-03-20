@@ -3,13 +3,13 @@ import { getFirestore, query, getDocs, collection, doc, updateDoc } from "fireba
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyARkbDyJ8-fTwTSBmFhzvQecRDe4bVxPaY",
-    authDomain: "hygieiadb-44a6b.firebaseapp.com",
-    projectId: "hygieiadb-44a6b",
-    storageBucket: "hygieiadb-44a6b.appspot.com",
-    messagingSenderId: "824643133220",
-    appId: "1:824643133220:web:e1f09dca55032a63099db1",
-    measurementId: "G-Z4ZXQE12XL"
+    apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+    authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+    projectId: process.env.REACT_APP_PROJECT_ID,
+    storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+    messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+    appId: process.env.REACT_APP__APP_ID,
+    measurementId: process.env.REACT_APP_MEASUREMENTID
 };
 
 const app = initializeApp(firebaseConfig);

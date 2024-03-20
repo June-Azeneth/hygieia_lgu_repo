@@ -12,3 +12,15 @@ body{
   @apply bg-mutedFlesh
 }
 
+.container{
+  @apply p-5 md:pl-24;
+  width: 100vw;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Overrides */
+.ant-table-thead{
+  background-color: #323232 !important;
+}

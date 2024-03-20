@@ -19,10 +19,9 @@ import {
     showLoader,
     showNoDataView,
 } from '../../../Helpers/Utils/Common'
-
 import '../storemanagement.css';
 
-function StoreList() {
+function StoresList(){
     const [loading, setLoading] = useState(true);
     const [isloading, setIsLoading] = useState(false);
     const [data, setData] = useState([]);
@@ -38,7 +37,7 @@ function StoreList() {
     const [message, setMessage] = useState(``);
     const [reason, setReason] = useState('')
     const [filter, setFilteredData] = useState([]);
-    const [searchQuery, setSearchQuery] = useState(''); 
+    const [searchQuery, setSearchQuery] = useState('');
     const [isImageEnlarged, setIsImageEnlarged] = useState(false);
 
     const handleImageClick = () => {
@@ -232,7 +231,7 @@ function StoreList() {
             alert('Failed to send email');
         }
     };
-    
+
     const handleRejectSubmit = async (e) => {
         try {
             setIsLoading(true);
@@ -252,7 +251,7 @@ function StoreList() {
             setIsLoading(false);
             alert('Failed to send email');
         }
-    };    
+    };
 
     useEffect(() => {
         filterData();
@@ -498,4 +497,4 @@ function StoreList() {
     );
 }
 
-export default StoreList;
+export default StoresList;

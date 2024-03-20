@@ -17,7 +17,6 @@ export function useAuth() {
 export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState()
     const [userDetails, setUserDetails] = useState()
-    const [user, setUser] = useState()
     const [loading, setLoading] = useState(true)
     const [isAdmin, setIsAdmin] = useState(false);
 
@@ -54,7 +53,7 @@ export function AuthProvider({ children }) {
             setLoading(false);
 
             if (user) {
-                const docRef = doc(firestore, "lgu", user.uid);
+                const docRef = doc(firestore, "client", user.uid);
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
@@ -87,7 +86,6 @@ export function AuthProvider({ children }) {
     const value = {
         currentUser,
         userDetails,
-        user,
         isAdmin,
         login,
         signUp,

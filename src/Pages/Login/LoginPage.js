@@ -2,6 +2,7 @@ import { React, useState } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom'
+import { FadeLoader } from 'react-spinners';
 
 import { useAuth } from '../../Helpers/Context/AuthContext'
 
@@ -9,12 +10,13 @@ import { useAuth } from '../../Helpers/Context/AuthContext'
 import Logo from '../../Assets/logo_final.png'
 import { FaUser } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
+import { showLoader } from "../../Helpers/Utils/Common";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate()
-
+  const [loading, setLoading] = useState(false)
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
@@ -45,11 +47,14 @@ function Login() {
     }
 
     try {
+      setLoading(true)
       await login(email, password)
       toast.success("Logged in successfully!")
       navigate('/home')
+      setLoading(false)
     }
     catch (e) {
+      setLoading(false)
       toast.error("An error occured:" + e)
     }
   };
@@ -86,7 +91,17 @@ function Login() {
               <RiLockPasswordFill className='absolute top-0 text-darkGreen h-full left-3' />
             </div>
             <div className="flex justify-center">
-              <button type="submit" className="bg-oliveGreen hover:bg-green mt-3 text-white rounded-md py-2 w-32">Login</button>
+              {loading ? (
+                <div className="mt-3">
+                  <FadeLoader
+                    color="#617C49"
+                  />
+                </div>
+              ) : (
+                <div>
+                  <button type="submit" className="bg-oliveGreen hover:bg-green mt-3 text-white rounded-md py-2 w-32">Login</button>
+                </div>
+              )}
             </div>
           </form>
         </div>

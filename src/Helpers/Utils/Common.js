@@ -1,15 +1,19 @@
 import Box from '@mui/material/Box';
 import NoData from '../../Assets/no_data.png'
-import { PulseLoader, BeatLoader } from 'react-spinners';
-import { FaPaperPlane } from "react-icons/fa";
-import { GoAlertFill } from "react-icons/go";
-import Modal from '@mui/material/Modal';
+import { SyncLoader, BeatLoader } from 'react-spinners';
+import moment from 'moment';
 import { Timestamp } from 'firebase/firestore';
 
 export const currentDateTimestamp = Timestamp.now();
 
 export function formatDate(timestamp) {
     return new Date(timestamp?.seconds * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+export function formatMomentArray(momentArray) {
+    const startDate = momentArray[0].format('YYYY-MMM-DD');
+    const endDate = momentArray[momentArray.length - 1].format('YYYY-MMM-DD');
+    return `From ${startDate} To ${endDate}`;
 }
 
 export function TabPanel(props) {
@@ -33,8 +37,8 @@ export function TabPanel(props) {
 
 export function showLoader() {
     return (
-        <PulseLoader
-            color="#5F8604"
+        <SyncLoader
+            color="#617C49"
         />
     );
 }
