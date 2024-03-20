@@ -147,7 +147,7 @@ function Transactions() {
                     </div>
                 </div>
                 <div>
-                    <button className='bg-oliveGreen hover:bg-green items-center flex flex-row text-sm text-white py-2 px-4 rounded-md mb-5 w-fit me-auto' onClick={exportToExcel}><span className='p-0 m-0 me-2'><IoMdDownload /></span>Download</button>
+                    <button className='bg-orange hover:shadow-md items-center flex flex-row text-sm text-white py-2 px-4 rounded-md mb-5 w-fit me-auto' onClick={exportToExcel}><span className='p-0 m-0 me-2'><IoMdDownload /></span>Download</button>
                 </div>
             </div>
             <div className='bg-white rounded-md overflow-x-scroll'>

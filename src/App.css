@@ -24,3 +24,7 @@ body{
 .ant-table-thead{
   background-color: #323232 !important;
 }
+
+th{
+  @apply bg-oliveGreen text-white !important;
+}
