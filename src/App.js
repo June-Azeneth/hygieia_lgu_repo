@@ -5,7 +5,6 @@ import Dashboard from './Pages/Dashboard/Dashboard';
 import Scheduler from './Pages/Scheduler/Scheduler';
 import Reports from './Pages/Reports/Reports';
 import Requests from './Pages/Requests/Requests';
-// import {StoresList} from './Pages/StoreManagement/StoreList/StoresList';
 import Login from './Pages/Login/LoginPage';
 import { AuthProvider } from './Helpers/Context/AuthContext';
 import PrivateRoute from './Components/PrivateRoute';
