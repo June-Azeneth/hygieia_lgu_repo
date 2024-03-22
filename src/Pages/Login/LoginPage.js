@@ -10,7 +10,6 @@ import { useAuth } from '../../Helpers/Context/AuthContext'
 import Logo from '../../Assets/logo_final.png'
 import { FaUser } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
-import { showLoader } from "../../Helpers/Utils/Common";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -62,7 +61,7 @@ function Login() {
   return (
     <div className="flex flex-col justify-center items-center h-screen md:flex-row">
       <div className="w-full justify-center items-center flex text-center px-10 max-w-screen-sm">
-        <div className="bg-white rounded-md border ring-gray-50 w-full px-8 lg:px-20 py-10">
+        <div className="bg-white rounded-md ring-gray-50 w-full px-8 lg:px-20 py-10">
           <img src={Logo} alt="waste-management" className="w-28 h-28 mx-auto" />
           <p className="mb-6 font-bold text-green tracking-widest">Hygieia Web Service</p>
           <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
@@ -74,7 +73,7 @@ function Login() {
                 value={email}
                 onChange={handleEmailChange}
                 autoComplete="off"
-                className="rounded border-2 border-gray-200 py-2 pl-9 w-full"
+                className="rounded border-2 border-calmGray py-2 pl-9 w-full"
               />
               <FaUser className='absolute top-0 text-darkGreen h-full left-3' />
             </div>
@@ -86,7 +85,7 @@ function Login() {
                 value={password}
                 onChange={handlePasswordChange}
                 autoComplete="off"
-                className="rounded border-2 border-gray-200 py-2 pl-9 w-full"
+                className="rounded border-2 border-calmGray py-2 pl-9 w-full"
               />
               <RiLockPasswordFill className='absolute top-0 text-darkGreen h-full left-3' />
             </div>

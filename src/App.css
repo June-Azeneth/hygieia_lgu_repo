@@ -4,27 +4,42 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz@6..12&display=swap');
 
-*{
+* {
   font-family: 'Nunito Sans', sans-serif;
 }
 
-body{
+body {
   @apply bg-mutedFlesh
 }
 
-.container{
+.container {
   @apply p-5 md:pl-24;
-  width: 100vw;
+  width: 100% !important;
   overflow-y: scroll;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
 /* Overrides */
-.ant-table-thead{
+.ant-table-thead {
   background-color: #323232 !important;
 }
 
-th{
+th {
   @apply bg-oliveGreen text-white !important;
+}
+
+.page-container {
+  @apply p-5 md:pl-24;
+  width: 100% !important;
+  overflow-y: scroll;
+  overflow-x: scroll;
+  height: 92vh;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }

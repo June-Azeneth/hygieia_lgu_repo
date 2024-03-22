@@ -14,8 +14,6 @@ export const getTransactions = async (userDetails) => {
             const customerId = transactionData.customerId;
             const storeId = transactionData.storeId;
 
-            console.log(userDetails)
-
             const userType = userDetails.type;
             const id = userDetails.id
 
@@ -41,7 +39,6 @@ export const getTransactions = async (userDetails) => {
             };
             transactions.push(transaction);
         }
-        console.log(transactions);
         return transactions;
     } catch (error) {
         console.error('Error fetching transactions:', error);

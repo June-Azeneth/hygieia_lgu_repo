@@ -58,3 +58,19 @@ td {
     font-family: 'Nunito Sans', sans-serif !important;
     padding: 0px !important;
 }
+
+.tabs{
+    @apply w-36 text-center py-2 rounded-t-lg border border-oliveGreen cursor-pointer hover:bg-oliveGreen hover:text-white;
+}
+
+.active-tab{
+    @apply bg-oliveGreen text-white w-36 text-center;
+}
+
+.content{
+    @apply bg-white hidden rounded-md p-3 shadow-md
+}
+
+.active-content{
+    @apply inline-flex w-full
+}

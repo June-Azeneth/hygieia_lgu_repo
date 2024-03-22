@@ -30,8 +30,6 @@ function Transactions() {
         setDateRange(dates);
     };
 
-    console.log(userDetails)
-
     const fetchData = async () => {
         setLoading(true);
         if (!userDetails) {
@@ -40,7 +38,7 @@ function Transactions() {
         const response = await getTransactions(userDetails);
         const formattedData = response.map(transaction => {
             const { addedOn, ...otherFields } = transaction;
-            const formattedDate = formatDate(addedOn); // Ensure that formatDate function returns a consistent format
+            const formattedDate = formatDate(addedOn);
             return {
                 ...otherFields,
                 addedOn: formattedDate
@@ -150,7 +148,7 @@ function Transactions() {
                     <button className='bg-orange hover:shadow-md items-center flex flex-row text-sm text-white py-2 px-4 rounded-md mb-5 w-fit me-auto' onClick={exportToExcel}><span className='p-0 m-0 me-2'><IoMdDownload /></span>Download</button>
                 </div>
             </div>
-            <div className='bg-white rounded-md overflow-x-scroll'>
+            <div className='bg-white rounded-md overflow-x-scroll scrollbar-none'>
                 {loading ? (
                     <div className='w-full h-full flex justify-center p-10'>
                         {showLoader()}

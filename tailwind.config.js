@@ -14,7 +14,8 @@ module.exports = {
         mutedFlesh: "#ECE5D5",
         oliveGreen: '#617C49',
 
-        darkGray : '#323232'
+        darkGray : '#323232',
+        gray : '#999999'
       }
     },
   },

@@ -8,8 +8,10 @@ import Requests from './Pages/Requests/Requests';
 import Login from './Pages/Login/LoginPage';
 import { AuthProvider } from './Helpers/Context/AuthContext';
 import PrivateRoute from './Components/PrivateRoute';
-import List from './Pages/StoreManagement/StoreList/List.'
+// import List from './Pages/StoreManagement/StoreList/List.'
+import StoreProfile from './Pages/StoreManagement/StoreProfile/StoreProfile'
 import Transactions from './Pages/Transaction/Transactions';
+import StoresList from './Pages/StoreManagement/StoreList/StoresList'
 
 function App() {
   return (
@@ -29,7 +31,8 @@ function App() {
                     <Route path='/scheduler' element={<Scheduler />} />
                     <Route path='/reports' element={<Reports />} />
                     <Route path='/requests' element={<Requests />} />
-                    <Route path='/store' element={<List />} />
+                    <Route path='/store' element={<StoresList />} />
+                    <Route path='/store-profile/:id' element={<StoreProfile />} />
                   </Route>
                 </Routes>
               </>
