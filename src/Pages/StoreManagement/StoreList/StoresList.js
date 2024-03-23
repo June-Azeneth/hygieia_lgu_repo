@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Table } from 'antd'
-import Modal from '@mui/material/Modal';
-import { IoCloseCircleOutline } from "react-icons/io5";
-import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 
 import {
     getStores,
-    registerStore,
-    rejectStoreApplication
 } from '../../../Helpers/Context/StoreRepo'
 import {
     formatDate,
@@ -76,7 +71,7 @@ function StoresList() {
         {
             key: 3,
             title: 'Email',
-            dataIndex: 'id'
+            dataIndex: 'email'
         },
         {
             key: 4,
@@ -118,7 +113,7 @@ function StoresList() {
         {
             key: 3,
             title: 'Email',
-            dataIndex: 'id'
+            dataIndex: 'email'
         },
         {
             key: 4,
@@ -160,7 +155,7 @@ function StoresList() {
         {
             key: 3,
             title: 'Email',
-            dataIndex: 'id'
+            dataIndex: 'email'
         },
         {
             key: 4,

@@ -11,7 +11,9 @@
 
   import {
     getStores
-  } from '../../Helpers/Context/LguRepo'
+  } from '../../Helpers/Context/ClientRepo'
+
+  import { getRequests } from "../../Helpers/Context/RequestsRepo";
 
   function Dashboard() {
     const [loading, setLoading] = useState(true)
@@ -20,13 +22,16 @@
     const [admin, setAdmin] = useState("")
     const [activeStores, setActiveStores] = useState(0)
     const [requests, setRequests] = useState(0)
+    const [pickUp, setPickUp] = useState(0)
 
     const fetchData = async () => {
       const stores  = await getStores(userDetails);
+      const pickUpRequests = await getRequests(userDetails)
       const active = stores.filter(store => store.status === 'active');
       const pending = stores.filter(store => store.status === 'pending');
       setActiveStores(active.length)
       setRequests(pending.length)
+      setPickUp(pickUpRequests.length)
     }
 
     useEffect(() => {
@@ -77,7 +82,7 @@
                 <PiTruck className="text-[3.5rem] text-oliveGreen" />
                 <div>
                   <p>Garbage Pick-up Requests</p>
-                  <p className="font-bold text-lg">100</p>
+                  <p className="font-bold text-lg">{pickUp}</p>
                 </div>
               </div>
             </div>

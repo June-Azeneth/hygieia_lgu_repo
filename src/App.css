@@ -43,3 +43,15 @@ th {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+
+.view-btn {
+  @apply px-3 w-fit py-1 rounded-md hover:shadow-md me-3 bg-green text-white;
+}
+
+.danger-btn {
+  @apply px-3 w-fit py-1 rounded-md hover:shadow-md me-3 bg-red text-white;
+}
+
+.warning-btn {
+  @apply px-3 py-1 rounded-md hover:shadow-md text-white bg-orange;
+}

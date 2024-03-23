@@ -13,6 +13,7 @@ import StoreProfile from './Pages/StoreManagement/StoreProfile'
 import Transactions from './Pages/Transaction/Transactions';
 import StoresList from './Pages/StoreManagement/StoreList/StoresList'
 import StoreAccountRequest from './Pages/StoreManagement/StoreAccountRequest';
+import ClientManager from './Pages/Client/ClientManager';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
                     <Route path='/store-profile/:id' element={<StoreProfile />} />
                     <Route path="/account-request/:id" element={<StoreAccountRequest />} />
                     <Route path='/list' element={<List />} />
+                    <Route path='/clients' element={<ClientManager />} />
                   </Route>
                 </Routes>
               </>

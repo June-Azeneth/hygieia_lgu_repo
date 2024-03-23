@@ -88,7 +88,7 @@ export const getRewardsPerStore = async (id) => {
 };
 
 export const getPromosPerStore = async (id) => {
-    try {   
+    try {
         const rewardCollection = collection(firestore, 'promo');
         const promoQuery = query(
             rewardCollection,
@@ -110,7 +110,6 @@ export const getPromosPerStore = async (id) => {
 
 export const registerStore = async (documentId, email, password) => {
     try {
-        // Check if the password meets the length requirement
         if (password.length < 6) {
             throw new Error("Password should be at least 6 characters");
         }
@@ -130,10 +129,10 @@ export const registerStore = async (documentId, email, password) => {
             storeId: uid
         }, { merge: true });
 
-        return true; // Return true indicating success
+        return true;
     } catch (error) {
         console.error("Error registering store:", error);
-        throw error; // Throw the error to be caught by the calling function
+        throw error;
     }
 }
 

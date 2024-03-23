@@ -164,7 +164,7 @@ function StoreProfile() {
             <div className='flex flex-row gap-5'>
               <img
                 src={store.photo || Placeholder}
-                alt="photo"
+                alt=""
                 className='w-52 h-52 object-cover rounded-md shadow-md'
               />
               <div>

@@ -17,20 +17,17 @@ export const getTransactions = async (userDetails) => {
             const userType = userDetails.type;
             const id = userDetails.id
 
-            // Fetch customer data
             const customerData = await getField('consumer', 'id', customerId);
             const customerName = customerData.length > 0 ? `${customerData[0].firstName} ${customerData[0].lastName}` : 'Unknown Customer';
 
-            // Fetch store data
             const storeData = await getField('store', 'storeId', storeId);
             const storeLguId = storeData.length > 0 ? storeData[0].lguId : null;
             const storeName = storeData.length > 0 ? storeData[0].name : 'Unknown Store';
 
-            if(userType === 'client' && id !== storeLguId){
+            if (userType === 'client' && id !== storeLguId) {
                 continue;
             }
 
-            // Construct the transaction object with additional information
             const transaction = {
                 id: docSnapshot.id,
                 customerName: customerName,
@@ -47,7 +44,7 @@ export const getTransactions = async (userDetails) => {
 };
 
 
-const getField = async (collectionName, fieldName, fieldValue) => {
+export const getField = async (collectionName, fieldName, fieldValue) => {
     try {
         const documentsRef = collection(firestore, collectionName);
         const querySnapshot = await getDocs(query(documentsRef, where(fieldName, '==', fieldValue)));
@@ -56,7 +53,6 @@ const getField = async (collectionName, fieldName, fieldValue) => {
         querySnapshot.forEach(doc => {
             documents.push({ id: doc.id, ...doc.data() });
         });
-
         return documents;
     } catch (error) {
         console.error('Error getting documents by field:', error);

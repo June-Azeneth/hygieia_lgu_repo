@@ -33,7 +33,7 @@
 
 .nav-menu{
     background-color: #617C49;
-    width: 220px;  
+    width: 230px;  
     height: 100vh;
     display: flex;
     justify-content: center;
@@ -62,16 +62,16 @@
     display: flex;
     justify-content: start;
     align-items: center;
-    padding: 8px 0px 8px 16px;
+    /* padding: 8px 0px 8px 0px; */
     list-style: none;
-    height: 50px;
+    height: 40px;
 }
 
 .nav-text a{
     text-decoration: none;
     color: white;
     font-size: 16px;
-    width: 95%;
+    width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
