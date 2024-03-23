@@ -3,6 +3,7 @@ import NoData from '../../Assets/no_data.png'
 import { SyncLoader, BeatLoader } from 'react-spinners';
 import moment from 'moment';
 import { Timestamp } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 
 export const currentDateTimestamp = Timestamp.now();
 
@@ -45,7 +46,7 @@ export function showLoader() {
 
 export function showNoDataView() {
     return (
-        <div className="flex flex-col items-center gap-5">
+        <div className="flex flex-col items-center gap-5 w-full">
             <img src={NoData} alt="no data to show" className='w-[20rem] h-auto'></img>
             <h3 className='font-bold '>No Data To Show</h3>
         </div>

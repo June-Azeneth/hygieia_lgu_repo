@@ -5,15 +5,16 @@ import 'react-toastify/dist/ReactToastify.css';
 import Modal from '@mui/material/Modal';
 import { AiOutlineClose } from "react-icons/ai";
 import { PulseLoader } from 'react-spinners';
+import Placeholder from '../../Assets/placeholder_image.jpg'
 
 import {
   getStore,
   getRewardsPerStore,
   getPromosPerStore,
   updateStore
-} from '../../../Helpers/Context/StoreRepo';
-import { showLoader } from '../../../Helpers/Utils/Common';
-import { useAuth } from '../../../Helpers/Context/AuthContext';
+} from '../../Helpers/Context/StoreRepo';
+import { showLoader, showNoDataView } from '../../Helpers/Utils/Common';
+import { useAuth } from '../../Helpers/Context/AuthContext';
 
 function StoreProfile() {
   const { id } = useParams();
@@ -161,7 +162,11 @@ function StoreProfile() {
         <div>
           <div className="flex flex-col md:flex-row gap-5">
             <div className='flex flex-row gap-5'>
-              <img src={store.photo} alt="photo" className='w-52 h-52 object-cover rounded-md shadow-md' />
+              <img
+                src={store.photo || Placeholder}
+                alt="photo"
+                className='w-52 h-52 object-cover rounded-md shadow-md'
+              />
               <div>
                 <p className='font-bold text-2xl'>{store.name}</p>
                 <p>ID: {store.storeId}</p>
@@ -169,7 +174,7 @@ function StoreProfile() {
                 <p>Email: {store.email}</p>
                 <p className='mt-3'>Recyclables:</p>
                 <div className='flex flex-row gap-2'>
-                  {store.recyclable.map((item, index) => (
+                  {store.recyclable && store.recyclable.map((item, index) => (
                     <div className='bg-white border border-orange rounded-lg py-1 px-3 w-29' key={index}>{item}</div>
                   ))}
                 </div>
@@ -177,7 +182,7 @@ function StoreProfile() {
             </div>
             <div className='ms-auto flex flex-row gap-3'>
               <button className='bg-oliveGreen h-fit rounded-md hover:shadow-md py-2 w-28 text-white' onClick={() => handleEditClick()}>Edit Store</button>
-              <button className='bg-oliveGreen h-fit rounded-md hover:shadow-md py-2 px-3 w-fit text-white'>Change Password</button>
+              {/* <button className='bg-oliveGreen h-fit rounded-md hover:shadow-md py-2 px-3 w-fit text-white'>Change Password</button> */}
             </div>
           </div>
           <div className='flex flex-row gap-1 text-sm mt-6'>
@@ -185,7 +190,7 @@ function StoreProfile() {
             <div className={toggleState === 'promos' ? "tabs active-tab" : "tabs"} onClick={() => toggleTab('promos')}>Promos</div>
           </div>
           <div className={toggleState === "rewards" ? "content active-content" : "content"}>
-            {rewards && (
+            {rewards && rewards.length > 0 ? (
               <div className="flex flex-wrap gap-3 text-sm overflow-x-scroll scrollbar-none">
                 {rewards.map((item, index) => (
                   <div key={index} className='border border-gray rounded-md flex flex-col w-52 overflow-hidden'>
@@ -200,10 +205,14 @@ function StoreProfile() {
                   </div>
                 ))}
               </div>
+            ) : (
+              <div className='font-bold text-lg w-full text-center h-24 text-gray'>
+                No Rewards Offered
+              </div>
             )}
           </div>
           <div className={toggleState === "promos" ? "content active-content" : "content"}>
-            {promos && (
+            {promos && promos.length > 0 ? (
               <div className="flex flex-wrap gap-3 text-sm overflow-x-scroll scrollbar-none">
                 {promos.map((item, index) => (
                   <div key={index} className='border border-gray rounded-md flex flex-col w-52 overflow-hidden'>
@@ -217,6 +226,10 @@ function StoreProfile() {
                     </div>
                   </div>
                 ))}
+              </div>
+            ) : (
+              <div className='font-bold text-lg w-full text-center h-24 text-gray'>
+                No Promos Offered
               </div>
             )}
           </div>
@@ -297,7 +310,7 @@ function StoreProfile() {
 
                     </div>
                   )}
-                  <button type='button' className='bg-red py-2 px-4 text-white rounded-md' onClick={() => seTIsModalOpen(false)}>Cancel</button>
+                  <button type='button' className='hover:bg-red py-2 px-4 border border-red text-red hover:text-white rounded-md' onClick={() => seTIsModalOpen(false)}>Cancel</button>
                   <button type='button' className='bg-oliveGreen py-2 px-4 text-white rounded-md' onClick={() => handleSubmit()}>Submit</button>
                 </div>
               </form>

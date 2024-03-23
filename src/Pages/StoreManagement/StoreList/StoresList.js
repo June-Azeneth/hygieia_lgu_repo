@@ -32,6 +32,11 @@ function StoresList() {
         if (toggleState === 'active') {
             navigate(`/store-profile/${record.id}`);
         }
+        else if (toggleState === 'pending' || toggleState === 'rejected') {
+            navigate(`/account-request/${record.id}`);
+        } else {
+
+        }
     }
 
     const handleTableChange = pagination => {
@@ -135,8 +140,7 @@ function StoresList() {
             title: 'Actions',
             render: (text, record) => (
                 <div>
-                    <button className="px-3 w-20 py-1 rounded-md me-3 bg-green text-white">View</button>
-                    <button className="px-3 w-20 py-1 rounded-md bg-red text-white">Reject</button>
+                    <button className="px-3 w-20 py-1 rounded-md me-3 bg-green text-white" onClick={() => handleViewClick(record)}>View</button>
                 </div>
             )
         },
@@ -183,7 +187,7 @@ function StoresList() {
             title: 'Actions',
             render: (text, record) => (
                 <div>
-                    <button className="px-3 w-20 py-1 rounded-md me-3 bg-green text-white">View</button>
+                    <button className="px-3 w-20 py-1 rounded-md me-3 bg-green text-white" onClick={() => handleViewClick(record)}>View</button>
                 </div>
             )
         },

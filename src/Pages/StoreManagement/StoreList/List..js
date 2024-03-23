@@ -67,7 +67,7 @@ function List() {
 
 
   const fetchData = async () => {
-    const response = await getStores();
+    const response = await getStores("HzAfYwnM0WQnoqLiPliC8xFcAt33");
     setData(response);
     setLoading(false);
   };
@@ -219,7 +219,7 @@ function List() {
         text: message
       };
       await axios.post('https://hygieia-back-end-node.onrender.com/send-email', emailContent);
-      registerStore(selectedRowData.id, email);
+      registerStore(selectedRowData.id, email, "12345");
       setIsLoading(false);
       setIsDecisionModalOpen(false);
       setIsModalOpen(false);

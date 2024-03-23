@@ -25,7 +25,7 @@ function Login() {
     setPassword(event.target.value);
   };
 
-  const { login } = useAuth()
+  const { login, logout } = useAuth()
 
 
   async function handleSubmit(event) {
@@ -53,6 +53,7 @@ function Login() {
       setLoading(false)
     }
     catch (e) {
+      await logout()
       setLoading(false)
       toast.error("An error occured:" + e)
     }

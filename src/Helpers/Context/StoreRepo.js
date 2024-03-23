@@ -10,7 +10,7 @@ export const getStores = async (userDetails, toggleState) => {
     try {
         console.log("User type:", userDetails.type);
         console.log("Toggle state:", toggleState);
-        
+
         const storeCollection = collection(firestore, 'store');
         let storeQuery = storeCollection;
 
@@ -69,26 +69,32 @@ export const getStore = async (id) => {
 
 export const getRewardsPerStore = async (id) => {
     try {
-        console.log(id)
         const rewardCollection = collection(firestore, 'reward');
-        const rewardQuery = query(rewardCollection, where('storeId', '==', id));
+        const rewardQuery = query(
+            rewardCollection,
+            where('storeId', '==', id),
+            where('status', '==', 'active') // Add condition for active rewards
+        );
         const querySnapshot = await getDocs(rewardQuery);
         const rewards = [];
         querySnapshot.forEach((doc) => {
             rewards.push(doc.data());
         });
         return rewards;
-    }
-    catch (error) {
+    } catch (error) {
         console.error('Error fetching rewards:', error);
         throw error;
     }
-}
+};
 
 export const getPromosPerStore = async (id) => {
-    try {
+    try {   
         const rewardCollection = collection(firestore, 'promo');
-        const promoQuery = query(rewardCollection, where('storeId', '==', id));
+        const promoQuery = query(
+            rewardCollection,
+            where('storeId', '==', id),
+            where('status', '==', 'active')
+        );
         const querySnapshot = await getDocs(promoQuery);
         const promos = [];
         querySnapshot.forEach((doc) => {
@@ -102,17 +108,21 @@ export const getPromosPerStore = async (id) => {
     }
 }
 
-
-export const registerStore = async (documentId, email) => {
+export const registerStore = async (documentId, email, password) => {
     try {
+        // Check if the password meets the length requirement
+        if (password.length < 6) {
+            throw new Error("Password should be at least 6 characters");
+        }
+
         const documentRef = doc(firestore, 'store', documentId);
         const credentials = {
             email: email,
-            password: '123456'
+            password: password
         }
         const userCredential = await createUserWithEmailAndPassword(auth, credentials.email, credentials.password);
         const user = userCredential.user;
-        uid = user.uid;
+        const uid = user.uid;
 
         await setDoc(documentRef, {
             dateJoined: currentDateTimestamp,
@@ -120,9 +130,10 @@ export const registerStore = async (documentId, email) => {
             storeId: uid
         }, { merge: true });
 
+        return true; // Return true indicating success
     } catch (error) {
         console.error("Error registering store:", error);
-        throw error;
+        throw error; // Throw the error to be caught by the calling function
     }
 }
 

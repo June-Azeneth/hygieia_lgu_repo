@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { auth, firestore } from '../Utils/Firebase'
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, getDocs, where, collection } from "firebase/firestore";
 
 import {
     signInWithEmailAndPassword,
@@ -26,18 +26,21 @@ export function AuthProvider({ children }) {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
-            // Check if the user exists in the "lgu" collection
-            const docRef = doc(firestore, "lgu", user.uid);
+            // Check if the user exists in the "client" collection
+            const docRef = doc(firestore, "user", user.uid);
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
                 return userCredential;
             } else {
-                
+                await signOut(auth);
+                setCurrentUser(null);
                 throw new Error("Invalid Credentials");
             }
         } catch (error) {
             // Handle any errors that occur during the sign-in process
+            await signOut(auth);
+            setCurrentUser(null);
             console.error("Error signing in:", error);
             throw error;
         }
@@ -53,7 +56,7 @@ export function AuthProvider({ children }) {
             setLoading(false);
 
             if (user) {
-                const docRef = doc(firestore, "client", user.uid);
+                const docRef = doc(firestore, "user", user.uid);
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
