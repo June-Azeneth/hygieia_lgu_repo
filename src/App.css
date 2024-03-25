@@ -63,3 +63,7 @@ th {
 input:focus {
   outline: none;
 }
+
+.input-field {
+  @apply border border-gray rounded-md p-1;
+}

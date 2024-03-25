@@ -34,7 +34,7 @@ function StoresList() {
     const { userDetails } = useAuth();
     const [modalOpen, setModalOpen] = useState(false);
     const [loader, setLoader] = useState(false)
-    const [name, setname] = useState('');
+    const [name, setName] = useState('');
     const [owner, setOwner] = useState('');
     const [barangay, setBarangay] = useState('');
     const [city, setCity] = useState('');
@@ -61,7 +61,7 @@ function StoresList() {
     }
 
     const clearFields = () => {
-        setname('')
+        setName('')
         setEmail('')
         setBarangay('')
         setCity('')
@@ -410,7 +410,7 @@ function StoresList() {
                                     id='store_name'
                                     type="text"
                                     value={name}
-                                    onChange={(e) => setname(e.target.value)}
+                                    onChange={(e) => setName(e.target.value)}
                                     placeholder='Store Name'
                                     className='border rounded-md border-gray p-1'
                                 />
