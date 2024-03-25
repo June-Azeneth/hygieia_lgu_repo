@@ -1,4 +1,4 @@
-import { query, getDocs, setDoc, collection, doc, getDoc, where } from "firebase/firestore";
+import { query, getDocs, addDoc, setDoc, collection, doc, getDoc, where } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 import { firestore, auth } from '../Utils/Firebase'
@@ -19,9 +19,9 @@ export const getStores = async (userDetails, toggleState) => {
         }
 
         // If user is client, add filter by lguId
-        if (userDetails.type === 'client') {
-            storeQuery = query(storeQuery, where('lguId', '==', userDetails.id));
-        }
+        // if (userDetails.type === 'client') {
+        //     storeQuery = query(storeQuery, where('lguId', '==', userDetails.id));
+        // }
 
         const querySnapshot = await getDocs(storeQuery);
         const data = querySnapshot.docs.map(doc => ({
@@ -37,7 +37,7 @@ export const getStores = async (userDetails, toggleState) => {
 
 export const getStoreByID = async (toggleState, searchId) => {
     try {
-        
+
         if (toggleState === "active") {
             const storeCollection = collection(firestore, 'store');
             const storeQuery = query(
@@ -170,7 +170,37 @@ export const registerStore = async (documentId, email, password) => {
 
         return true;
     } catch (error) {
-        console.error("Error registering store:", error);
+        throw error;
+    }
+}
+
+export const addStore = async (email, password, data) => {
+    try {
+        if (password.length < 6) {
+            throw new Error("Password should be at least 6 characters");
+        }
+
+        const storeCollectionRef = collection(firestore, 'store');
+
+        const credentials = {
+            email: email,
+            password: password
+        }
+
+        const userCredential = await createUserWithEmailAndPassword(auth, credentials.email, credentials.password);
+        const user = userCredential.user;
+        const uid = user.uid;
+
+        const newStoreRef = await addDoc(storeCollectionRef, {
+            ...data,
+            storeId: uid,
+            email: email,
+            dateJoined: currentDateTimestamp,
+            status: "active"
+        });
+        return true;
+    }
+    catch (error) {
         throw error;
     }
 }

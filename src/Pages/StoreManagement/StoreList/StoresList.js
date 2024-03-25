@@ -5,11 +5,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import Modal from '@mui/material/Modal';
 import { AiOutlineClose } from "react-icons/ai";
-import { PulseLoader } from 'react-spinners';
+import axios from 'axios';
 
 import {
     getStores,
-    getStoreByID
+    getStoreByID,
+    addStore
 } from '../../../Helpers/Context/StoreRepo'
 import {
     formatDate,
@@ -25,13 +26,23 @@ import { BiSearchAlt } from "react-icons/bi";
 
 function StoresList() {
     const navigate = useNavigate();
-    const [toggleState, setToggleState] = useState('pending')
+    const [toggleState, setToggleState] = useState('pending');
     const [dataSource, setDataSource] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("")
     const [pagination, setPagination] = useState({ pageSize: 8 });
     const { userDetails } = useAuth();
-    const [modalOpen, setModalOpen] = useState(false)
+    const [modalOpen, setModalOpen] = useState(false);
+    const [loader, setLoader] = useState(false)
+    const [name, setname] = useState('');
+    const [owner, setOwner] = useState('');
+    const [barangay, setBarangay] = useState('');
+    const [city, setCity] = useState('');
+    const [province, setProvince] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [message, setMessage] = useState('');
+    const [placeholderText, setPlaceHolderText] = useState('')
 
     const handleViewClick = (record) => {
         if (toggleState === 'active') {
@@ -41,6 +52,56 @@ function StoresList() {
             navigate(`/account-request/${record.id}`);
         } else {
 
+        }
+    }
+
+    const handleCancelClick = () => {
+        setModalOpen(false)
+        clearFields()
+    }
+
+    const clearFields = () => {
+        setname('')
+        setEmail('')
+        setBarangay('')
+        setCity('')
+        setProvince('')
+        setEmail('')
+        setPassword('')
+    }
+
+    const handleSubmitClick = async () => {
+        try {
+            setLoader(true)
+            const success = await addStore(email, password, {
+                name,
+                owner,
+                address: {
+                    barangay,
+                    city,
+                    province
+                }
+            });
+
+            if (success) {
+                const emailContent = {
+                    to: email,
+                    subject: 'Welcome to Hygieia',
+                    text: message
+                };
+                await axios.post('https://hygieia-back-end-node.onrender.com/send-email', emailContent);
+                toast.success("Store Added Successfully")
+                setLoader(false)
+                setModalOpen(false)
+                clearFields()
+                fetchData()
+            } else {
+                toast.error("Failed to Add Store")
+            }
+
+        }
+        catch (error) {
+            toast.error("An error occured: " + error)
         }
     }
 
@@ -54,6 +115,11 @@ function StoresList() {
 
     const fetchStoreByID = async () => {
         try {
+            if (!search) {
+                toast.error("Please supply an ID")
+                return;
+            }
+
             setLoading(true)
             const response = await getStoreByID(toggleState, search);
             if (Array.isArray(response)) {
@@ -248,19 +314,34 @@ function StoresList() {
         fetchData();
     }, [userDetails, toggleState]);
 
+    useEffect(() => {
+        setMessage(`Welcome Aboard! \n\nYou are now apart of the Hygieia program. You may use these credentials to login your account. \n\nEmail: ${email} \nPassword: ${password} \n\nYou may leave the password as is, but we recommend that you change it to a more secure password once you have logged in to your account. \n\nThank you and welcome!`);
+    }, [email, password]);
+
+    useEffect(() => {
+        setSearch('')
+        if (toggleState === "active") {
+            setPlaceHolderText('Enter Store ID')
+        }
+        else {
+            setPlaceHolderText('Enter Request ID')
+        }
+    }, [toggleState])
+
     return (
         <div className='page-container text-darkGray'>
             <ToastContainer />
             <div className='w-full justify-center md:justify-between flex flex-row items-center gap-10 mb-4 h-9'>
-                <div className='flex justify-end flex-row items-center bg-white rounded-md border border-gray px-2'>
+                <div className='flex justify-end flex-row items-center bg-white rounded-md border border-gray ps-2 overflow-hidden'>
                     <input
                         type="text"
                         value={search}
                         onChange={handleSearchInputChange}
-                        placeholder='Search Store by ID'
-                        className='p-1 focus-within:bg-white outline-none'
+                        placeholder={placeholderText}
+                        className='p-1 focus-within:bg-white outline-none w-56'
                     />
-                    <BiSearchAlt className="text-oliveGreen text-lg cursor-pointer" onClick={() => fetchStoreByID()} />
+                    <button type="button" className='bg-green h-full py-1 text-white px-3' onClick={() => fetchStoreByID()}>Search</button>
+                    {/* <BiSearchAlt className="text-oliveGreen text-lg cursor-pointer" onClick={() => fetchStoreByID()} /> */}
                 </div>
                 <button className='warning-btn flex justify-center items-center h-full pe-1' onClick={() => setModalOpen(true)}>
                     <span className='p-0 text-lg m-0 me-2'><MdAdd /></span>
@@ -320,13 +401,84 @@ function StoresList() {
                     )}
                 </div>
                 <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-                    <div className='w-screen h-screen justify-center items-center flex text-sm'>
-                        <div className='bg-white w-96 rounded-md'>
-                            <form className='p-5'>
+                    <div className='w-screen h-screen justify-center items-center flex text-sm text-darkGray'>
+                        <div className='bg-white w-fit rounded-md'>
+                            <AiOutlineClose className="hover:text-red text-2xl ms-auto m-2" onClick={() => setModalOpen(false)} />
+                            <form className='px-5 flex flex-col gap-2 pb-5'>
+                                <p className="font-bold text-lg">Add Store</p>
                                 <input
+                                    id='store_name'
                                     type="text"
+                                    value={name}
+                                    onChange={(e) => setname(e.target.value)}
                                     placeholder='Store Name'
+                                    className='border rounded-md border-gray p-1'
                                 />
+                                <input
+                                    id='owner'
+                                    type="text"
+                                    value={owner}
+                                    onChange={(e) => setOwner(e.target.value)}
+                                    placeholder='Owner'
+                                    className='border rounded-md border-gray p-1'
+                                />
+                                <p className='mt-2 font-bold'>Address</p>
+                                <div className="" flex flew-row gap-2>
+                                    <input
+                                        id='barangay'
+                                        type="text"
+                                        value={barangay}
+                                        onChange={(e) => setBarangay(e.target.value)}
+                                        placeholder='Barangay'
+                                        className='border rounded-md border-gray p-1'
+                                    />
+                                    <input
+                                        id='city'
+                                        type="text"
+                                        value={city}
+                                        onChange={(e) => setCity(e.target.value)}
+                                        placeholder='City'
+                                        className='border rounded-md border-gray p-1 mx-2'
+                                    />
+                                    <input
+                                        id='province'
+                                        type="text"
+                                        value={province}
+                                        onChange={(e) => setProvince(e.target.value)}
+                                        placeholder='Province'
+                                        className='border rounded-md border-gray p-1'
+                                    />
+                                </div>
+                                <p className='mt-2 font-bold'>Set Credentials</p>
+                                <div className='flex gap-2'>
+                                    <input
+                                        id='email'
+                                        type="email"
+                                        placeholder='Email'
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className='border rounded-md border-gray p-1'
+                                    />
+                                    <input
+                                        id='password'
+                                        type="text"
+                                        placeholder='Password'
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className='border rounded-md border-gray p-1'
+                                    />
+                                </div>
+                                <div className="flex justify-end gap-3 mt-5">
+                                    <div>
+                                        {loader ? (
+                                            <div>{showLoader()}</div>
+                                        ) : (
+                                            <div>   </div>
+                                        )}
+                                    </div>
+                                    <button type='button' className="cancel-btn" onClick={() => handleCancelClick()}>Cancel</button>
+                                    <button type='button' className="view-btn w-20" onClick={() => handleSubmitClick()}>Add</button>
+                                </div>
                             </form>
                         </div>
                     </div>

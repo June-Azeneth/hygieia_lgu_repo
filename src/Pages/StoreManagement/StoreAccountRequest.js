@@ -26,18 +26,19 @@ const StoreAccountRequest = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { userDetails } = useAuth();
-    const [requestDetails, setRequestDetails] = useState(null)
-    const [side, setSide] = useState("")
-    const [decision, setDecision] = useState("")
-    const [password, setPassword] = useState("")
-    const [subject, setSubject] = useState('')
-    const [email, setEmail] = useState('')
+    const [requestDetails, setRequestDetails] = useState(null);
+    const [loader, setLoader] = useState(false)
+    const [side, setSide] = useState("");
+    const [decision, setDecision] = useState("");
+    const [password, setPassword] = useState("");
+    const [subject, setSubject] = useState('');
+    const [email, setEmail] = useState('');
     const [message, setMessage] = useState(``);
     const [isDecisionModalOpen, setDecisionModalOpen] = useState(false)
 
-    function handleBackToDashboard() {
-        navigate('/dashboard');
-    }
+    // function handleBackToDashboard() {
+    //     navigate('/dashboard');
+    // }
 
     const fetchData = async () => {
         try {
@@ -97,6 +98,7 @@ const StoreAccountRequest = () => {
     async function handleSubmitClick(event) {
         event.preventDefault();
         try {
+            setLoader(true)
             if (decision === "approve") {
                 if (!password) {
                     toast.error("Password Required");
@@ -122,6 +124,7 @@ const StoreAccountRequest = () => {
                 });
                 await axios.post('https://hygieia-back-end-node.onrender.com/send-email', emailContent);
                 toast.success('Email sent successfully \nStore account created');
+                setLoader(false)
                 setDecisionModalOpen(false);
                 clearFields();
                 setTimeout(() => {
@@ -292,6 +295,13 @@ const StoreAccountRequest = () => {
                                             className='px-1 border h-10 border-gray rounded-sm ms-4'
                                         />
                                         <div className="flex gap-3 flex-row mt-10 justify-end">
+                                            <div>
+                                                {loader ? (
+                                                    <div>{showLoader()}</div>
+                                                ) : (
+                                                    <div>   </div>
+                                                )}
+                                            </div>
                                             <button className="w-36 py-2 border-red border text-red hover:text-white hover:bg-red rounded-md" onClick={() => handleCancelClick("cancel_modal")}>Cancel</button>
                                             <button className="w-36 py-2 bg-oliveGreen text-white rounded-md" onClick={(e) => handleSubmitClick(e)}>Submit</button>
                                         </div>
@@ -325,6 +335,13 @@ const StoreAccountRequest = () => {
                                             required
                                         />
                                         <div className="flex gap-3 flex-row mt-10 justify-end">
+                                            <div>
+                                                {loader ? (
+                                                    <div>{showLoader()}</div>
+                                                ) : (
+                                                    <div>   </div>
+                                                )}
+                                            </div>
                                             <button className="w-36 py-2 border-red border text-red hover:text-white hover:bg-red rounded-md" onClick={() => handleCancelClick("cancel_modal")}>Cancel</button>
                                             <button className="w-36 py-2 bg-oliveGreen text-white rounded-md" onClick={(e) => handleSubmitClick(e)}>Submit</button>
                                         </div>

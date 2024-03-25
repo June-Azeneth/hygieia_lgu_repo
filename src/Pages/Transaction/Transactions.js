@@ -14,6 +14,7 @@ import { useAuth } from '../../Helpers/Context/AuthContext';
 import { IoMdDownload } from "react-icons/io";
 
 import { getTransactions } from '../../Helpers/Context/TransactionRepo'
+import { ToastContainer, toast } from 'react-toastify';
 
 function Transactions() {
     const { userDetails } = useAuth();
@@ -31,27 +32,32 @@ function Transactions() {
     };
 
     const fetchData = async () => {
-        setLoading(true);
-        if (!userDetails) {
-            return;
+        try {
+            setLoading(true);
+            if (!userDetails) {
+                return;
+            }
+            const response = await getTransactions(userDetails);
+            const formattedData = response.map(transaction => {
+                const { addedOn, ...otherFields } = transaction;
+                const formattedDate = formatDate(addedOn);
+                return {
+                    ...otherFields,
+                    addedOn: formattedDate
+                };
+            });
+            const filteredData = formattedData.filter(transaction => {
+                const transactionDate = new Date(transaction.addedOn).getTime();
+                const startDate = dateRange[0] ? dateRange[0].startOf('day').toDate().getTime() : 0;
+                const endDate = dateRange[1] ? dateRange[1].endOf('day').toDate().getTime() : Infinity;
+                return transactionDate >= startDate && transactionDate <= endDate;
+            });
+            setDataSource(filteredData);
+            setLoading(false);
         }
-        const response = await getTransactions(userDetails);
-        const formattedData = response.map(transaction => {
-            const { addedOn, ...otherFields } = transaction;
-            const formattedDate = formatDate(addedOn);
-            return {
-                ...otherFields,
-                addedOn: formattedDate
-            };
-        });
-        const filteredData = formattedData.filter(transaction => {
-            const transactionDate = new Date(transaction.addedOn).getTime();
-            const startDate = dateRange[0] ? dateRange[0].startOf('day').toDate().getTime() : 0;
-            const endDate = dateRange[1] ? dateRange[1].endOf('day').toDate().getTime() : Infinity;
-            return transactionDate >= startDate && transactionDate <= endDate;
-        });
-        setDataSource(filteredData);
-        setLoading(false);
+        catch (error) {
+            toast.error("An error occured: " + error)
+        }
     };
 
     const columns = [
@@ -136,6 +142,7 @@ function Transactions() {
 
     return (
         <div className='pt-8 pl-8 md:pl-24 pr-8'>
+            <ToastContainer />
             <div className='flex flew-row'>
                 <div className='w-full'>
                     {/* <DatePicker />
