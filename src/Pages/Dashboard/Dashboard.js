@@ -66,7 +66,7 @@
                 <VscRequestChanges className="text-[3.5rem] text-oliveGreen" />
                 <div>
                   <p>Account Registration Requests</p>
-                  <p className="font-bold text-lg">{requests}</p>
+                  <p className="font-bold text-2xl">{requests}</p>
                 </div>
               </div>
 
@@ -74,7 +74,7 @@
                 <IoStorefrontOutline className="text-[3.5rem] text-oliveGreen" />
                 <div>
                   <p>Total Stores</p>
-                  <p className="font-bold text-lg">{activeStores}</p>
+                  <p className="font-bold text-2xl">{activeStores}</p>
                 </div>
               </div>
 
@@ -82,7 +82,7 @@
                 <PiTruck className="text-[3.5rem] text-oliveGreen" />
                 <div>
                   <p>Garbage Pick-up Requests</p>
-                  <p className="font-bold text-lg">{pickUp}</p>
+                  <p className="font-bold text-2xl">{pickUp}</p>
                 </div>
               </div>
             </div>

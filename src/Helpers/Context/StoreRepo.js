@@ -4,13 +4,8 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { firestore, auth } from '../Utils/Firebase'
 import { currentDateTimestamp } from '../Utils/Common'
 
-let uid = ""
-
 export const getStores = async (userDetails, toggleState) => {
     try {
-        console.log("User type:", userDetails.type);
-        console.log("Toggle state:", toggleState);
-
         const storeCollection = collection(firestore, 'store');
         let storeQuery = storeCollection;
 
@@ -40,6 +35,50 @@ export const getStores = async (userDetails, toggleState) => {
     }
 };
 
+export const getStoreByID = async (toggleState, searchId) => {
+    try {
+        
+        if (toggleState === "active") {
+            const storeCollection = collection(firestore, 'store');
+            const storeQuery = query(
+                storeCollection,
+                where('storeId', '==', searchId),
+                where('status', '==', toggleState)
+            );
+
+            const storeDocSnapshot = await getDocs(storeQuery);
+
+            if (!storeDocSnapshot.empty) {
+                // Only return the first document if found
+                const doc = storeDocSnapshot.docs[0];
+                return {
+                    id: doc.id,
+                    ...doc.data()
+                };
+            } else {
+                return null; // Return null if no document is found
+            }
+        }
+        else {
+            const docRef = doc(firestore, "store", searchId);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const storeData = docSnap.data();
+                if (storeData.status === toggleState) {
+                    return {
+                        id: docSnap.id,
+                        ...storeData
+                    };
+                }
+            }
+            return null; // Return null if no document is found or status doesn't match
+        }
+    }
+    catch (error) {
+        throw error;
+    }
+};
 
 export const updateStore = async (storeId, updatedStoreData) => {
     try {

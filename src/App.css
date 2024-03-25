@@ -45,7 +45,7 @@ th {
 }
 
 .view-btn {
-  @apply px-3 w-fit py-1 rounded-md hover:shadow-md me-3 bg-green text-white;
+  @apply px-3 w-fit py-1 rounded-md hover:shadow-md bg-green text-white;
 }
 
 .danger-btn {
@@ -54,4 +54,8 @@ th {
 
 .warning-btn {
   @apply px-3 py-1 rounded-md hover:shadow-md text-white bg-orange;
+}
+
+input:focus {
+  outline: none;
 }

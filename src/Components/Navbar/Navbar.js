@@ -99,7 +99,7 @@ function Navbar() {
                                     <div>
                                         <ul className='mt-5 overflow-y-scroll scrollbar-none' onClick={showSideBar}>
                                             {client.map((item, index) => (
-                                                <li key={index} className={isCurrentPage(item.path) ? 'bg-mutedGreen rounded-md nav-text my-1 h-8' : 'h-8 my-1 hover:bg-mutedGreen rounded-md nav-text'}>
+                                                <li key={index} className={isCurrentPage(item.path) ? 'bg-mutedGreen nav-text my-1 h-8' : 'h-8 my-1 hover:bg-mutedGreen nav-text'}>
                                                     <Link to={item.path}>
                                                         {item.icon}
                                                         <span>{item.title}</span>
@@ -170,7 +170,7 @@ function Navbar() {
                                     <div>
                                         <ul className='mt-5 overflow-y-scroll scrollbar-none' onClick={showSideBar}>
                                             {admin.map((item, index) => (
-                                                <li key={index} className={isCurrentPage(item.path) ? 'bg-mutedGreen rounded-md nav-text my-1 h-8' : 'h-8 my-1 hover:bg-mutedGreen rounded-md nav-text'}>
+                                                <li key={index} className={isCurrentPage(item.path) ? 'bg-mutedGreen nav-text my-1 h-8' : 'h-8 my-1 hover:bg-mutedGreen nav-text'}>
                                                     <Link to={item.path}>
                                                         {item.icon}
                                                         <span>{item.title}</span>

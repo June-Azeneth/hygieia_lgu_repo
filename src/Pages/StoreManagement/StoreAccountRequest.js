@@ -117,15 +117,13 @@ const StoreAccountRequest = () => {
                     text: message
                 };
 
-                await axios.post('https://hygieia-back-end-node.onrender.com/send-email', emailContent);
-
                 await registerStore(requestDetails.id, email, password).catch(error => {
                     throw error;
                 });
-
+                await axios.post('https://hygieia-back-end-node.onrender.com/send-email', emailContent);
+                toast.success('Email sent successfully \nStore account created');
                 setDecisionModalOpen(false);
                 clearFields();
-                toast.success('Email sent successfully \nStore account created');
                 setTimeout(() => {
                     navigate('/store');
                 }, 3000);
@@ -145,9 +143,7 @@ const StoreAccountRequest = () => {
                     text: message
                 };
 
-                console.log(emailContent);
                 await axios.post('https://hygieia-back-end-node.onrender.com/send-email', emailContent);
-
                 await rejectStoreApplication(requestDetails.id, message).catch(error => {
                     throw error;
                 });
@@ -229,8 +225,8 @@ const StoreAccountRequest = () => {
                             <button className='py-2 px-3 w-32 rounded-md text-white bg-oliveGreen' onClick={() => handleDecisionClick("approve")}>Approve</button>
                         </div>
                     ) : (
-                        <div className='flex gap-3 flex-row mt-10 justify-center md:justify-end mb-10'>
-
+                        <div className='flex gap-3 flex-row my-10'>
+                            <p>Reason For Rejection: <span className='text-red'>{requestDetails.reason}</span></p>
                         </div>
                     )}
                 </div>

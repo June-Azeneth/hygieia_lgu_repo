@@ -78,8 +78,8 @@ function Requests() {
       title: 'Actions',
       render: (text, record) => (
         <div>
-          <button className="view-btn">Accept</button>
-          <button className="danger-btn">Decline</button>
+          <button className="warning-btn me-2">Acknowledge</button>
+          <button className="view-btn">Mark as Done</button>
         </div>
       )
     },
@@ -126,8 +126,8 @@ function Requests() {
       title: 'Actions',
       render: (text, record) => (
         <div>
-          <button className="px-3 w-20 py-1 rounded-md hover:shadow-md me-3 bg-green text-white">Accept</button>
-          <button className="px-3 w-20 py-1 rounded-md hover:shadow-md me-3 bg-red text-white">Decline</button>
+          <button className="view-btn">Acknowledge</button>
+          <button className="danger-btn">Mark as Done</button>
         </div>
       )
     },
