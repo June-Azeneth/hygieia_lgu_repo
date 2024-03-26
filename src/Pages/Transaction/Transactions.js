@@ -3,17 +3,16 @@ import { Table } from 'antd'
 import { DatePicker } from 'antd';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-
+import { useAuth } from '../../Helpers/Context/AuthContext';
 import {
     formatDate,
     showLoader,
 } from '../../Helpers/Utils/Common'
 
-import { useAuth } from '../../Helpers/Context/AuthContext';
-
 import { IoMdDownload } from "react-icons/io";
+import { LuRefreshCw } from "react-icons/lu";
 
-import { getTransactions } from '../../Helpers/Context/TransactionRepo'
+import { getTransactions, getTransactionByID } from '../../Helpers/Context/TransactionRepo'
 import { ToastContainer, toast } from 'react-toastify';
 
 function Transactions() {
@@ -22,6 +21,7 @@ function Transactions() {
     const [loading, setLoading] = useState(true);
     const [pagination, setPagination] = useState({ pageSize: 8 });
     const [dateRange, setDateRange] = useState([]);
+    const [search, setSearch] = useState('')
 
     const handleTableChange = pagination => {
         setPagination(pagination);
@@ -136,23 +136,63 @@ function Transactions() {
         return buf;
     };
 
+    const fetchTrasactionById = async () => {
+        try {
+            if (!search) {
+                toast.error("Please supply an ID");
+                return;
+            }
+            setLoading(true)
+            const response = await getTransactionByID(search);
+            if (response) {
+                const { addedOn, ...otherFields } = response;
+                const formattedDate = formatDate(addedOn);
+                const formattedData = {
+                    ...otherFields,
+                    addedOn: formattedDate
+                };
+                setDataSource([formattedData]);
+                setLoading(false)
+            } else {
+                toast.error("Error: No record found");
+                setLoading(false)
+                setDataSource([])
+            }
+        } catch (error) {
+            toast.error("Error: " + error.message);
+            setLoading(false)
+            setDataSource([])
+        }
+    }
+
     useEffect(() => {
         fetchData();
     }, [dateRange, userDetails]);
 
     return (
-        <div className='pt-8 pl-8 md:pl-24 pr-8'>
+        <div className='pt-5 pl-8 md:pl-24 pr-8'>
             <ToastContainer />
-            <div className='flex flew-row'>
-                <div className='w-full'>
-                    {/* <DatePicker />
-                    <DatePicker className='ms-2' /> */}
-                    <div className='w-full'>
-                        <DatePicker.RangePicker onChange={handleDateChange} />
-                    </div>
+            <div className='flex flew-row justify-between'>
+                <div className='rounded-md border border-gray overflow-hidden'>
+                    <input
+                        type="text"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="Search by Transaction ID"
+                        className='p-1 focus-within:bg-white outline-none w-56'
+                    />
+                    <button type="button" className='bg-green py-1 text-white px-3' onClick={() => fetchTrasactionById()}>Search</button>
                 </div>
-                <div>
-                    <button className='bg-orange hover:shadow-md items-center flex flex-row text-sm text-white py-2 px-4 rounded-md mb-5 w-fit me-auto' onClick={exportToExcel}><span className='p-0 m-0 me-2'><IoMdDownload /></span>Download</button>
+            </div>
+            <div className='w-full my-3 flex flex-row justify-between'>
+                <DatePicker.RangePicker
+                    picker="date"
+                    showTime={false}
+                    onChange={handleDateChange}
+                />
+                <div className='flex flex-row text-darkGray items-center'>
+                    <LuRefreshCw className='cursor-pointer text-2xl me-4' onClick={() => fetchData()} />
+                    <button className='bg-orange hover:shadow-md items-center flex flex-row text-sm text-white py-2 px-4 rounded-md w-fit me-auto' onClick={exportToExcel}><span className='p-0 m-0 me-2'><IoMdDownload /></span>Download</button>
                 </div>
             </div>
             <div className='bg-white rounded-md overflow-x-scroll scrollbar-none'>
@@ -160,12 +200,14 @@ function Transactions() {
                     <div className='w-full h-full flex justify-center p-10'>
                         {showLoader()}
                     </div>) : (
-                    <Table
-                        columns={columns}
-                        dataSource={dataSource}
-                        pagination={pagination}
-                        onChange={handleTableChange}>
-                    </Table>
+                    <div>
+                        <Table
+                            columns={columns}
+                            dataSource={dataSource}
+                            pagination={pagination}
+                            onChange={handleTableChange}>
+                        </Table>
+                    </div>
                 )}
             </div>
         </div>

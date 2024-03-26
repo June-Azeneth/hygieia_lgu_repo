@@ -1,4 +1,4 @@
-import { collection, query, getDocs, where } from 'firebase/firestore';
+import { collection, query, getDocs, getDoc, doc, where } from 'firebase/firestore';
 import { firestore } from '../Utils/Firebase';
 
 export const getTransactions = async (userDetails) => {
@@ -14,19 +14,19 @@ export const getTransactions = async (userDetails) => {
             const customerId = transactionData.customerId;
             const storeId = transactionData.storeId;
 
-            const userType = userDetails.type;
-            const id = userDetails.id
+            // const userType = userDetails.type;
+            // const id = userDetails.id
 
             const customerData = await getField('consumer', 'id', customerId);
             const customerName = customerData.length > 0 ? `${customerData[0].firstName} ${customerData[0].lastName}` : 'Unknown Customer';
 
             const storeData = await getField('store', 'storeId', storeId);
-            const storeLguId = storeData.length > 0 ? storeData[0].lguId : null;
+            // const storeLguId = storeData.length > 0 ? storeData[0].lguId : null;
             const storeName = storeData.length > 0 ? storeData[0].name : 'Unknown Store';
 
-            if (userType === 'client' && id !== storeLguId) {
-                continue;
-            }
+            // if (userType === 'client' && id !== storeLguId) {
+            //     continue;
+            // }
 
             const transaction = {
                 id: docSnapshot.id,
@@ -38,11 +38,40 @@ export const getTransactions = async (userDetails) => {
         }
         return transactions;
     } catch (error) {
-        console.error('Error fetching transactions:', error);
+        throw error
         return [];
     }
 };
 
+export const getTransactionByID = async (searchID) => {
+    try {
+        const ref = doc(firestore, 'transaction', searchID);
+        const transactionDoc = await getDoc(ref);
+
+        if (transactionDoc.exists()) {
+            const transactionData = transactionDoc.data();
+            const customerId = transactionData.customerId;
+            const storeId = transactionData.storeId;
+
+            const customerData = await getField('consumer', 'id', customerId);
+            const customerName = customerData.length > 0 ? `${customerData[0].firstName} ${customerData[0].lastName}` : 'Unknown Customer';
+
+            const storeData = await getField('store', 'storeId', storeId);
+            const storeName = storeData.length > 0 ? storeData[0].name : 'Unknown Store';
+
+            return {
+                id: transactionDoc.id,
+                customerName: customerName,
+                storeName: storeName,
+                ...transactionData
+            };
+        } else {
+            throw new Error('Transaction not found');
+        }
+    } catch (error) {
+        throw error;
+    }
+};
 
 export const getField = async (collectionName, fieldName, fieldValue) => {
     try {
@@ -55,7 +84,7 @@ export const getField = async (collectionName, fieldName, fieldValue) => {
         });
         return documents;
     } catch (error) {
-        console.error('Error getting documents by field:', error);
+        throw error
         return [];
     }
 };
