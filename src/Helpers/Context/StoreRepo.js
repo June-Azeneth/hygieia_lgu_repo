@@ -37,7 +37,6 @@ export const getStores = async (userDetails, toggleState) => {
 
 export const getStoreByID = async (toggleState, searchId) => {
     try {
-
         if (toggleState === "active") {
             const storeCollection = collection(firestore, 'store');
             const storeQuery = query(

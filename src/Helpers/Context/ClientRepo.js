@@ -22,7 +22,6 @@ export const getStores = async (userDetails) => {
     }
 }
 
-
 // FOR ADMIN
 export const getClients = async () => {
     try {
@@ -36,6 +35,28 @@ export const getClients = async () => {
     }
     catch (error) {
         throw error.message
+    }
+}
+
+export const getClientById = async (searchId) => {
+    try {
+        const ref = collection(firestore, 'user');
+        const userQuery = query(ref, where('id', '==', searchId),);
+
+        const userDocument = await getDocs(userQuery);
+
+        if (!userDocument.empty) {
+            const doc = userDocument.docs[0];
+            return {
+                id: doc.id,
+                ...doc.data()
+            };
+        } else {
+            return null;
+        }
+    }
+    catch (error) {
+        throw error
     }
 }
 
