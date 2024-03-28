@@ -216,5 +216,5 @@ export const rejectStoreApplication = async (documentId, reason) => {
     catch (error) {
         console.error("Error setting reason for rejection:", error);
         throw error;
-    }
+    } 
 }

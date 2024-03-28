@@ -1,4 +1,4 @@
-import { query, getDocs, addDoc, collection, where } from "firebase/firestore";
+import { query, getDocs, addDoc, setDoc, doc, collection, where } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 import { firestore, auth } from '../Utils/Firebase'
@@ -25,7 +25,7 @@ export const getStores = async (userDetails) => {
 // FOR ADMIN
 export const getClients = async () => {
     try {
-        const userQuery = query(collection(firestore, 'user'), where('type', '==', 'client'));
+        const userQuery = query(collection(firestore, 'user'), where('type', '==', 'client'), where('status', '==', 'active'));
         const querySnapshot = await getDocs(userQuery);
 
         const clients = querySnapshot.docs.map(doc => ({
@@ -37,6 +37,36 @@ export const getClients = async () => {
         throw error.message
     }
 }
+
+export const updateClient = async (clientId, update) => {
+    try {
+        const querySnapshot = await getDocs(query(collection(firestore, 'user'), where('id', '==', clientId)));
+        if (!querySnapshot.empty) {
+            const docRef = querySnapshot.docs[0].ref;
+            await setDoc(docRef, update, { merge: true });
+            return true
+        } else {
+            throw new Error('Client not found');
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const deleteClient = async (clientId) => {
+    try {
+        const querySnapshot = await getDocs(query(collection(firestore, 'user'), where('id', '==', clientId)));
+        if (!querySnapshot.empty) {
+            const docRef = querySnapshot.docs[0].ref;
+            await setDoc(docRef, { status: "deleted" }, { merge: true });
+            return true;
+        } else {
+            throw new Error('Client not found');
+        }
+    } catch (error) {
+        throw error;
+    }
+};
 
 export const getClientById = async (searchId) => {
     try {
@@ -85,7 +115,8 @@ export const addClient = async (email, password, data) => {
             email: email,
             dateAdded: currentDateTimestamp,
             status: "active",
-            type: "client"
+            type: "client",
+            status: "active"
         });
         await updateCurrentUser(auth, originalUser);
         return true;

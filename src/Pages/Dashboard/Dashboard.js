@@ -71,7 +71,6 @@ function Dashboard() {
                 <p className="font-bold text-2xl">{requests}</p>
               </div>
             </div>
-
             <div className="bg-white rounded-md w-[22rem] p-5 flex flex-row items-center gap-4 shadow-md">
               <IoStorefrontOutline className="text-[3.5rem] text-oliveGreen" />
               <div>
@@ -79,7 +78,6 @@ function Dashboard() {
                 <p className="font-bold text-2xl">{activeStores}</p>
               </div>
             </div>
-
             <div className="bg-white rounded-md w-[22rem] p-5 flex flex-row items-center gap-4 shadow-md">
               <PiTruck className="text-[3.5rem] text-oliveGreen" />
               <div>

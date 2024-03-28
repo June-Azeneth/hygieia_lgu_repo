@@ -49,7 +49,7 @@ th {
 }
 
 .danger-btn {
-  @apply px-3 w-fit py-1 rounded-md hover:shadow-md me-3 bg-red text-white;
+  @apply px-3 py-1 rounded-md hover:shadow-md me-3 bg-red text-white;
 }
 
 .warning-btn {
@@ -57,7 +57,7 @@ th {
 }
 
 .cancel-btn {
-  @apply border w-20 rounded-md p-1 border-red text-red hover:bg-red hover:text-white;
+  @apply border rounded-md p-1 border-red text-red hover:bg-red hover:text-white;
 }
 
 input:focus {

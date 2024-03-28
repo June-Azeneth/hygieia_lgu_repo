@@ -22,6 +22,7 @@ function Transactions() {
     const [pagination, setPagination] = useState({ pageSize: 8 });
     const [dateRange, setDateRange] = useState([]);
     const [search, setSearch] = useState('')
+    const [transactionFee, setTransactionFee] = useState(0)
 
     const handleTableChange = pagination => {
         setPagination(pagination);
@@ -37,8 +38,10 @@ function Transactions() {
             if (!userDetails) {
                 return;
             }
-            const response = await getTransactions(userDetails);
-            const formattedData = response.map(transaction => {
+            const { transactions } = await getTransactions(userDetails);
+
+            // Process transactions
+            const formattedData = transactions.map(transaction => {
                 const { addedOn, ...otherFields } = transaction;
                 const formattedDate = formatDate(addedOn);
                 return {
@@ -46,19 +49,30 @@ function Transactions() {
                     addedOn: formattedDate
                 };
             });
+
+            // Filter transactions based on date range
             const filteredData = formattedData.filter(transaction => {
                 const transactionDate = new Date(transaction.addedOn).getTime();
                 const startDate = dateRange[0] ? dateRange[0].startOf('day').toDate().getTime() : 0;
                 const endDate = dateRange[1] ? dateRange[1].endOf('day').toDate().getTime() : Infinity;
                 return transactionDate >= startDate && transactionDate <= endDate;
             });
+
+            const totalTransactions = filteredData.length;
+            setTransactionFee(totalTransactions * 0.1)
+
             setDataSource(filteredData);
             setLoading(false);
+
+            // You can use totalTransactions and transactionFee as needed
+            console.log('Total Transactions:', totalTransactions);
+            console.log('Transaction Fee:', transactionFee);
         }
         catch (error) {
-            toast.error("An error occured: " + error)
+            toast.error("An error occurred: " + error);
         }
     };
+
 
     const columns = [
         {
@@ -113,9 +127,6 @@ function Transactions() {
         const data = dataSource.map(item => columns.map(column => item[column.dataIndex]));
 
         const ws = XLSX.utils.aoa_to_sheet([header, ...data]);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Transactions');
-        const wbout = XLSX.write(wb, { type: 'binary', bookType: 'xlsx' });
 
         let formattedDateRange = '';
         if (dateRange && dateRange.length === 2) {
@@ -124,10 +135,22 @@ function Transactions() {
             formattedDateRange = '';
         }
 
+        // Add transaction fee and date range to specific cells
+        const transactionFeeCell = `A1`;
+        const dateRangeCell = `A2`;
+        XLSX.utils.sheet_add_aoa(ws, [[`Transaction Fee:`, transactionFee]], { origin: transactionFeeCell });
+        XLSX.utils.sheet_add_aoa(ws, [[`Date Range:`, formattedDateRange]], { origin: dateRangeCell });
+
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Transactions');
+
+        const wbout = XLSX.write(wb, { type: 'binary', bookType: 'xlsx' });
+
         const fileName = `Transactions ${formattedDateRange}.xlsx`;
 
         saveAs(new Blob([s2ab(wbout)], { type: 'application/octet-stream' }), fileName);
     };
+
 
     const s2ab = s => {
         const buf = new ArrayBuffer(s.length);
@@ -135,6 +158,41 @@ function Transactions() {
         for (let i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
         return buf;
     };
+
+    function handleExport() {
+        try {
+            const header = columns.map(column => column.title);
+            const data = dataSource.map(item => columns.map(column => item[column.dataIndex]));
+
+            let formattedDateRange = '';
+            if (dateRange && dateRange.length === 2) {
+                formattedDateRange = `${dateRange[0].format('YYYY-MMM-DD')} to ${dateRange[1].format('YYYY-MMM-DD')}`;
+            } else {
+                formattedDateRange = 'All';
+            }
+
+            const meta = [
+                ['Title:', 'Transaction List'],
+                ['Date Range:', formattedDateRange],
+                ['Transaction Fee:', `₱${transactionFee}`]
+            ];
+
+            const sheet = XLSX.utils.json_to_sheet([{}], {
+                // header: header
+            });
+
+            /* generate worksheet and workbook */
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.sheet_add_json(sheet, data, { origin: 'A5' });
+            XLSX.utils.book_append_sheet(workbook, sheet, "Sheet 1");
+            XLSX.utils.sheet_add_aoa(sheet, meta, { origin: "A1" });
+            XLSX.utils.sheet_add_aoa(sheet, [header], { origin: "A5" });
+            XLSX.writeFile(workbook, `Trial.xlsx`, { compression: true });
+        }
+        catch (error) {
+            toast.error("Error: " + error)
+        }
+    }
 
     const fetchTrasactionById = async () => {
         try {
@@ -169,8 +227,11 @@ function Transactions() {
         fetchData();
     }, [dateRange, userDetails]);
 
+    useEffect(() => {
+    }, [dataSource])
+
     return (
-        <div className='pt-5 pl-8 md:pl-24 pr-8'>
+        <div className='pt-5 px-5 md:pl-24'>
             <ToastContainer />
             <div className='flex flew-row justify-between'>
                 <div className='rounded-md border border-gray overflow-hidden'>
@@ -184,15 +245,15 @@ function Transactions() {
                     <button type="button" className='bg-green py-1 text-white px-3' onClick={() => fetchTrasactionById()}>Search</button>
                 </div>
             </div>
-            <div className='w-full my-3 flex flex-row justify-between'>
+            <div className='w-full my-3 flex flex-col md:flex-row justify-between'>
                 <DatePicker.RangePicker
                     picker="date"
                     showTime={false}
                     onChange={handleDateChange}
                 />
-                <div className='flex flex-row text-darkGray items-center'>
+                <div className='flex flex-row text-darkGray items-center mt-4 md:mt-0 justify-end'>
                     <LuRefreshCw className='cursor-pointer text-2xl me-4' onClick={() => fetchData()} />
-                    <button className='bg-orange hover:shadow-md items-center flex flex-row text-sm text-white py-2 px-4 rounded-md w-fit me-auto' onClick={exportToExcel}><span className='p-0 m-0 me-2'><IoMdDownload /></span>Download</button>
+                    <button className='bg-orange hover:shadow-md items-center flex flex-row text-sm text-white py-2 px-4 rounded-md w-fit' onClick={() => handleExport()}><span className='p-0 m-0 me-2'><IoMdDownload /></span>Download</button>
                 </div>
             </div>
             <div className='bg-white rounded-md overflow-x-scroll scrollbar-none'>
@@ -210,6 +271,9 @@ function Transactions() {
                     </div>
                 )}
             </div>
+            {/* <div className="mt-3">
+                <p>Transaction Fee: ₱{transactionFee}</p>
+            </div> */}
         </div>
     )
 }
