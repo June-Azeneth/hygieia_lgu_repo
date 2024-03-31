@@ -3,7 +3,7 @@ import { Table } from 'antd'
 import { DatePicker } from 'antd';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import { useAuth } from '../../Helpers/Context/AuthContext';
+import { useAuth } from '../../Helpers/Repository/AuthContext';
 import {
     formatDate,
     showLoader,
@@ -12,7 +12,7 @@ import {
 import { IoMdDownload } from "react-icons/io";
 import { LuRefreshCw } from "react-icons/lu";
 
-import { getTransactions, getTransactionByID } from '../../Helpers/Context/TransactionRepo'
+import { getTransactions, getTransactionByID } from '../../Helpers/Repository/TransactionRepo'
 import { ToastContainer, toast } from 'react-toastify';
 
 function Transactions() {

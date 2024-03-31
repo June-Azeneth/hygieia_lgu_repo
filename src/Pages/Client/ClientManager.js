@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useAuth } from '../../Helpers/Context/AuthContext'
+import { useAuth } from '../../Helpers/Repository/AuthContext'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Table } from 'antd'
@@ -18,7 +18,7 @@ import {
     getClientById,
     updateClient,
     deleteClient
-} from '../../Helpers/Context/ClientRepo';
+} from '../../Helpers/Repository/ClientRepo';
 
 export default function ClientManager() {
     const { userDetails } = useAuth();
@@ -39,6 +39,7 @@ export default function ClientManager() {
     const [selectedRow, setSelectedRow] = useState([])
     const [confirmationDiag, setConfirmationDiag] = useState(false)
     const [deleteRec, setDeleteRec] = useState(false)
+
     const handleTableChange = pagination => {
         setPagination(pagination);
     };
@@ -66,7 +67,7 @@ export default function ClientManager() {
     const fetchClientById = async () => {
         try {
             if (!search) {
-                toast.error("Please supply an ID");
+                toast.error("Please enter an ID");
                 return;
             }
             setLoading(true)
@@ -259,7 +260,7 @@ export default function ClientManager() {
         {
             key: 5,
             title: 'Actions',
-            render: (text, record) => (
+            render: (record) => (
                 <div>
                     <button className="view-btn w-fit" onClick={() => handleUpdateClick(record)}>Edit</button>
                     <button className="danger-btn ms-3 w-fit" onClick={() => handleDeleteClick(record)}>Delete</button>
@@ -378,7 +379,7 @@ export default function ClientManager() {
                                             <div>   </div>
                                         )}
                                     </div>
-                                    <button type='button' className="cancel-btn" onClick={() => handleCancelClick()}>Cancel</button>
+                                    <button type='button' className="cancel-btn w-20" onClick={() => handleCancelClick()}>Cancel</button>
                                     <button type='button' className="view-btn w-20" onClick={() => handleAddClient()}>Add</button>
                                 </div>
                             </div>
@@ -430,7 +431,7 @@ export default function ClientManager() {
                                             <div>   </div>
                                         )}
                                     </div>
-                                    <button type='button' className="cancel-btn" onClick={() => handleCancelClick()}>Cancel</button>
+                                    <button type='button' className="cancel-btn w-20" onClick={() => handleCancelClick()}>Cancel</button>
                                     <button type='button' className="view-btn w-20" onClick={() => handleUpdateClientInfo()}>Update</button>
                                 </div>
                             </div>

@@ -4,7 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom'
 import { FadeLoader } from 'react-spinners';
 
-import { useAuth } from '../../Helpers/Context/AuthContext'
+import { useAuth } from '../../Helpers/Repository/AuthContext'
 
 //assets
 import Logo from '../../Assets/logo_final.png'
@@ -49,11 +49,12 @@ function Login() {
       setLoading(true)
       await login(email, password)
       toast.success("Logged in successfully!")
-      navigate('/home')
       setLoading(false)
+      navigate('/home')
     }
     catch (e) {
       await logout()
+      navigate('/')
       setLoading(false)
       toast.error("An error occured:" + e)
     }

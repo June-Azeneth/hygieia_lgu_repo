@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { useAuth } from '../Helpers/Context/AuthContext';
+import { useAuth } from '../Helpers/Repository/AuthContext';
 import Unauthorized from '../Pages/Unauthorized';
 
 const PrivateRoute = () => {

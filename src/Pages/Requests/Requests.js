@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Table } from 'antd'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useAuth } from '../../Helpers/Context/AuthContext';
 
 import {
   formatDate,
   showLoader,
 } from '../../Helpers/Utils/Common'
 
-import { getRequests } from '../../Helpers/Context/RequestsRepo'
+import { useAuth } from '../../Helpers/Repository/AuthContext';
+import { getRequests } from '../../Helpers/Repository/RequestsRepo'
 
 function Requests() {
   const [dataSource, setDataSource] = useState([]);
@@ -77,8 +77,8 @@ function Requests() {
       key: 7,
       title: 'Actions',
       render: (text, record) => (
-        <div>
-          <button className="warning-btn me-2">Acknowledge</button>
+        <div className='flex flex-row gap-3'>
+          <button className="warning-btn">Acknowledge</button>
           <button className="view-btn">Mark as Done</button>
         </div>
       )
@@ -125,9 +125,9 @@ function Requests() {
       key: 7,
       title: 'Actions',
       render: (text, record) => (
-        <div>
-          <button className="view-btn">Acknowledge</button>
-          <button className="danger-btn">Mark as Done</button>
+        <div className='flex flex-row gap-3'>
+          <button className="warning-btn">Acknowledge</button>
+          <button className="view-btn">Mark as Done</button>
         </div>
       )
     },

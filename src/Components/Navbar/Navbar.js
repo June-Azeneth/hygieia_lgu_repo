@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import * as FaIcons from "react-icons/fa";
 import { IconContext } from 'react-icons';
-import { useAuth } from '../../Helpers/Context/AuthContext'
+import { useAuth } from '../../Helpers/Repository/AuthContext'
 import { IoLogOut } from "react-icons/io5";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -94,12 +94,14 @@ function Navbar() {
                             <div className='flex flex-col justify-between' onClick={showSideBar}>
                                 <div className='text-white flex justify-center flex-col items-center pt-6'>
                                     <img src={Logo} alt="logo" className='w-20 bg-white rounded-md' />
-                                    <p>{user}</p>
-                                    <p className='text-xs tracking-tight font-thin'>ID: {id}</p>
+                                    <div className='text-center w-full'>
+                                        <p>{user}</p>
+                                        <p className='text-xs tracking-tight font-thin'>ID: {id}</p>
+                                    </div>
                                     <div>
                                         <ul className='mt-5 overflow-y-scroll scrollbar-none' onClick={showSideBar}>
                                             {client.map((item, index) => (
-                                                <li key={index} className={isCurrentPage(item.path) ? 'bg-mutedGreen nav-text my-1 h-8' : 'h-8 my-1 hover:bg-mutedGreen nav-text'}>
+                                                <li key={index} className={isCurrentPage(item.path) ? 'bg-mutedGreen nav-text h-8' : 'h-8 hover:bg-mutedGreen nav-text'}>
                                                     <Link to={item.path}>
                                                         {item.icon}
                                                         <span>{item.title}</span>
@@ -165,8 +167,10 @@ function Navbar() {
                             <div className='flex flex-col justify-between' onClick={showSideBar}>
                                 <div className='text-white flex justify-center flex-col items-center pt-6'>
                                     <img src={Logo} alt="logo" className='w-20 bg-white rounded-md' />
-                                    <p>{user}</p>
-                                    <p className='text-xs tracking-tight font-thin'>ID: {id}</p>
+                                    <div className='text-center w-full'>
+                                        <p>{user}</p>
+                                        <p className='text-xs tracking-tight font-thin'>ID: {id}</p>
+                                    </div>
                                     <div>
                                         <ul className='mt-5 overflow-y-scroll scrollbar-none' onClick={showSideBar}>
                                             {admin.map((item, index) => (

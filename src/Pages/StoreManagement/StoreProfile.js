@@ -12,9 +12,9 @@ import {
   getRewardsPerStore,
   getPromosPerStore,
   updateStore
-} from '../../Helpers/Context/StoreRepo';
+} from '../../Helpers/Repository/StoreRepo';
 import { showLoader, showNoDataView } from '../../Helpers/Utils/Common';
-import { useAuth } from '../../Helpers/Context/AuthContext';
+import { useAuth } from '../../Helpers/Repository/AuthContext';
 
 function StoreProfile() {
   const { id } = useParams();

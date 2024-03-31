@@ -11,14 +11,14 @@ import {
     getStores,
     getStoreByID,
     addStore
-} from '../../../Helpers/Context/StoreRepo'
+} from '../../../Helpers/Repository/StoreRepo'
 import {
     formatDate,
     showLoader,
 } from '../../../Helpers/Utils/Common'
 import '../storemanagement.css';
 
-import { useAuth } from '../../../Helpers/Context/AuthContext';
+import { useAuth } from '../../../Helpers/Repository/AuthContext';
 
 //assets
 import { MdAdd } from "react-icons/md";

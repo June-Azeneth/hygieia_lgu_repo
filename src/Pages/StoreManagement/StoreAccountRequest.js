@@ -5,14 +5,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import Modal from '@mui/material/Modal';
 import { AiOutlineClose } from "react-icons/ai";
 import { PulseLoader } from 'react-spinners';
-import { useAuth } from '../../Helpers/Context/AuthContext';
+import { useAuth } from '../../Helpers/Repository/AuthContext';
 import axios from 'axios';
 
 import {
     getStore,
     registerStore,
     rejectStoreApplication
-} from '../../Helpers/Context/StoreRepo';
+} from '../../Helpers/Repository/StoreRepo';
 
 import {
     showLoader,

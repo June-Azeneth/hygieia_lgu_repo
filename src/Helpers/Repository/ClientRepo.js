@@ -109,15 +109,15 @@ export const addClient = async (email, password, data) => {
         const user = userCredential.user;
         const uid = user.uid;
 
-        const newClient = await addDoc(userCollectionRef, {
+        const newClient = await setDoc(doc(userCollectionRef, uid), {
             ...data,
             id: uid,
             email: email,
             dateAdded: currentDateTimestamp,
             status: "active",
             type: "client",
-            status: "active"
         });
+
         await updateCurrentUser(auth, originalUser);
         return true;
     } catch (error) {

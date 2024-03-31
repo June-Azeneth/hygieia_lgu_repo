@@ -7,8 +7,9 @@ import {
     signOut,
     browserSessionPersistence,
     setPersistence,
-    updateCurrentUser
 } from 'firebase/auth';
+
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = React.createContext();
 
@@ -21,12 +22,13 @@ export function AuthProvider({ children }) {
     const [userDetails, setUserDetails] = useState();
     const [loading, setLoading] = useState(true);
     const [isAdmin, setIsAdmin] = useState(false);
+    const navigate = useNavigate
 
     async function login(email, password) {
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
-            const originalUser = auth.currentUser; // Store the original user
+            // const originalUser = auth.currentUser;
 
             const docRef = doc(firestore, 'user', user.uid);
             const docSnap = await getDoc(docRef);
@@ -57,7 +59,9 @@ export function AuthProvider({ children }) {
 
             if (user) {
                 const userCollectionRef = collection(firestore, 'user');
-                const querySnapshot = await getDocs(query(userCollectionRef, where('id', '==', user.uid)));
+                const querySnapshot = await getDocs(query(userCollectionRef,
+                    where('id', '==', user.uid),
+                    where('status', '==', 'active')));
 
                 querySnapshot.forEach((doc) => {
                     const userData = doc.data();
@@ -70,7 +74,12 @@ export function AuthProvider({ children }) {
                 });
 
                 if (querySnapshot.empty) {
-                    console.log('No such document!');
+                    setUserDetails([]);
+                    // navigate('/');
+                    logout()
+                }
+                else {
+                    // navigate('/home');
                 }
             }
 
@@ -90,8 +99,8 @@ export function AuthProvider({ children }) {
         try {
             await signOut(auth);
             setCurrentUser(null);
+            // navigate('/')
         } catch (error) {
-            console.error('Error logging out:', error);
             throw error;
         }
     }

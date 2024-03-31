@@ -12,7 +12,7 @@ import {
   getStores,
   registerStore,
   rejectStoreApplication
-} from '../../../Helpers/Context/StoreRepo'
+} from '../../../Helpers/Repository/StoreRepo'
 import {
   formatDate,
   TabPanel,

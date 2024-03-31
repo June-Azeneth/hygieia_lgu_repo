@@ -3,6 +3,7 @@ import * as FaIcons from "react-icons/fa"
 // import * as AiIcons from "react-icons/ai"
 import * as IoIcons from "react-icons/io"
 // import { ImStatsDots } from "react-icons/im";
+import { RiAdminFill } from "react-icons/ri";
 import { IoPeople } from "react-icons/io5";
 import { PiTruckFill } from "react-icons/pi";
 import { FaBuildingColumns } from "react-icons/fa6";
@@ -20,12 +21,12 @@ export const client = [
         icon: <FaIcons.FaHistory />,
         cName: 'nav-text'
     },
-    {
-        title: 'Scheduler',
-        path: '/scheduler',
-        icon: <FaIcons.FaCalendarAlt />,
-        cName: 'nav-text'
-    },
+    // {
+    //     title: 'Scheduler',
+    //     path: '/scheduler',
+    //     icon: <FaIcons.FaCalendarAlt />,
+    //     cName: 'nav-text'
+    // },
     {
         title: 'Manage Stores',
         path: '/store',
@@ -35,7 +36,7 @@ export const client = [
     {
         title: 'Garbage Pickup Requests',
         path: '/requests',
-        icon: <PiTruckFill/>,
+        icon: <PiTruckFill />,
         cName: 'nav-text'
     },
     // {
@@ -59,12 +60,12 @@ export const admin = [
         icon: <FaIcons.FaHistory />,
         cName: 'nav-text'
     },
-    {
-        title: 'Scheduler',
-        path: '/scheduler',
-        icon: <FaIcons.FaCalendarAlt />,
-        cName: 'nav-text'
-    },
+    // {
+    //     title: 'Scheduler',
+    //     path: '/scheduler',
+    //     icon: <FaIcons.FaCalendarAlt />,
+    //     cName: 'nav-text'
+    // },
     {
         title: 'Manage Stores',
         path: '/store',
@@ -74,7 +75,7 @@ export const admin = [
     {
         title: 'Garbage Pickup Requests',
         path: '/requests',
-        icon: <PiTruckFill/>,
+        icon: <PiTruckFill />,
         cName: 'nav-text'
     },
     {
@@ -85,8 +86,14 @@ export const admin = [
     },
     {
         title: 'Manage Consumer',
-        path: '/customers',
+        path: '/consumers',
         icon: <IoPeople />,
+        cName: 'nav-text'
+    },
+    {
+        title: 'Manage Admins',
+        path: '/admin',
+        icon: <RiAdminFill />,
         cName: 'nav-text'
     },
 ]

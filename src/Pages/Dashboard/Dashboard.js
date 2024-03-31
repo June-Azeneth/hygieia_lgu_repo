@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useAuth } from '../../Helpers/Context/AuthContext'
+import { useAuth } from '../../Helpers/Repository/AuthContext'
 
 import { IoStorefrontOutline } from "react-icons/io5";
 import { VscRequestChanges } from "react-icons/vsc";
@@ -11,9 +11,9 @@ import {
 
 import {
   getStores
-} from '../../Helpers/Context/ClientRepo'
+} from '../../Helpers/Repository/ClientRepo'
 
-import { getRequests } from "../../Helpers/Context/RequestsRepo";
+import { getRequests } from "../../Helpers/Repository/RequestsRepo";
 
 function Dashboard() {
   const [loading, setLoading] = useState(true)
