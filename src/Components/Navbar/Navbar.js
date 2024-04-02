@@ -84,7 +84,7 @@ function Navbar() {
                                 </div>
                                 <div className='current-user pr-2'>
                                     <span className='user-name'>{user}</span>
-                                    <span className='lgu-name'>{address && typeof address === 'object' ? address.city : 'Location'}</span>
+                                    <span className='lgu-name'>{address && typeof address === 'object' ? address.city : ''}</span>
                                 </div>
                             </div>
                         </IconContext.Provider>
@@ -157,7 +157,7 @@ function Navbar() {
                                 </div>
                                 <div className='current-user pr-2'>
                                     <span className='user-name'>{user}</span>
-                                    <span className='lgu-name'>{address && typeof address === 'object' ? address.city : 'Location'}</span>
+                                    <span className='lgu-name'>{address && typeof address === 'object' ? address.city : ''}</span>
                                 </div>
                             </div>
                         </IconContext.Provider>

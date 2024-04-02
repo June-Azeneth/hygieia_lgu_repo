@@ -190,7 +190,7 @@ export const addStore = async (email, password, data) => {
         const user = userCredential.user;
         const uid = user.uid;
 
-        const newStoreRef = await addDoc(storeCollectionRef, {
+        await addDoc(storeCollectionRef, {
             ...data,
             storeId: uid,
             email: email,
@@ -216,5 +216,5 @@ export const rejectStoreApplication = async (documentId, reason) => {
     catch (error) {
         console.error("Error setting reason for rejection:", error);
         throw error;
-    } 
+    }
 }

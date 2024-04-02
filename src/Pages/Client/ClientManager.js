@@ -235,7 +235,7 @@ export default function ClientManager() {
     const headers = [
         {
             key: 1,
-            title: 'ID',
+            title: 'Client ID',
             dataIndex: 'id'
         },
         {

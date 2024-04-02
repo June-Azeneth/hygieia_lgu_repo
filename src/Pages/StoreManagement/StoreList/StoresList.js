@@ -116,7 +116,7 @@ function StoresList() {
     const fetchStoreByID = async () => {
         try {
             if (!search) {
-                toast.error("Please supply an ID")
+                toast.error("Please s ply an ID")
                 return;
             }
 
