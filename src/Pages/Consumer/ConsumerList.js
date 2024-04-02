@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Table } from 'antd'
 import { MdAdd } from "react-icons/md";
 import Modal from '@mui/material/Modal';
-import axios from 'axios';
+import QRCode from "qrcode";
 
 //ASSETS
 import Placeholder from '../../Assets/placeholder_image.jpg'
@@ -19,8 +19,13 @@ import {
     getByConsumerID,
     deleteConsumerRecord,
     updateConsumer,
-    updateBalance
+    updateBalance,
+    uploadQrCode,
+    updloadToFirestore
 } from '../../Helpers/Repository/ConsumerRepo';
+
+import { addConsumer } from '../../Helpers/Repository/ClientRepo';
+import { useNavigate } from 'react-router-dom';
 
 function ConsumerList() {
     const { userDetails } = useAuth();
@@ -40,7 +45,11 @@ function ConsumerList() {
     const [province, setProvince] = useState("")
     const [newBalance, setBalance] = useState(0)
     const [notes, setNotes] = useState("")
+    const [addConsumerModal, setAddConsumerModal] = useState(false)
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
     const [updateBalanceModal, setUpdateBalanceModal] = useState(false)
+    const navigate = useNavigate()
 
     const handleTableChange = pagination => {
         setPagination(pagination);
@@ -62,7 +71,7 @@ function ConsumerList() {
             setLoading(false)
         }
         catch (error) {
-
+            toast.error("An errow occured: " + error)
         }
     }
 
@@ -101,14 +110,55 @@ function ConsumerList() {
         setBarangay("")
         setCity("")
         setProvince("")
+        setEmail("")
+        setPassword("")
     }
 
-    const handleAddConsumerClick = async () => {
+    const addConsumerRecord = async () => {
         try {
+            if (!firstName || !lastName || !barangay || !city || !province || !email || !password) {
+                toast.error("Fill in all the required fields")
+                return
+            }
+            setLoader(true)
+            const uid = await addConsumer(email, password)
+            if (uid) {
+                QRCode.toDataURL(uid, { width: 300 }, async (_, dataUrl) => {
+                    const downloadURL = await uploadQrCode(dataUrl, uid);
+                    const newData = {
+                        firstName: firstName,
+                        lastName: lastName,
+                        address: {
+                            barangay: barangay,
+                            city: city,
+                            province: province
+                        },
+                        qrCode: downloadURL,
+                        currentBalance: 0,
+                        dateRegistered: currentDateTimestamp,
+                        id: uid,
+                        email: email,
+                        status: "active"
+                    };
 
-        }
-        catch (error) {
-            toast.error("An error occured: " + error)
+                    const success = await updloadToFirestore(newData, uid);
+                    if (success) {
+                        setLoader(false);
+                        setAddConsumerModal(false);
+                        clearFields();
+                        fetchData();
+                    } else {
+                        setLoader(false);
+                        toast.error("Upload failed");
+                    }
+                });
+            } else {
+                setLoader(false);
+                toast.error("An error occurred");
+            }
+        } catch (error) {
+            setLoader(false);
+            toast.error("An error occurred: " + error);
         }
     }
 
@@ -136,6 +186,7 @@ function ConsumerList() {
                     toast.success("Consumer details updated!")
                     setLoader(false)
                     setModalOpen(false)
+                    clearFields()
                     fetchData()
                 }
                 else {
@@ -180,7 +231,7 @@ function ConsumerList() {
 
     const applyChangeClick = async () => {
         try {
-            if (newBalance != selectedRow) {
+            if (newBalance != selectedRow.currentBalance) {
                 setLoader(true)
 
                 const trail = {
@@ -212,23 +263,34 @@ function ConsumerList() {
         }
     }
 
-    const cancelClick = () => {
-        setUpdateBalanceModal(false)
-        setNotes("")
-        setBalance(0)
+    const cancelClick = (action) => {
+        if (action === "balance") {
+            setUpdateBalanceModal(false)
+            setNotes("")
+            setBalance(0)
+        } else {
+            setAddConsumerModal(false)
+            setLoader(false)
+            clearFields()
+        }
     }
 
     const handleClick = (record, action) => {
-        setModalOpen(true)
-        setSelectedRow(record)
-        setAction(action)
+        setModalOpen(true);
+        setSelectedRow(record);
+        setAction(action);
 
         if (action === "edit") {
-            setFirstName(record.firstName)
-            setLastName(record.lastName)
-            setBarangay(record.address.barangay)
-            setCity(record.address.city)
-            setProvince(record.address.province)
+            if (record.address && record.address.barangay != null) {
+                setFirstName(record.firstName);
+                setLastName(record.lastName);
+                setBarangay(record.address.barangay);
+                setCity(record.address.city);
+                setProvince(record.address.province);
+            } else {
+                // Handle the case when address is null or barangay is null
+                // You can set default values or handle it in some other way
+            }
         }
     }
 
@@ -253,7 +315,15 @@ function ConsumerList() {
         {
             key: 2,
             title: 'Name',
-            render: (record) => `${record.firstName} ${record.lastName}`,
+            // render: (record) => `${record.firstName} ${record.lastName}`,
+            render: record => {
+                if (record.firstName && record.lastName && record) {
+                    return `${record.firstName} ${record.lastName}`
+                }
+                else {
+                    return "Unset"
+                }
+            }
         },
         {
             key: 3,
@@ -264,7 +334,13 @@ function ConsumerList() {
             key: 4,
             title: 'Address',
             dataIndex: 'address',
-            render: address => `${address.barangay}, ${address.city}, ${address.province}`
+            render: address => {
+                if (address && address.barangay && address.city && address.province) {
+                    return `${address.barangay}, ${address.city}, ${address.province}`;
+                } else {
+                    return 'Address not set';
+                }
+            }
         },
         {
             key: 5,
@@ -278,6 +354,11 @@ function ConsumerList() {
         },
         {
             key: 7,
+            title: 'Status',
+            dataIndex: 'status'
+        },
+        {
+            key: 8,
             title: 'Actions',
             render: (record) => (
                 <div className='flex flex-col md:flex-row gap-2'>
@@ -291,6 +372,12 @@ function ConsumerList() {
 
     useEffect(() => {
         fetchData()
+    }, [])
+
+    useEffect(() => {
+        if (userDetails && userDetails.type === "client") {
+            navigate('/home')
+        }
     }, [userDetails])
 
     return (
@@ -309,7 +396,7 @@ function ConsumerList() {
                 </div>
                 <div className='flex flex-row justify-end items-center mt-6 md:mt-0'>
                     <LuRefreshCw className='cursor-pointer text-2xl me-4' onClick={() => fetchData()} />
-                    <button className='bg-orange hover:shadow-md items-center flex flex-row text-sm text-white py-2 px-4 rounded-md w-fit' onClick={() => handleAddConsumerClick(true)}><span className='p-0 text-lg m-0 me-2'><MdAdd /></span>Add Consumer</button>
+                    <button className='bg-orange hover:shadow-md items-center flex flex-row text-sm text-white py-2 px-4 rounded-md w-fit' onClick={() => setAddConsumerModal(true)}><span className='p-0 text-lg m-0 me-2'><MdAdd /></span>Add Consumer</button>
                 </div>
             </div>
             <div className='overflow-x-scroll w-full scrollbar-none bg-white rounded-md'>
@@ -343,9 +430,17 @@ function ConsumerList() {
                                 <img src={selectedRow.qrCode} alt="qr code" className="w-[13rem] h-[13rem]" />
                                 <div className="flex flex-col gap-1 mt-5">
                                     <p>ID: {selectedRow.id}</p>
-                                    <p>Name: {`${selectedRow.firstName} ${selectedRow.lastName}`}</p>
+                                    {selectedRow.firstName != "" && selectedRow.lastName ? (
+                                        <p>Name: {`${selectedRow.firstName} ${selectedRow.lastName}`}</p>
+                                    ) : (
+                                        <p>Name: Unset</p>
+                                    )}
                                     <p>Email: {selectedRow.email}</p>
-                                    <p>Address: {`${selectedRow.address.barangay}, ${selectedRow.address.city}, ${selectedRow.address.province},`}</p>
+                                    {selectedRow.address.barangay != "" && selectedRow.address.province != "" && selectedRow.address.city != "" ? (
+                                        <p>Address: {`${selectedRow.address.barangay}, ${selectedRow.address.city}, ${selectedRow.address.province},`}</p>
+                                    ) : (
+                                        <p>Address: Unset</p>
+                                    )}
                                     <p>Current Balance: {selectedRow.currentBalance}</p>
                                     <p>Status : <span className='text-green m-0 uppercase'>{selectedRow.status}</span></p>
                                     <button className="view-btn my-5" onClick={() => setUpdateBalanceModal(true)}>Update Balance</button>
@@ -451,6 +546,7 @@ function ConsumerList() {
                                 value={newBalance}
                                 onChange={(e) => setBalance(e.target.value)}
                                 className='input-field'
+                                required
                             />
                             <p className="text-sm text-gray mt-4">Details <span className='text-red m-0'>*</span></p>
                             <textarea
@@ -458,6 +554,7 @@ function ConsumerList() {
                                 id="notes"
                                 placeholder='Full detail about this update'
                                 value={notes}
+                                required
                                 onChange={(e) => setNotes(e.target.value)}
                                 className='input-field w-full'>
                             </textarea>
@@ -469,9 +566,116 @@ function ConsumerList() {
                                 ) : (
                                     <div></div>
                                 )}
-                                <button className='border border-gray rounded-md w-fit px-3 hover:bg-gray hover:text-white' onClick={() => cancelClick()}>Cancel</button>
+                                <button className='border border-gray rounded-md w-fit px-3 hover:bg-gray hover:text-white' onClick={() => cancelClick("balance")}>Cancel</button>
                                 <button className='view-btn w-fit' onClick={() => applyChangeClick()}>Apply Change</button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </Modal>
+            <Modal open={addConsumerModal} onClose={() => addConsumerModal(false)}>
+                <div className='w-screen h-screen justify-center flex items-center text-darkGray'>
+                    <div className='w-fit bg-white rounded-md overflow-hidden'>
+                        <div className='bg-oliveGreen font-bold text-white py-2 text-center flex flex-row items-center justify-center'>Add Consumer</div>
+                        <p className='font-bold my-3 mx-5'>General Information</p>
+                        <div className='flex flex-row justify-end gap-3 mx-5'>
+                            <form className='flex flex-col gap-3 w-full'>
+                                <div className='flex flex-row gap-3'>
+                                    <div>
+                                        <p className="text-sm text-gray">First Name <span className='text-red m-0'>*</span></p>
+                                        <input
+                                            type="text"
+                                            id="firstName"
+                                            name="firstName"
+                                            value={firstName}
+                                            onChange={(e) => setFirstName(e.target.value)}
+                                            required
+                                            className='input-field' />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray">Last Name <span className='text-red m-0'>*</span></p>
+                                        <input
+                                            type="text"
+                                            id="lastName"
+                                            name="lastName"
+                                            value={lastName}
+                                            onChange={(e) => setLastName(e.target.value)}
+                                            required
+                                            className='input-field' />
+                                    </div>
+                                </div>
+                                <div className="flex flex-row gap-3">
+                                    <div>
+                                        <p className="text-sm text-gray">Address (Barangay)<span className='text-red m-0'>*</span></p>
+                                        <input
+                                            type="text"
+                                            id="barangay"
+                                            name="barangay"
+                                            value={barangay}
+                                            onChange={(e) => setBarangay(e.target.value)}
+                                            required
+                                            className='input-field' />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray">City<span className='text-red m-0'>*</span></p>
+                                        <input
+                                            type="text"
+                                            id="city"
+                                            name="city"
+                                            value={city}
+                                            onChange={(e) => setCity(e.target.value)}
+                                            required
+                                            className='input-field' />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray">Province<span className='text-red m-0'>*</span></p>
+                                        <input
+                                            type="text"
+                                            id="province"
+                                            name="province"
+                                            value={province}
+                                            onChange={(e) => setProvince(e.target.value)}
+                                            required
+                                            className='input-field' />
+                                    </div>
+                                </div>
+                                <p className='font-bold'>Set Credentials</p>
+                                <div className='flex flex-row gap-3'>
+                                    <div>
+                                        <p className="text-sm text-gray">Email<span className='text-red m-0'>*</span></p>
+                                        <input
+                                            type="text"
+                                            id="email"
+                                            name="email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            required
+                                            className='input-field' />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray">Password<span className='text-red m-0'>*</span></p>
+                                        <input
+                                            type="text"
+                                            id="password"
+                                            name="password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            required
+                                            className='input-field' />
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div className='flex flex-row gap-3 w-full justify-end mt-3 py-3 px-5'>
+                            {loader ? (
+                                <div>
+                                    {showLoader()}
+                                </div>
+                            ) : (
+                                <div></div>
+                            )}
+                            <button className='border border-gray rounded-md w-fit px-3 hover:bg-gray hover:text-white' onClick={() => cancelClick("add")}>Cancel</button>
+                            <button className='view-btn w-fit' onClick={() => addConsumerRecord()}>Submit</button>
                         </div>
                     </div>
                 </div>

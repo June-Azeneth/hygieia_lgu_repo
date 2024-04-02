@@ -19,6 +19,7 @@ import {
     updateClient,
     deleteClient
 } from '../../Helpers/Repository/ClientRepo';
+import { useNavigate } from 'react-router-dom';
 
 export default function ClientManager() {
     const { userDetails } = useAuth();
@@ -38,7 +39,8 @@ export default function ClientManager() {
     const [action, setAction] = useState('')
     const [selectedRow, setSelectedRow] = useState([])
     const [confirmationDiag, setConfirmationDiag] = useState(false)
-    const [deleteRec, setDeleteRec] = useState(false)
+    // const [deleteRec, setDeleteRec] = useState(false)
+    const navigate = useNavigate()
 
     const handleTableChange = pagination => {
         setPagination(pagination);
@@ -136,7 +138,7 @@ export default function ClientManager() {
                         text: message
                     };
                     await axios.post('https://hygieia-back-end-node.onrender.com/send-email', emailContent);
-                    toast.success("Store Added Successfully")
+                    toast.success("Client Added Successfully")
                     setLoader(false)
                     setModalOpen(false)
                     clearFields()
@@ -270,7 +272,11 @@ export default function ClientManager() {
     ]
 
     useEffect(() => {
-        fetchData()
+        if (userDetails && userDetails.type === "client") {
+            navigate('/home')
+        } else {
+            fetchData()
+        }
     }, [userDetails])
 
     useEffect(() => {
@@ -280,179 +286,181 @@ export default function ClientManager() {
     return (
         <div className='page-container'>
             <ToastContainer />
-            <div className='w-full justify-between flex-row flex mb-5 h-[2.5rem]'>
-                <div className='rounded-md border border-gray overflow-hidden h-fit w-fit'>
-                    <input
-                        type="text"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Search by ID"
-                        className='p-1 focus-within:bg-white outline-none w-56'
-                    />
-                    <button type="button" className='bg-green py-1 text-white px-3' onClick={() => fetchClientById()}>Search</button>
-                </div>
-                <div className='flex flex-row justify-end gap-3 items-center'>
-                    <LuRefreshCw className='cursor-pointer text-2xl me-4' onClick={() => fetchData()} />
-                    <button className='bg-orange hover:shadow-md items-center flex flex-row text-sm text-white py-2 px-4 rounded-md w-fit me-auto' onClick={() => handleAddClientClick(true)}><span className='p-0 text-lg m-0 me-2'><MdAdd /></span>Add Client</button>
-                </div>
-            </div>
-            <div className='overflow-x-scroll w-full scrollbar-none bg-white rounded-md'>
-                {loading ? (
-                    <div className='w-full h-full flex justify-center p-10'>
-                        {showLoader()}
+            <div>
+                <div className='w-full justify-between flex-col md:gap-0 md:flex-row flex mb-5'>
+                    <div className='rounded-md border border-gray h-fit overflow-hidden w-fit'>
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Search by ID"
+                            className='p-1 focus-within:bg-white outline-none w-56'
+                        />
+                        <button type="button" className='bg-green py-1 text-white px-3' onClick={() => fetchClientById()}>Search</button>
                     </div>
-                ) : (
-                    <div>
-                        <Table
-                            columns={headers}
-                            dataSource={dataSource}
-                            pagination={pagination}
-                            onChange={handleTableChange}>
-                        </Table>
+                    <div className='flex flex-row justify-end gap-3 items-center mt-7 md:mt-0'>
+                        <LuRefreshCw className='cursor-pointer text-2xl me-4' onClick={() => fetchData()} />
+                        <button className='bg-orange hover:shadow-md items-center flex flex-row text-sm text-white py-2 px-4 rounded-md w-fit' onClick={() => handleAddClientClick(true)}><span className='p-0 text-lg m-0 me-2'><MdAdd /></span>Add Client</button>
                     </div>
-                )}
+                </div>
+                <div className='overflow-x-scroll w-full scrollbar-none bg-white rounded-md'>
+                    {loading ? (
+                        <div className='w-full h-full flex justify-center p-10'>
+                            {showLoader()}
+                        </div>
+                    ) : (
+                        <div>
+                            <Table
+                                columns={headers}
+                                dataSource={dataSource}
+                                pagination={pagination}
+                                onChange={handleTableChange}>
+                            </Table>
+                        </div>
+                    )}
 
-            </div>
-            <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-                <div className='h-screen w-screen flex justify-center items-center text-darkGray'>
-                    <div className='bg-white rounded-md p-5'>
-                        {action === "add" ? (
-                            <div>
-                                <div className="flex flex-row justify-between">
-                                    <p className='text-lg font-bold'>Create Client</p>
-                                    <AiOutlineClose className="hover:text-red text-2xl" onClick={() => handleCancelClick()} />
-                                </div>
-                                <p className='font-bold mt-3'>General Information</p>
-                                <input
-                                    type="text"
-                                    placeholder="Name"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    className='input-field w-full'
-                                />
-                                <p className='font-bold mt-3'>Address</p>
-                                <div className='flex flex-row gap-2'>
-                                    <input
-                                        type="text"
-                                        placeholder="Barangay"
-                                        value={barangay}
-                                        onChange={(e) => setBarangay(e.target.value)}
-                                        className='input-field'
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="City"
-                                        value={city}
-                                        onChange={(e) => setCity(e.target.value)}
-                                        className='input-field'
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Province"
-                                        value={province}
-                                        onChange={(e) => setProvince(e.target.value)}
-                                        className='input-field'
-                                    />
-                                </div>
-                                <p className='font-bold mt-3'>Set Credentials</p>
-                                <div className='flex flex-row gap-3'>
-                                    <input
-                                        type="text"
-                                        placeholder="Email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        className='input-field'
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Set Password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        className='input-field'
-                                    />
-                                </div>
-                                <div className="flex justify-end gap-3 mt-9">
-                                    <div>
-                                        {loader ? (
-                                            <div>{showLoader()}</div>
-                                        ) : (
-                                            <div>   </div>
-                                        )}
-                                    </div>
-                                    <button type='button' className="cancel-btn w-20" onClick={() => handleCancelClick()}>Cancel</button>
-                                    <button type='button' className="view-btn w-20" onClick={() => handleAddClient()}>Add</button>
-                                </div>
-                            </div>
-                        ) : (
-                            <div>
-                                <div className="flex flex-row justify-between">
-                                    <p className='text-lg font-bold'>Update Client Information</p>
-                                    <AiOutlineClose className="hover:text-red text-2xl" onClick={() => handleCancelClick()} />
-                                </div>
-                                <p className='font-bold mt-3'>General Information</p>
-                                <input
-                                    type="text"
-                                    placeholder="Name"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    className='input-field w-full'
-                                />
-                                <p className='font-bold mt-3'>Address</p>
-                                <div className='flex flex-row gap-2'>
-                                    <input
-                                        type="text"
-                                        placeholder="Barangay"
-                                        value={barangay}
-                                        onChange={(e) => setBarangay(e.target.value)}
-                                        className='input-field'
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="City"
-                                        value={city}
-                                        onChange={(e) => setCity(e.target.value)}
-                                        className='input-field'
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Province"
-                                        value={province}
-                                        onChange={(e) => setProvince(e.target.value)}
-                                        className='input-field'
-                                    />
-                                </div>
-                                <div className="flex justify-end gap-3 mt-9">
-                                    <div>
-                                        {loader ? (
-                                            <div className='me-4'>
-                                                {showLoader()}
-                                            </div>
-                                        ) : (
-                                            <div>   </div>
-                                        )}
-                                    </div>
-                                    <button type='button' className="cancel-btn w-20" onClick={() => handleCancelClick()}>Cancel</button>
-                                    <button type='button' className="view-btn w-20" onClick={() => handleUpdateClientInfo()}>Update</button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
                 </div>
-            </Modal>
-            <Modal open={confirmationDiag} onClose={() => setConfirmationDiag(false)}>
-                <div className='w-screen h-screen justify-center flex items-center'>
-                    <div className='w-96 bg-white rounded-md overflow-hidden'>
-                        <div className='bg-red text-white py-2 text-center'>WARNING!</div>
-                        <div className="p-5">
-                            <p>Are you sure you want to delete this client?</p>
-                            <div className='flex flex-row justify-end gap-3 mt-5'>
-                                <button className='border border-gray rounded-md w-14 hover:bg-gray hover:text-white' onClick={() => setConfirmationDiag(false)}>No</button>
-                                <button className='cancel-btn w-14' onClick={() => deleteClientRecord()}>Yes</button>
+                <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+                    <div className='h-screen w-screen flex justify-center items-center text-darkGray'>
+                        <div className='bg-white rounded-md p-5'>
+                            {action === "add" ? (
+                                <div>
+                                    <div className="flex flex-row justify-between">
+                                        <p className='text-lg font-bold'>Create Client</p>
+                                        <AiOutlineClose className="hover:text-red text-2xl" onClick={() => handleCancelClick()} />
+                                    </div>
+                                    <p className='font-bold mt-3'>General Information</p>
+                                    <input
+                                        type="text"
+                                        placeholder="Name"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        className='input-field w-full'
+                                    />
+                                    <p className='font-bold mt-3'>Address</p>
+                                    <div className='flex flex-row gap-2'>
+                                        <input
+                                            type="text"
+                                            placeholder="Barangay"
+                                            value={barangay}
+                                            onChange={(e) => setBarangay(e.target.value)}
+                                            className='input-field'
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="City"
+                                            value={city}
+                                            onChange={(e) => setCity(e.target.value)}
+                                            className='input-field'
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Province"
+                                            value={province}
+                                            onChange={(e) => setProvince(e.target.value)}
+                                            className='input-field'
+                                        />
+                                    </div>
+                                    <p className='font-bold mt-3'>Set Credentials</p>
+                                    <div className='flex flex-row gap-3'>
+                                        <input
+                                            type="text"
+                                            placeholder="Email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            className='input-field'
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Set Password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            className='input-field'
+                                        />
+                                    </div>
+                                    <div className="flex justify-end gap-3 mt-9">
+                                        <div>
+                                            {loader ? (
+                                                <div>{showLoader()}</div>
+                                            ) : (
+                                                <div>   </div>
+                                            )}
+                                        </div>
+                                        <button type='button' className="cancel-btn w-20" onClick={() => handleCancelClick()}>Cancel</button>
+                                        <button type='button' className="view-btn w-20" onClick={() => handleAddClient()}>Add</button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div>
+                                    <div className="flex flex-row justify-between">
+                                        <p className='text-lg font-bold'>Update Client Information</p>
+                                        <AiOutlineClose className="hover:text-red text-2xl" onClick={() => handleCancelClick()} />
+                                    </div>
+                                    <p className='font-bold mt-3'>General Information</p>
+                                    <input
+                                        type="text"
+                                        placeholder="Name"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        className='input-field w-full'
+                                    />
+                                    <p className='font-bold mt-3'>Address</p>
+                                    <div className='flex flex-row gap-2'>
+                                        <input
+                                            type="text"
+                                            placeholder="Barangay"
+                                            value={barangay}
+                                            onChange={(e) => setBarangay(e.target.value)}
+                                            className='input-field'
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="City"
+                                            value={city}
+                                            onChange={(e) => setCity(e.target.value)}
+                                            className='input-field'
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Province"
+                                            value={province}
+                                            onChange={(e) => setProvince(e.target.value)}
+                                            className='input-field'
+                                        />
+                                    </div>
+                                    <div className="flex justify-end gap-3 mt-9">
+                                        <div>
+                                            {loader ? (
+                                                <div className='me-4'>
+                                                    {showLoader()}
+                                                </div>
+                                            ) : (
+                                                <div>   </div>
+                                            )}
+                                        </div>
+                                        <button type='button' className="cancel-btn w-20" onClick={() => handleCancelClick()}>Cancel</button>
+                                        <button type='button' className="view-btn w-20" onClick={() => handleUpdateClientInfo()}>Update</button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </Modal>
+                <Modal open={confirmationDiag} onClose={() => setConfirmationDiag(false)}>
+                    <div className='w-screen h-screen justify-center flex items-center'>
+                        <div className='w-96 bg-white rounded-md overflow-hidden'>
+                            <div className='bg-red text-white py-2 text-center'>WARNING!</div>
+                            <div className="p-5">
+                                <p>Are you sure you want to delete this client?</p>
+                                <div className='flex flex-row justify-end gap-3 mt-5'>
+                                    <button className='border border-gray rounded-md w-14 hover:bg-gray hover:text-white' onClick={() => setConfirmationDiag(false)}>No</button>
+                                    <button className='cancel-btn w-14' onClick={() => deleteClientRecord()}>Yes</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </Modal>
+                </Modal>
+            </div>
         </div >
     )
 }

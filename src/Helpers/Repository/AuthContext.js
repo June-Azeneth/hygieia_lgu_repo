@@ -5,20 +5,27 @@ import {
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
     signOut,
-    browserSessionPersistence,
-    setPersistence,
+    // browserSessionPersistence,
+    // setPersistence,
 } from 'firebase/auth';
 
 import { useNavigate } from 'react-router-dom';
 
+
 const AuthContext = React.createContext();
 
 export function useAuth() {
-    return useContext(AuthContext);
+    const context = useContext(AuthContext);
+    if (!context) {
+        // throw new Error('useAuth must be used within an AuthProvider');
+    }
+    else {
+        return context;
+    }
 }
 
 export function AuthProvider({ children }) {
-    const [currentUser, setCurrentUser] = useState();
+    const [currentUser, setCurrentUser] = useState([]);
     const [userDetails, setUserDetails] = useState();
     const [loading, setLoading] = useState(true);
     const [isAdmin, setIsAdmin] = useState(false);
@@ -58,7 +65,13 @@ export function AuthProvider({ children }) {
             setLoading(false);
 
             if (user) {
-                const userCollectionRef = collection(firestore, 'user');
+                let userCollectionRef;
+                if (user) {
+                    userCollectionRef = collection(firestore, 'user');
+                } else {
+                    userCollectionRef = collection(firestore, 'consumer');
+                }
+
                 const querySnapshot = await getDocs(query(userCollectionRef,
                     where('id', '==', user.uid),
                     where('status', '==', 'active')));
@@ -74,22 +87,10 @@ export function AuthProvider({ children }) {
                 });
 
                 if (querySnapshot.empty) {
-                    setUserDetails([]);
-                    // navigate('/');
-                    logout()
-                }
-                else {
-                    // navigate('/home');
+                    // setUserDetails([]);
+                    // logout()
                 }
             }
-
-            setPersistence(auth, browserSessionPersistence)
-                .then(() => {
-                    setCurrentUser(user);
-                })
-                .catch((error) => {
-                    console.error('Error setting persistence:', error);
-                });
         });
 
         return unsubscribe;
@@ -99,7 +100,6 @@ export function AuthProvider({ children }) {
         try {
             await signOut(auth);
             setCurrentUser(null);
-            // navigate('/')
         } catch (error) {
             throw error;
         }

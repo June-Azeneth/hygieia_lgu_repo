@@ -1,9 +1,8 @@
-import { query, getDocs, addDoc, setDoc, doc, collection, where } from "firebase/firestore";
+import { query, getDocs, setDoc, doc, collection, where } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-
-import { firestore, auth } from '../Utils/Firebase'
 import { currentDateTimestamp } from '../Utils/Common'
 import { updateCurrentUser } from "firebase/auth";
+import { firestore, auth } from '../Utils/Firebase'
 
 export const getStores = async (userDetails) => {
     try {
@@ -90,13 +89,14 @@ export const getClientById = async (searchId) => {
     }
 }
 
+
+
 export const addClient = async (email, password, data) => {
+    const originalUser = auth.currentUser;
     try {
         if (password.length < 6) {
             throw new Error("Password should be at least 6 characters");
         }
-
-        const originalUser = auth.currentUser;
 
         const userCollectionRef = collection(firestore, 'user');
 
@@ -121,6 +121,33 @@ export const addClient = async (email, password, data) => {
         await updateCurrentUser(auth, originalUser);
         return true;
     } catch (error) {
+        await updateCurrentUser(auth, originalUser);
+        throw error.message
+    }
+}
+
+
+//temp
+export const addConsumer = async (email, password) => {
+    const originalUser = auth.currentUser;
+    try {
+        if (password.length < 6) {
+            throw new Error("Password should be at least 6 characters");
+        }
+
+        const credentials = {
+            email: email,
+            password: password
+        }
+
+        const userCredential = await createUserWithEmailAndPassword(auth, credentials.email, credentials.password);
+        const user = userCredential.user;
+        const uid = user.uid;
+
+        await updateCurrentUser(auth, originalUser);
+        return uid
+    } catch (error) {
+        await updateCurrentUser(auth, originalUser);
         throw error.message
     }
 }
