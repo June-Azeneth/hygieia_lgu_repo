@@ -56,7 +56,7 @@ function Login() {
       await logout()
       navigate('/')
       setLoading(false)
-      toast.error("An error occured:" + e)
+      toast.error("Error: " + e.message)
     }
   };
 

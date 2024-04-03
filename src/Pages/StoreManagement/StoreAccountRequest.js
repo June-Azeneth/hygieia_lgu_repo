@@ -7,6 +7,7 @@ import { AiOutlineClose } from "react-icons/ai";
 import { PulseLoader } from 'react-spinners';
 import { useAuth } from '../../Helpers/Repository/AuthContext';
 import axios from 'axios';
+import { Helmet } from 'react-helmet';
 
 import {
     getStore,
@@ -176,8 +177,10 @@ const StoreAccountRequest = () => {
     }, [email, decision, password]);
 
     return (
-
         <div className='page-container'>
+            <Helmet>
+                <title>Req. No: {requestDetails.id}</title>
+            </Helmet>
             {loading ? (
                 <div className='w-full flex justify-center items-center h-36'>
                     {showLoader()}

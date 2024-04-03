@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from '../../Helpers/Repository/AuthContext'
 import { useNavigate } from "react-router-dom";
+import { Helmet } from 'react-helmet';
 
 import { IoStorefrontOutline } from "react-icons/io5";
 import { VscRequestChanges } from "react-icons/vsc";
 import { PiTruck } from "react-icons/pi";
-import { FaBuildingColumns } from "react-icons/fa6";
-import { FaRegUser } from "react-icons/fa6";
+// import { FaBuildingColumns } from "react-icons/fa6";
+// import { FaRegUser } from "react-icons/fa6";
 import { HiOutlineBuildingLibrary } from "react-icons/hi2";
 import { FiUsers } from "react-icons/fi";
 import { MdOutlinePending } from "react-icons/md";
@@ -136,6 +137,9 @@ function Dashboard() {
 
   return (
     <div className='container text-darkGray'>
+      <Helmet>
+        <title>Dashboard</title>
+      </Helmet>
       <p className="font-bold text-xl">Welcome Back {user}!</p>
       <div className="mt-4">
         {loading ? (
@@ -219,7 +223,7 @@ function Dashboard() {
                 <VscRequestChanges className="text-[3.5rem] text-oliveGreen" />
                 <div>
                   <p>Account Registration Requests</p>
-                  <p className="font-bold text-2xl">{pickUpRequestsCount}</p>
+                  <p className="font-bold text-2xl">{storeReq}</p>
                 </div>
               </div>
               <div className="bg-white rounded-md w-[22rem] p-5 flex flex-row items-center gap-4 hover:shadow-md cursor-pointer" onClick={() => navigate('/store')}>

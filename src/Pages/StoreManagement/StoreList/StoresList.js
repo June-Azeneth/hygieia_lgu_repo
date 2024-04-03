@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import Modal from '@mui/material/Modal';
 import { AiOutlineClose } from "react-icons/ai";
 import axios from 'axios';
+import { Helmet } from 'react-helmet';
 
 import {
     getStores,
@@ -330,6 +331,9 @@ function StoresList() {
 
     return (
         <div className='page-container text-darkGray'>
+            <Helmet>
+                <title>Stores</title>
+            </Helmet>
             <ToastContainer />
             <div className='w-full justify-center md:justify-between flex flex-row items-center gap-10 mb-4 h-9'>
                 <div className='flex justify-end flex-row items-center bg-white rounded-md border border-gray ps-2 overflow-hidden'>

@@ -3,6 +3,7 @@ import { Table } from 'antd'
 import { DatePicker } from 'antd';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { Helmet } from 'react-helmet';
 import { useAuth } from '../../Helpers/Repository/AuthContext';
 import {
     formatDate,
@@ -63,10 +64,6 @@ function Transactions() {
 
             setDataSource(filteredData);
             setLoading(false);
-
-            // You can use totalTransactions and transactionFee as needed
-            console.log('Total Transactions:', totalTransactions);
-            console.log('Transaction Fee:', transactionFee);
         }
         catch (error) {
             toast.error("An error occurred: " + error);
@@ -232,6 +229,9 @@ function Transactions() {
 
     return (
         <div className='pt-5 px-5 md:pl-24'>
+            <Helmet>
+                <title>Transactions</title>
+            </Helmet>
             <ToastContainer />
             <div className='flex flew-row justify-between'>
                 <div className='rounded-md border border-gray overflow-hidden'>

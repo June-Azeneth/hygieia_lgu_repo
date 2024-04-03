@@ -6,6 +6,7 @@ import { Table } from 'antd'
 import { MdAdd } from "react-icons/md";
 import Modal from '@mui/material/Modal';
 import QRCode from "qrcode";
+import { Helmet } from 'react-helmet';
 
 //ASSETS
 import Placeholder from '../../Assets/placeholder_image.jpg'
@@ -382,6 +383,9 @@ function ConsumerList() {
 
     return (
         <div className="page-container">
+            <Helmet>
+                <title>Consumers</title>
+            </Helmet>
             <ToastContainer />
             <div className='w-full justify-between flex-col md:gap-0 md:flex-row flex mb-5'>
                 <div className='rounded-md border border-gray h-fit overflow-hidden w-fit'>

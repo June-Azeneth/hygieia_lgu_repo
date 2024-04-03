@@ -1,6 +1,5 @@
 import { query, getDocs, setDoc, doc, collection, where } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { currentDateTimestamp } from '../Utils/Common'
 import { updateCurrentUser } from "firebase/auth";
 import { firestore, auth } from '../Utils/Firebase'
 
@@ -88,6 +87,7 @@ export const deleteAdmin = async (id) => {
         throw error
     }
 }
+
 export const editAdmin = async (id, update) => {
     try {
         const querySnapshot = await getDocs(query(collection(firestore, 'user'), where('id', '==', id)));

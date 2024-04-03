@@ -1,20 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../Helpers/Repository/AuthContext';
 import { useParams } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Modal from '@mui/material/Modal';
+import { Helmet } from 'react-helmet';
+
+//ASSETS
+import Placeholder from '../../Assets/placeholder_image.jpg'
+import { showLoader, formatDate } from '../../Helpers/Utils/Common';
 import { AiOutlineClose } from "react-icons/ai";
 import { PulseLoader } from 'react-spinners';
-import Placeholder from '../../Assets/placeholder_image.jpg'
 
+//QUERIES
 import {
   getStore,
   getRewardsPerStore,
   getPromosPerStore,
   updateStore
 } from '../../Helpers/Repository/StoreRepo';
-import { showLoader, showNoDataView } from '../../Helpers/Utils/Common';
-import { useAuth } from '../../Helpers/Repository/AuthContext';
 
 function StoreProfile() {
   const { id } = useParams();
@@ -80,7 +84,6 @@ function StoreProfile() {
       setLoading(true);
       const rewards = await getRewardsPerStore(storeId);
       setRewards(rewards);
-      console.log(rewards);
     } catch (error) {
       toast.error("An error occurred: " + error);
     } finally {
@@ -92,7 +95,6 @@ function StoreProfile() {
     try {
       setLoading(true);
       const promos = await getPromosPerStore(storeId);
-      console.log(promos);
       setPromos(promos);
     } catch (error) {
       toast.error("An error occurred: " + error);
@@ -153,6 +155,9 @@ function StoreProfile() {
 
   return (
     <div className="page-container text-darkGray">
+      <Helmet>
+        <title>{store.name}</title>
+      </Helmet>
       <ToastContainer />
       {loading ? (
         <div className='w-full flex justify-center items-center h-36'>
@@ -223,13 +228,15 @@ function StoreProfile() {
                       <p>Org Price: ₱{item.price}</p>
                       <p>Discounted Price: ₱{item.discountedPrice}</p>
                       <p>Points Required: {item.pointsRequired} pts</p>
+                      <p>From {formatDate(item.promoStart)}</p>
+                      <p>To {formatDate(item.promoEnd)}</p>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
               <div className='font-bold text-lg w-full text-center h-24 text-gray'>
-                No Promos Offered
+                No Active Promos
               </div>
             )}
           </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table } from 'antd'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Helmet } from 'react-helmet';
 
 //HELPERS
 import {
@@ -199,12 +200,12 @@ function Requests() {
         <div className='flex flex-row gap-3'>
           {toggleState === "today" && (
             <div>
-              <button className="view-btn">View</button>
+              {/* <button className="view-btn">View</button> */}-
             </div>
           )}
           {toggleState === "upcoming" && (
             <div>
-              <button className="view-btn">View</button>
+              {/* <button className="view-btn">View</button> */}-
             </div>
           )}
           {toggleState === "pending" && (
@@ -216,7 +217,7 @@ function Requests() {
           }
           {toggleState === "done" && (
             <div>
-
+              -
             </div>
           )}
         </div >
@@ -291,6 +292,9 @@ function Requests() {
 
   return (
     <div className="p-5 md:pl-24 text-darkGray">
+      <Helmet>
+        <title>Garbage Collection</title>
+      </Helmet>
       <ToastContainer />
       <div className='w-full justify-end flex-col md:gap-0 md:flex-row flex mb-5'>
         {/* <div className='rounded-md border border-gray h-fit overflow-hidden w-fit'>

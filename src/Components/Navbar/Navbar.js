@@ -33,7 +33,7 @@ function Navbar() {
             navigate("/")
         }
         catch (e) {
-            toast.error("An error occured: " + e )
+            toast.error("An error occured: " + e)
         }
     }
 
@@ -80,7 +80,11 @@ function Navbar() {
                                     <Link to="#" className='flex md:hidden'>
                                         <FaIcons.FaBars onClick={showSideBar} className="" />
                                     </Link>
-                                    <span className='page-title '>{currentPage ? currentPage.title : 'Unknown Page'}</span>
+                                    {location.pathname.includes("/store-profile") ? (
+                                        <span className='page-title'>Store Profile</span>
+                                    ) : (
+                                        <span className='page-title'>{currentPage ? currentPage.title : 'Unknown Page'}</span>
+                                    )}
                                 </div>
                                 <div className='current-user pr-2'>
                                     <span className='user-name'>{user}</span>
@@ -153,7 +157,11 @@ function Navbar() {
                                     <Link to="#" className='flex md:hidden'>
                                         <FaIcons.FaBars onClick={showSideBar} className="" />
                                     </Link>
-                                    <span className='page-title '>{currentAdminPage ? currentAdminPage.title : 'Unknown Page'}</span>
+                                    {location.pathname.includes("/store-profile") ? (
+                                        <span className='page-title'>Store Profile</span>
+                                    ) : (
+                                        <span className='page-title'>{currentPage ? currentPage.title : 'Unknown Page'}</span>
+                                    )}
                                 </div>
                                 <div className='current-user pr-2'>
                                     <span className='user-name'>{user}</span>

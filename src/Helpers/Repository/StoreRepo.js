@@ -1,8 +1,9 @@
 import { query, getDocs, addDoc, setDoc, collection, doc, getDoc, where } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-
 import { firestore, auth } from '../Utils/Firebase'
 import { currentDateTimestamp } from '../Utils/Common'
+import { getUnixTime } from 'date-fns';
+import { Timestamp } from 'firebase/firestore';
 
 export const getStores = async (userDetails, toggleState) => {
     try {
@@ -127,6 +128,7 @@ export const getRewardsPerStore = async (id) => {
 
 export const getPromosPerStore = async (id) => {
     try {
+        const currentDate = new Date();
         const rewardCollection = collection(firestore, 'promo');
         const promoQuery = query(
             rewardCollection,
@@ -135,9 +137,15 @@ export const getPromosPerStore = async (id) => {
         );
         const querySnapshot = await getDocs(promoQuery);
         const promos = [];
+
         querySnapshot.forEach((doc) => {
-            promos.push(doc.data());
+            const promoData = doc.data();
+            const promoEndTimestamp = promoData.promoEnd.toDate();
+            if (promoEndTimestamp >= currentDate) {
+                promos.push(promoData);
+            }
         });
+
         return promos;
     }
     catch (error) {

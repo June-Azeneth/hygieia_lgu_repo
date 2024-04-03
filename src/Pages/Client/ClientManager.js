@@ -6,6 +6,7 @@ import { Table } from 'antd'
 import { MdAdd } from "react-icons/md";
 import Modal from '@mui/material/Modal';
 import axios from 'axios';
+import { Helmet } from 'react-helmet';
 
 //ASSETS
 import { LuRefreshCw } from "react-icons/lu";
@@ -285,6 +286,9 @@ export default function ClientManager() {
 
     return (
         <div className='page-container'>
+            <Helmet>
+                <title>Clients</title>
+            </Helmet>
             <ToastContainer />
             <div>
                 <div className='w-full justify-between flex-col md:gap-0 md:flex-row flex mb-5'>
