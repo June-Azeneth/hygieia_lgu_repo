@@ -14,10 +14,10 @@ export const getAllConsumers = async () => {
         );
         const querySnapshot = await getDocs(userQuery);
 
-        const clients = querySnapshot.docs.map(doc => ({
+        const consumers = querySnapshot.docs.map(doc => ({
             ...doc.data()
         }));
-        return clients;
+        return consumers;
     }
     catch (error) {
         throw error

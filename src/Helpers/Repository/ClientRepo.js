@@ -6,7 +6,8 @@ import { firestore, auth } from '../Utils/Firebase'
 
 export const getStores = async (userDetails) => {
     try {
-        const storesQuery = query(collection(firestore, 'store'), where('lguId', '==', userDetails.id));
+        // const storesQuery = query(collection(firestore, 'store'), where('lguId', '==', userDetails.id));
+        const storesQuery = query(collection(firestore, 'store'));
 
         const querySnapshot = await getDocs(storesQuery);
 

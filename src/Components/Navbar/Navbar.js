@@ -33,7 +33,7 @@ function Navbar() {
             navigate("/")
         }
         catch (e) {
-            toast.error("An error occured: " + e)
+            toast.error("An error occured: " + e )
         }
     }
 
