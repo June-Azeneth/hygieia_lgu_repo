@@ -160,7 +160,7 @@ function Navbar() {
                                     {location.pathname.includes("/store-profile") ? (
                                         <span className='page-title'>Store Profile</span>
                                     ) : (
-                                        <span className='page-title'>{currentPage ? currentPage.title : 'Unknown Page'}</span>
+                                        <span className='page-title'>{currentAdminPage ? currentAdminPage.title : 'Unknown Page'}</span>
                                     )}
                                 </div>
                                 <div className='current-user pr-2'>
