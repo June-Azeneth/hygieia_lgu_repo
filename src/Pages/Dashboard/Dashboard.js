@@ -147,7 +147,7 @@ function Dashboard() {
             {showLoader()}
           </div>
         ) : userDetails && userDetails.type === "admin" ? (
-          <div className="flex flex-row gap-9">
+          <div className="flex flex-col lg:flex-row gap-9">
             <div className="flex flex-col gap-9 w-full">
               <div>
                 <p className="text-lg">Users Breakdown</p>
@@ -201,15 +201,15 @@ function Dashboard() {
             </div>
             <div className="w-full">
               <p className="mb-2">Upcoming Garbage Collection</p>
-              {loading ? (
-                <div classname="w-full p-9 flex flex-row items-center justify-center">
-                  {showLoader()}
+              {dataSource.length === 0 ? (
+                <div>
+                  <p className="rounded-md shadow-md bg-white p-3 h-[30rem] flex justify-center items-center w-full"> No Data</p>
                 </div>
               ) : (
-                <div>
+                <div className="rounded-md shadow-md bg-white p-3 h-[30rem]">
                   {dataSource.map((item, index) => (
                     <div key={index} className={`text-white max-h-24 overflow-y-scroll scrollbar-none cursor-pointer hover:shadow-md rounded-md p-4 ${index % 2 === 0 ? 'bg-oliveGreen' : 'bg-mutedGreen'}`} onClick={() => navigate('/requests')}>
-                      <p classname="font-bold">{item.storeName}</p>
+                      <p>{item.storeName}</p>
                       <p className="text-sm">{item.date}</p>
                     </div>
                   ))}</div>

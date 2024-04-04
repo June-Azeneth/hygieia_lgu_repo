@@ -82,6 +82,8 @@ function Navbar() {
                                     </Link>
                                     {location.pathname.includes("/store-profile") ? (
                                         <span className='page-title'>Store Profile</span>
+                                    ) : location.pathname.includes("/account-request") ? (
+                                        <span className='page-title'>Account Request Form</span>
                                     ) : (
                                         <span className='page-title'>{currentPage ? currentPage.title : 'Unknown Page'}</span>
                                     )}
@@ -124,7 +126,7 @@ function Navbar() {
                             </div>
                         </nav>
                     </IconContext.Provider>
-                </div>
+                </div >
             ) : (
                 <div>
                     <div className='hidden md:flex'>
@@ -159,6 +161,8 @@ function Navbar() {
                                     </Link>
                                     {location.pathname.includes("/store-profile") ? (
                                         <span className='page-title'>Store Profile</span>
+                                    ) : location.pathname.includes("/account-request") ? (
+                                        <span className='page-title'>Account Request Form</span>
                                     ) : (
                                         <span className='page-title'>{currentAdminPage ? currentAdminPage.title : 'Unknown Page'}</span>
                                     )}
@@ -202,8 +206,9 @@ function Navbar() {
                         </nav>
                     </IconContext.Provider>
                 </div>
-            )}
-        </div>
+            )
+            }
+        </div >
     )
 }
 

@@ -22,7 +22,8 @@ import {
     updateConsumer,
     updateBalance,
     uploadQrCode,
-    updloadToFirestore
+    updloadToFirestore,
+    sendVerificationEmail
 } from '../../Helpers/Repository/ConsumerRepo';
 
 import { addConsumer } from '../../Helpers/Repository/ClientRepo';
@@ -139,7 +140,7 @@ function ConsumerList() {
                         dateRegistered: currentDateTimestamp,
                         id: uid,
                         email: email,
-                        status: "active"
+                        status: "unauthenticated"
                     };
 
                     const success = await updloadToFirestore(newData, uid);
@@ -446,7 +447,7 @@ function ConsumerList() {
                                         <p>Address: Unset</p>
                                     )}
                                     <p>Current Balance: {selectedRow.currentBalance}</p>
-                                    <p>Status : <span className='text-green m-0 uppercase'>{selectedRow.status}</span></p>
+                                    <p>Status : <span className={selectedRow.status === "active" ? `text-green m-0 uppercase` : `text-red m-0 uppercase`}>{selectedRow.status}</span></p>
                                     <button className="view-btn my-5" onClick={() => setUpdateBalanceModal(true)}>Update Balance</button>
                                 </div>
                             </div>) :

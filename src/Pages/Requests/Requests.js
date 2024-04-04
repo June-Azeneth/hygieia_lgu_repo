@@ -10,7 +10,7 @@ import {
   showLoader,
 } from '../../Helpers/Utils/Common'
 import { useAuth } from '../../Helpers/Repository/AuthContext';
-import { getRequests, markAsCompleted, markAsActive, getRequestCounts } from '../../Helpers/Repository/RequestsRepo'
+import { getRequests, markAsCompleted, markAsActive, getRequestCounts, markAsRejected } from '../../Helpers/Repository/RequestsRepo'
 
 //ASSETS
 import { LuRefreshCw } from "react-icons/lu";
@@ -33,8 +33,8 @@ function Requests() {
 
   const fetchData = async () => {
     try {
-      setLoading(true)
-      const response = await getRequests(toggleState)
+      setLoading(true);
+      const response = await getRequests(toggleState);
       if (response) {
         const formattedData = response.map(item => ({
           ...item,
@@ -42,15 +42,16 @@ function Requests() {
         }));
         setDataSource(formattedData);
       } else {
-        toast.error("An error occured: No data returned");
+        toast.error("An error occurred: No data returned");
       }
-      setLoading(false)
+    } catch (error) {
+      toast.error("An error occurred: " + error);
+    } finally {
+      setTimeout(() => {
+        setLoading(false);
+      }, 3000); // Delay setLoading(false) by 3 seconds
     }
-    catch (error) {
-      toast.error("An error occured: " + error)
-      setLoading(false)
-    }
-  }
+  };
 
   // const handleSearch = async () => {
   //   try {
@@ -97,26 +98,26 @@ function Requests() {
   // }
 
   const handleClick = (action, record) => {
-    setSelectedRow(record)
     if (action === "acknowledge") {
+      setSelectedRow(record)
       acknowledgeRequest()
     }
-    else {
+    else if (action === "reject") {
+      setSelectedRow(record)
+    } else if (action == "mark_as_done") {
+      setSelectedRow(record)
       markAsDoneClick()
     }
   }
 
-  const acknowledgeRequest = async () => {
+  const acknowledgeRequest = async (record) => {
     try {
-      setLoading(true)
-      const success = await markAsActive(selectedRow.id)
+      const success = await markAsActive(record.id)
       if (success) {
-        setLoading(false)
         toast.success("Success!")
         fetchData()
       }
       else {
-        setLoading(false)
         toast.error("An error occured!")
       }
     }
@@ -126,13 +127,30 @@ function Requests() {
     }
   }
 
-  const markAsDoneClick = async () => {
+  const markAsRejectedClick = async (record) => {
     try {
-      setLoading(true)
-      const success = await markAsCompleted(selectedRow.id)
+      const success = await markAsRejected(record.id)
       if (success) {
         toast.success("Success!")
         fetchData()
+        setLoading(false)
+      }
+      else {
+        toast.error("An error occured!")
+      }
+    }
+    catch (error) {
+      toast.error("An error occured: " + error)
+    }
+  }
+
+  const markAsDoneClick = async (record) => {
+    try {
+      const success = await markAsCompleted(record.id)
+      if (success) {
+        toast.success("Success!")
+        fetchData()
+        setLoading(false)
       }
       else {
         toast.error("An error occured!")
@@ -200,18 +218,18 @@ function Requests() {
         <div className='flex flex-row gap-3'>
           {toggleState === "today" && (
             <div>
-              {/* <button className="view-btn">View</button> */}-
+              <button className="view-btn me-3" onClick={() => markAsDoneClick(record)}>Mark As Done</button>
             </div>
           )}
           {toggleState === "upcoming" && (
             <div>
-              {/* <button className="view-btn">View</button> */}-
+              <button className="view-btn me-3" onClick={() => markAsDoneClick(record)}>Mark As Done</button>
             </div>
           )}
           {toggleState === "pending" && (
             <div>
-              <button className="warning-btn me-3" onClick={() => handleClick("acknowledge", record)}>Acknowledge</button>
-              <button className="view-btn" onClick={() => handleClick("mark_as_done", record)}> Mark as Done</button>
+              <button className="warning-btn me-3" onClick={() => acknowledgeRequest(record)}>Acknowledge</button>
+              <button className="cancel-btn w-28" onClick={() => markAsRejectedClick(record)}> Reject</button>
             </div>
           )
           }
@@ -335,7 +353,6 @@ function Requests() {
           className={toggleState === 'done' ? "tabs active-tab" : "tabs"}
           onClick={() => toggleTab('done')}>
           Completed
-          <span className={requestCounts.completed != 0 ? "bg-red rounded-full px-2 text-white inline-flex text-sm" : "hidden"}>{requestCounts.completed}</span>
         </div>
       </div>
       {loading ? (

@@ -22,8 +22,10 @@ import {
   deleteAdmin,
   editAdmin
 } from '../../Helpers/Repository/AdminRepo';
+import { useNavigate } from 'react-router-dom';
 
 const AdminManager = () => {
+  const { userDetails } = useAuth();
   const [addAdminModal, setAddAdminModal] = useState(false)
   const [search, setSearch] = useState("")
   const [dataSource, setDataSource] = useState([])
@@ -36,6 +38,7 @@ const AdminManager = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loader, setLoader] = useState("")
+  const navigate = useNavigate()
 
 
   const handleTableChange = pagination => {
@@ -249,9 +252,15 @@ const AdminManager = () => {
     fetchData()
   }, [])
 
+  useEffect(() => {
+    if (userDetails && userDetails.type === "client") {
+      navigate('/home')
+    }
+  }, [userDetails])
+
   return (
     <div className='page-container'>
-       <Helmet>
+      <Helmet>
         <title>Admins</title>
       </Helmet>
       <ToastContainer />

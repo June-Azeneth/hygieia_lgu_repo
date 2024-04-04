@@ -159,6 +159,19 @@ export const markAsActive = async (id) => {
     }
 }
 
+export const markAsRejected = async (id) => {
+    try {
+        const documentRef = doc(firestore, 'request', id);
+        await setDoc(documentRef, {
+            status: "rejected"
+        }, { merge: true });
+        return true;
+    }
+    catch (error) {
+        throw error
+    }
+}
+
 export const markAsCompleted = async (id) => {
     try {
         const documentRef = doc(firestore, 'request', id);

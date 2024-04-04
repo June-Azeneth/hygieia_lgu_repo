@@ -66,16 +66,9 @@ export function AuthProvider({ children }) {
             setLoading(false);
 
             if (user) {
-                let userCollectionRef;
-                if (user) {
-                    userCollectionRef = collection(firestore, 'user');
-                } else {
-                    userCollectionRef = collection(firestore, 'consumer');
-                }
-
+                const userCollectionRef = collection(firestore, 'user');
                 const querySnapshot = await getDocs(query(userCollectionRef,
-                    where('id', '==', user.uid),
-                    where('status', '==', 'active')));
+                    where('id', '==', user.uid)));
 
                 querySnapshot.forEach((doc) => {
                     const userData = doc.data();
@@ -86,10 +79,6 @@ export function AuthProvider({ children }) {
                         setIsAdmin(false);
                     }
                 });
-
-                if (querySnapshot.empty) {
-                    logout()
-                }
             }
         });
         return unsubscribe;

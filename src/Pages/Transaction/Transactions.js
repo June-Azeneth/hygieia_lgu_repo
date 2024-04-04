@@ -39,7 +39,7 @@ function Transactions() {
             if (!userDetails) {
                 return;
             }
-            const { transactions } = await getTransactions(userDetails);
+            const { transactions, transactionFee } = await getTransactions(userDetails);
 
             // Process transactions
             const formattedData = transactions.map(transaction => {
@@ -59,9 +59,7 @@ function Transactions() {
                 return transactionDate >= startDate && transactionDate <= endDate;
             });
 
-            const totalTransactions = filteredData.length;
-            setTransactionFee(totalTransactions * 0.1)
-
+            setTransactionFee(transactionFee)
             setDataSource(filteredData);
             setLoading(false);
         }
@@ -135,7 +133,7 @@ function Transactions() {
         // Add transaction fee and date range to specific cells
         const transactionFeeCell = `A1`;
         const dateRangeCell = `A2`;
-        XLSX.utils.sheet_add_aoa(ws, [[`Transaction Fee:`, transactionFee]], { origin: transactionFeeCell });
+        XLSX.utils.sheet_add_aoa(ws, [[`Total Commision Fee:`, transactionFee]], { origin: transactionFeeCell });
         XLSX.utils.sheet_add_aoa(ws, [[`Date Range:`, formattedDateRange]], { origin: dateRangeCell });
 
         const wb = XLSX.utils.book_new();
@@ -171,7 +169,7 @@ function Transactions() {
             const meta = [
                 ['Title:', 'Transaction List'],
                 ['Date Range:', formattedDateRange],
-                ['Transaction Fee:', `₱${transactionFee}`]
+                ['Total Commision Fee:', `₱${transactionFee}`]
             ];
 
             const sheet = XLSX.utils.json_to_sheet([{}], {

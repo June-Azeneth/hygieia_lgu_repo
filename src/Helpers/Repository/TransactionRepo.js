@@ -1,4 +1,4 @@
-import { collection, query, getDocs, getDoc, doc, where } from 'firebase/firestore';
+import { collection, query, getDocs, getDoc, doc, where, orderBy } from 'firebase/firestore';
 import { firestore } from '../Utils/Firebase';
 
 // export const getTransactions = async () => {
@@ -47,7 +47,7 @@ import { firestore } from '../Utils/Firebase';
 export const getTransactions = async () => {
     try {
         const transactionCollection = collection(firestore, 'transaction');
-        const transactionQuery = query(transactionCollection);
+        const transactionQuery = query(transactionCollection, orderBy('addedOn', 'desc')); // Order by date in descending order
 
         const querySnapshot = await getDocs(transactionQuery);
         const transactions = [];
@@ -74,13 +74,15 @@ export const getTransactions = async () => {
             totalTransactions++;
         }
 
-        const transactionFee = totalTransactions * 0.1;
+        //Calculate total commision fee
+        const transactionFee = totalTransactions * 0.2;
 
         return { transactions, totalTransactions, transactionFee };
     } catch (error) {
         throw error;
     }
 };
+
 
 
 export const getTransactionByID = async (searchID) => {

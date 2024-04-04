@@ -2,8 +2,10 @@ import { query, getDocs, addDoc, setDoc, collection, doc, getDoc, where } from "
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { firestore, auth } from '../Utils/Firebase'
 import { currentDateTimestamp } from '../Utils/Common'
-import { getUnixTime } from 'date-fns';
-import { Timestamp } from 'firebase/firestore';
+// import { getUnixTime } from 'date-fns';
+// import { Timestamp } from 'firebase/firestore';
+
+import { updateCurrentUser } from "firebase/auth";
 
 export const getStores = async (userDetails, toggleState) => {
     try {
@@ -182,6 +184,7 @@ export const registerStore = async (documentId, email, password) => {
 }
 
 export const addStore = async (email, password, data) => {
+    const originalUser = auth.currentUser;
     try {
         if (password.length < 6) {
             throw new Error("Password should be at least 6 characters");
@@ -205,9 +208,11 @@ export const addStore = async (email, password, data) => {
             dateJoined: currentDateTimestamp,
             status: "active"
         });
+        await updateCurrentUser(auth, originalUser);
         return true;
     }
     catch (error) {
+        await updateCurrentUser(auth, originalUser);
         throw error;
     }
 }

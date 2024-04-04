@@ -1,9 +1,9 @@
 import { collection, query, getDocs, where, doc, addDoc, setDoc } from 'firebase/firestore';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendSignInLinkToEmail } from 'firebase/auth';
 import { firestore, auth, storage } from '../Utils/Firebase'
 import { currentDateTimestamp } from '../Utils/Common'
-import QRCode from 'qrcode.react';
+// import QRCode from 'qrcode.react';
 import { updateCurrentUser } from 'firebase/auth';
 
 export const getAllConsumers = async () => {
@@ -27,7 +27,9 @@ export const getAllConsumers = async () => {
 export const getByConsumerID = async (id) => {
     try {
         const ref = collection(firestore, 'consumer');
-        const userQuery = query(ref, where('id', '==', id),);
+        const userQuery = query(ref,
+            where('id', '==', id),
+            where('status', 'in', ['active', 'unauthenticated']));
 
         const userDocument = await getDocs(userQuery);
 
@@ -152,6 +154,22 @@ export const updloadToFirestore = async (data, uid) => {
         throw error
     }
 }
+
+// export const sendVerificationEmail = async (email) => {
+//     try {
+//         const actionCodeSettings = {
+//             handleCodeInApp: true,
+//             url: 'https://hygieia-admin.netlify.app/'
+//         };
+
+//         await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+
+//         return true
+//     }
+//     catch (error) {
+//         throw error
+//     }
+// }
 
 export const deleteConsumerRecord = async (id) => {
     try {

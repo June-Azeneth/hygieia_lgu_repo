@@ -69,37 +69,42 @@ function StoresList() {
         setProvince('')
         setEmail('')
         setPassword('')
+        setOwner('')
     }
 
     const handleSubmitClick = async () => {
         try {
-            setLoader(true)
-            const success = await addStore(email, password, {
-                name,
-                owner,
-                address: {
-                    barangay,
-                    city,
-                    province
-                }
-            });
-
-            if (success) {
-                const emailContent = {
-                    to: email,
-                    subject: 'Welcome to Hygieia',
-                    text: message
-                };
-                await axios.post('https://hygieia-back-end-node.onrender.com/send-email', emailContent);
-                toast.success("Store Added Successfully")
-                setLoader(false)
-                setModalOpen(false)
-                clearFields()
-                fetchData()
-            } else {
-                toast.error("Failed to Add Store")
+            if (name === '' || owner === '' || barangay === '' || city === '' || province === '' || email === '' || password === '') {
+                toast.info("Fill in all the required fields")
+                return;
             }
-
+            else {
+                const success = await addStore(email, password, {
+                    name,
+                    owner,
+                    address: {
+                        barangay,
+                        city,
+                        province
+                    }
+                });
+                setLoader(true)
+                if (success) {
+                    const emailContent = {
+                        to: email,
+                        subject: 'Welcome to Hygieia',
+                        text: message
+                    };
+                    await axios.post('https://hygieia-back-end-node.onrender.com/send-email', emailContent);
+                    toast.success("Store Added Successfully");
+                    setLoader(false);
+                    setModalOpen(false);
+                    clearFields();
+                    fetchData();
+                } else {
+                    toast.error("Failed to Add Store")
+                }
+            }
         }
         catch (error) {
             toast.error("An error occured: " + error)
@@ -404,6 +409,8 @@ function StoresList() {
                         </div>
                     )}
                 </div>
+
+                {/* ADD STORE MODAL */}
                 <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
                     <div className='w-screen h-screen justify-center items-center flex text-sm text-darkGray'>
                         <div className='bg-white w-fit rounded-md'>
@@ -480,7 +487,7 @@ function StoresList() {
                                             <div>   </div>
                                         )}
                                     </div>
-                                    <button type='button' className="cancel-btn" onClick={() => handleCancelClick()}>Cancel</button>
+                                    <button type='button' className="cancel-btn w-20" onClick={() => handleCancelClick()}>Cancel</button>
                                     <button type='button' className="view-btn w-20" onClick={() => handleSubmitClick()}>Add</button>
                                 </div>
                             </form>

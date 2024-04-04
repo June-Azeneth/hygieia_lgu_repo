@@ -99,18 +99,17 @@ const StoreAccountRequest = () => {
     async function handleSubmitClick(event) {
         event.preventDefault();
         try {
-            setLoader(true)
             if (decision === "approve") {
                 if (!password) {
-                    toast.error("Password Required");
+                    toast.info("Password Required");
                     return;
                 }
                 if (!subject) {
-                    toast.error("Subject Required");
+                    toast.info("Subject Required");
                     return;
                 }
                 if (!message) {
-                    toast.error("Message Required. Please compose an email");
+                    toast.info("Message Required. Please compose an email");
                     return;
                 }
 
@@ -119,6 +118,8 @@ const StoreAccountRequest = () => {
                     subject: subject,
                     text: message
                 };
+
+                setLoader(true)
 
                 await registerStore(requestDetails.id, email, password).catch(error => {
                     throw error;
@@ -133,13 +134,15 @@ const StoreAccountRequest = () => {
                 }, 3000);
             } else {
                 if (!subject) {
-                    toast.error("Subject Required");
+                    toast.info("Subject Required");
                     return;
                 }
                 if (!message) {
-                    toast.error("Message Required. Please compose an email");
+                    toast.info("Message Required. Please compose an email");
                     return;
                 }
+
+                setLoader(true)
 
                 const emailContent = {
                     to: email,
@@ -152,6 +155,7 @@ const StoreAccountRequest = () => {
                     throw error;
                 });
 
+                setLoader(false)
                 setDecisionModalOpen(false);
                 clearFields();
                 toast.success('Email sent successfully');
@@ -170,7 +174,7 @@ const StoreAccountRequest = () => {
 
     useEffect(() => {
         if (decision === 'approve') {
-            setMessage(`Welcome Aboard! \n\nYour account is now approved. You may use these credentials to open your account. \n\nEmail: ${requestDetails.email} \nPassword: ${password} \n\nYou may leave the password as is, but we recommend that you change it to a more secure password once you have logged in to your account. \n\nThank you and welcome! \n\nRegards,`);
+            setMessage(`Welcome Aboard! \n\nYour account is now approved. You may use these credentials to open your account. \n\nEmail: ${requestDetails.email} \nPassword: ${password} \n\nYou may leave the password as is, but we recommend that you change it to a more secure password once you have logged in to your account. \n\nThank you and welcome!`);
         } else {
             setMessage(``)
         }
@@ -179,7 +183,11 @@ const StoreAccountRequest = () => {
     return (
         <div className='page-container'>
             <Helmet>
-                <title>Req. No: {requestDetails.id}</title>
+                {requestDetails && requestDetails.id != "" ? (
+                    <title>Req. No: {requestDetails.id}</title>
+                ) : (
+                    <title>Loading...</title>
+                )}
             </Helmet>
             {loading ? (
                 <div className='w-full flex justify-center items-center h-36'>

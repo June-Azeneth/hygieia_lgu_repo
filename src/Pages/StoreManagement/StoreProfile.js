@@ -41,10 +41,6 @@ function StoreProfile() {
     setShopName(event.target.value);
   }
 
-  const handleSitioChange = (event) => {
-    setSitio(event.target.value);
-  }
-
   const handleBarangayChange = (event) => {
     setBarangay(event.target.value);
   }
@@ -106,7 +102,6 @@ function StoreProfile() {
   function handleEditClick() {
     seTIsModalOpen(true)
     setShopName(store.name);
-    setSitio(store.address.sitio);
     setBarangay(store.address.barangay);
     setCity(store.address.city);
     setProvince(store.address.province);
@@ -115,25 +110,24 @@ function StoreProfile() {
 
   const handleSubmit = async () => {
     try {
-      setUpdateLoad(true)
       if (
         shopName !== store.name ||
-        sitio !== store.address.sitio ||
         barangay !== store.address.barangay ||
         city !== store.address.city ||
         province !== store.address.province ||
-        recyclables !== store.recyclable.join(', ')
+        recyclables !== (store.recyclable ? store.recyclable.join(', ') : '')
       ) {
         const updatedStoreData = {
           name: shopName,
           address: {
-            sitio,
             barangay,
             city,
             province
           },
           recyclable: recyclables.split(',').map(item => item.trim())
         };
+
+        setUpdateLoad(true)
 
         await updateStore(id, updatedStoreData);
         setUpdateLoad(false)
@@ -251,32 +245,24 @@ function StoreProfile() {
                 <AiOutlineClose onClick={() => seTIsModalOpen(false)} className="cursor-pointer hover:text-red text-xl" />
               </div>
               <form>
-                <p className="text-sm">Shop Name</p>
+                <p className="text-sm text-gray">Shop Name</p>
                 <input
                   id='shop_name'
                   name='shop_name'
                   type="text"
                   value={shopName}
                   onChange={handleShopNameChange}
-                  className='border border-gray rounded-sm px-1'
+                  className='input-field'
                 />
-                <p className="text-sm mt-2">Address</p>
+                <p className="text-sm mt-2 text-gray">Address</p>
                 <div className="flex flex-wrap gap-2">
-                  <input
-                    id='sitio'
-                    name='sitio'
-                    type="text"
-                    value={sitio}
-                    onChange={handleSitioChange}
-                    className='border border-gray rounded-sm px-1'
-                  />
                   <input
                     id='barangay'
                     name='barangay'
                     type="text"
                     value={barangay}
                     onChange={handleBarangayChange}
-                    className='border border-gray rounded-sm px-1'
+                    className='input-field'
                   />
                   <input
                     id='city'
@@ -284,7 +270,7 @@ function StoreProfile() {
                     type="text"
                     value={city}
                     onChange={handleCityChange}
-                    className='border border-gray rounded-sm px-1'
+                    className='input-field'
                   />
                   <input
                     id='province'
@@ -292,17 +278,17 @@ function StoreProfile() {
                     type="text"
                     value={province}
                     onChange={handleProvinceChange}
-                    className='border border-gray rounded-sm px-1'
+                    className='input-field'
                   />
                 </div>
-                <p className="text-sm mt-2">Recyclables</p>
+                <p className="text-sm mt-2 text-gray">Recyclables (separate by comma)</p>
                 <textarea
                   id='recyclables'
                   name='recyclables'
                   type="text"
                   value={recyclables}
                   onChange={handleRecyclablesChange}
-                  className='border border-gray rounded-sm px-1 w-full' />
+                  className='input-field w-full' />
                 <div className='flex justify-end gap-3 mt-3 relative'>
                   {updateLoad ? (
                     <div className='mt-3'>
@@ -313,12 +299,10 @@ function StoreProfile() {
                       />
                     </div>
                   ) : (
-                    <div>
-
-                    </div>
+                    <div></div>
                   )}
-                  <button type='button' className='hover:bg-red py-2 px-4 border border-red text-red hover:text-white rounded-md' onClick={() => seTIsModalOpen(false)}>Cancel</button>
-                  <button type='button' className='bg-oliveGreen py-2 px-4 text-white rounded-md' onClick={() => handleSubmit()}>Submit</button>
+                  <button type='button' className='hover:bg-red py-1 px-4 border border-red text-red hover:text-white rounded-md' onClick={() => seTIsModalOpen(false)}>Cancel</button>
+                  <button type='button' className='bg-oliveGreen py-1 px-4 text-white rounded-md' onClick={() => handleSubmit()}>Submit</button>
                 </div>
               </form>
             </div>
