@@ -40,7 +40,6 @@ const AdminManager = () => {
   const [loader, setLoader] = useState("")
   const navigate = useNavigate()
 
-
   const handleTableChange = pagination => {
     setPagination(pagination);
   };

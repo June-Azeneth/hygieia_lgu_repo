@@ -39,7 +39,7 @@ function Transactions() {
             if (!userDetails) {
                 return;
             }
-            const { transactions, transactionFee } = await getTransactions(userDetails);
+            const { transactions } = await getTransactions(userDetails);
 
             // Process transactions
             const formattedData = transactions.map(transaction => {
@@ -58,6 +58,8 @@ function Transactions() {
                 const endDate = dateRange[1] ? dateRange[1].endOf('day').toDate().getTime() : Infinity;
                 return transactionDate >= startDate && transactionDate <= endDate;
             });
+
+            const transactionFee = filteredData.length * 0.5;   
 
             setTransactionFee(transactionFee)
             setDataSource(filteredData);
