@@ -23,7 +23,6 @@ import {
     updateBalance,
     uploadQrCode,
     updloadToFirestore,
-    sendVerificationEmail
 } from '../../Helpers/Repository/ConsumerRepo';
 
 import { addConsumer } from '../../Helpers/Repository/ClientRepo';
@@ -233,31 +232,44 @@ function ConsumerList() {
 
     const applyChangeClick = async () => {
         try {
-            if (newBalance != selectedRow.currentBalance) {
-                setLoader(true)
+            if (newBalance == selectedRow.currentBalance) {
+                toast.info("No changes detected!")
+                return
+            }
 
-                const trail = {
-                    date: currentDateTimestamp,
-                    collection: "consumer",
-                    notes: notes,
-                    document: selectedRow.id,
-                    before: selectedRow.currentBalance,
-                    after: newBalance
-                };
+            if (newBalance == "" || notes == "") {
+                toast.info("Please supply all the required fields!")
+                return
+            }
 
-                const success = await updateBalance(selectedRow.id, newBalance, trail)
-                if (success) {
-                    toast.success("Update Success")
-                    setLoader(false)
-                    setUpdateBalanceModal(false)
-                    setModalOpen(false)
-                    setNotes("")
-                    setBalance(0)
-                    fetchData()
-                }
-                else {
-                    toast.error("Update Failed")
-                }
+            if (newBalance <= 0 || isNaN(newBalance)) {
+                toast.info("Invalid balance input!")
+                return
+            }
+
+            setLoader(true)
+            const trail = {
+                date: currentDateTimestamp,
+                collection: "consumer",
+                notes: notes,
+                document: selectedRow.id,
+                field: 'currentBalance',
+                before: selectedRow.currentBalance,
+                after: Number(newBalance)
+            };
+
+            const success = await updateBalance(selectedRow.id, newBalance, trail)
+            if (success) {
+                toast.success("Update Success")
+                setLoader(false)
+                setUpdateBalanceModal(false)
+                setModalOpen(false)
+                setNotes("")
+                setBalance(0)
+                fetchData()
+            }
+            else {
+                toast.error("Update Failed")
             }
         }
         catch (error) {
@@ -448,7 +460,13 @@ function ConsumerList() {
                                     )}
                                     <p>Current Balance: {selectedRow.currentBalance}</p>
                                     <p>Status : <span className={selectedRow.status === "active" ? `text-green m-0 uppercase` : `text-red m-0 uppercase`}>{selectedRow.status}</span></p>
-                                    <button className="view-btn my-5" onClick={() => setUpdateBalanceModal(true)}>Update Balance</button>
+
+                                    {selectedRow.status != "active" ? (
+                                        <div></div>
+                                    ) : (
+                                        <button className="view-btn my-5" onClick={() => setUpdateBalanceModal(true)}>Update Balance</button>
+                                    )}
+
                                 </div>
                             </div>) :
                             (<div className="p-5 flex flex-col gap-3">

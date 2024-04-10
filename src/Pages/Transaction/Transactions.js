@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { Table } from 'antd'
 import { DatePicker } from 'antd';
 import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
 import { Helmet } from 'react-helmet';
 import { useAuth } from '../../Helpers/Repository/AuthContext';
 import {
@@ -54,12 +53,17 @@ function Transactions() {
             // Filter transactions based on date range
             const filteredData = formattedData.filter(transaction => {
                 const transactionDate = new Date(transaction.addedOn).getTime();
-                const startDate = dateRange[0] ? dateRange[0].startOf('day').toDate().getTime() : 0;
-                const endDate = dateRange[1] ? dateRange[1].endOf('day').toDate().getTime() : Infinity;
-                return transactionDate >= startDate && transactionDate <= endDate;
+                const startDate = dateRange[0] ? dateRange[0].startOf('day').toDate().getTime() : null;
+                const endDate = dateRange[1] ? dateRange[1].endOf('day').toDate().getTime() : null;
+                // Check if both start and end dates are defined
+                if (startDate !== null && endDate !== null) {
+                    return transactionDate >= startDate && transactionDate <= endDate;
+                }
+                // If date range is not defined, return true to include all transactions
+                return true;
             });
 
-            const transactionFee = filteredData.length * 0.5;   
+            const transactionFee = filteredData.length * 0.5;
 
             setTransactionFee(transactionFee)
             setDataSource(filteredData);
@@ -119,34 +123,34 @@ function Transactions() {
         },
     ]
 
-    const exportToExcel = () => {
-        const header = columns.map(column => column.title);
-        const data = dataSource.map(item => columns.map(column => item[column.dataIndex]));
+    // const exportToExcel = () => {
+    //     const header = columns.map(column => column.title);
+    //     const data = dataSource.map(item => columns.map(column => item[column.dataIndex]));
 
-        const ws = XLSX.utils.aoa_to_sheet([header, ...data]);
+    //     const ws = XLSX.utils.aoa_to_sheet([header, ...data]);
 
-        let formattedDateRange = '';
-        if (dateRange && dateRange.length === 2) {
-            formattedDateRange = `${dateRange[0].format('YYYY-MMM-DD')} to ${dateRange[1].format('YYYY-MMM-DD')}`;
-        } else {
-            formattedDateRange = '';
-        }
+    //     let formattedDateRange = '';
+    //     if (dateRange && dateRange.length === 2) {
+    //         formattedDateRange = `${dateRange[0].format('YYYY-MMM-DD')} to ${dateRange[1].format('YYYY-MMM-DD')}`;
+    //     } else {
+    //         formattedDateRange = '';
+    //     }
 
-        // Add transaction fee and date range to specific cells
-        const transactionFeeCell = `A1`;
-        const dateRangeCell = `A2`;
-        XLSX.utils.sheet_add_aoa(ws, [[`Total Commision Fee:`, transactionFee]], { origin: transactionFeeCell });
-        XLSX.utils.sheet_add_aoa(ws, [[`Date Range:`, formattedDateRange]], { origin: dateRangeCell });
+    //     // Add transaction fee and date range to specific cells
+    //     const transactionFeeCell = `A1`;
+    //     const dateRangeCell = `A2`;
+    //     XLSX.utils.sheet_add_aoa(ws, [[`Total Commision Fee:`, transactionFee]], { origin: transactionFeeCell });
+    //     XLSX.utils.sheet_add_aoa(ws, [[`Date Range:`, formattedDateRange]], { origin: dateRangeCell });
 
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Transactions');
+    //     const wb = XLSX.utils.book_new();
+    //     XLSX.utils.book_append_sheet(wb, ws, 'Transactions');
 
-        const wbout = XLSX.write(wb, { type: 'binary', bookType: 'xlsx' });
+    //     const wbout = XLSX.write(wb, { type: 'binary', bookType: 'xlsx' });
 
-        const fileName = `Transactions ${formattedDateRange}.xlsx`;
+    //     const fileName = `Transactions ${formattedDateRange}.xlsx`;
 
-        saveAs(new Blob([s2ab(wbout)], { type: 'application/octet-stream' }), fileName);
-    };
+    //     saveAs(new Blob([s2ab(wbout)], { type: 'application/octet-stream' }), fileName);
+    // };
 
 
     const s2ab = s => {
@@ -184,7 +188,7 @@ function Transactions() {
             XLSX.utils.book_append_sheet(workbook, sheet, "Sheet 1");
             XLSX.utils.sheet_add_aoa(sheet, meta, { origin: "A1" });
             XLSX.utils.sheet_add_aoa(sheet, [header], { origin: "A5" });
-            XLSX.writeFile(workbook, `Trial.xlsx`, { compression: true });
+            XLSX.writeFile(workbook, `Transactions (${formattedDateRange}).xlsx`, { compression: true });
         }
         catch (error) {
             toast.error("Error: " + error)

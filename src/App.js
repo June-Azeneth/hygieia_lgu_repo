@@ -16,6 +16,7 @@ import StoreAccountRequest from './Pages/StoreManagement/StoreAccountRequest';
 import ClientManager from './Pages/Client/ClientManager';
 import ConsumerList from './Pages/Consumer/ConsumerList';
 import AdminManager from './Pages/Admin/AdminManager'
+import Announcement from './Pages/Announcement/Announcement';
 
 import { useAuth } from './Helpers/Repository/AuthContext'
 import { useEffect, useState } from 'react';
@@ -62,6 +63,7 @@ function App() {
                     <Route path='/clients' element={<ClientManager />} />
                     <Route path='/consumers' element={<ConsumerList />} />
                     <Route path='/admin' element={<AdminManager />} />
+                    <Route path='/announcements' element={<Announcement />} />
                   </Route>
                 </Routes>
               </>

@@ -174,7 +174,8 @@ export const registerStore = async (documentId, email, password) => {
         await setDoc(documentRef, {
             dateJoined: currentDateTimestamp,
             status: "active",
-            storeId: uid
+            storeId: uid,
+            photo: "https://firebasestorage.googleapis.com/v0/b/hygieiadb-44a6b.appspot.com/o/stores%2Fstore_no_photo_placeholder.jpg?alt=media&token=4be438e4-1084-4f18-bcf2-a91f9ad51dd9"
         }, { merge: true });
 
         return true;
@@ -206,6 +207,7 @@ export const addStore = async (email, password, data) => {
             storeId: uid,
             email: email,
             dateJoined: currentDateTimestamp,
+            photo: "https://firebasestorage.googleapis.com/v0/b/hygieiadb-44a6b.appspot.com/o/stores%2Fstore_no_photo_placeholder.jpg?alt=media&token=4be438e4-1084-4f18-bcf2-a91f9ad51dd9",
             status: "active"
         });
         await updateCurrentUser(auth, originalUser);

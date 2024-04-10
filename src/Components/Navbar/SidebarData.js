@@ -7,6 +7,7 @@ import { RiAdminFill } from "react-icons/ri";
 import { IoPeople } from "react-icons/io5";
 import { PiTruckFill } from "react-icons/pi";
 import { FaBuildingColumns } from "react-icons/fa6";
+import { BiSolidMegaphone } from "react-icons/bi";
 
 export const client = [
     {
@@ -94,6 +95,12 @@ export const admin = [
         title: 'Manage Admins',
         path: '/admin',
         icon: <RiAdminFill />,
+        cName: 'nav-text'
+    },
+    {
+        title: 'Announcements',
+        path: '/announcements',
+        icon: <BiSolidMegaphone />,
         cName: 'nav-text'
     },
 ]

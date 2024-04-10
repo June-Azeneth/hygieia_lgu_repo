@@ -50,6 +50,19 @@ import { getField } from './TransactionRepo';
 //     }
 // }
 
+export const createRequest = async (data) => {
+    try {
+        const collectionRef = collection(firestore, 'request');
+        await setDoc(doc(collectionRef), {
+            ...data,
+        });
+        return true
+    }
+    catch (error) {
+        throw error
+    }
+}
+
 export const getRequestCounts = async () => {
     try {
         const currentDate = new Date();
@@ -109,7 +122,7 @@ export const getRequests = async (toggleState) => {
             const todayEnd = endOfDay(currentDate);
             requestQuery = query(requestQuery, where('status', '==', 'active'), where('date', '>=', todayStart), where('date', '<=', todayEnd));
         } else if (toggleState === 'upcoming') {
-            const todayStart = startOfDay(currentDate);
+            const todayStart = endOfDay(currentDate);
             const futureEnd = endOfDay(addMonths(currentDate, 1)); // Set the end date to one month from today
             requestQuery = query(requestQuery,
                 where('status', '==', 'active'),
@@ -138,7 +151,7 @@ export const getRequests = async (toggleState) => {
             };
             requests.push(request);
         }
-
+        console.log(requests)
         return requests;
     }
     catch (error) {
@@ -146,11 +159,12 @@ export const getRequests = async (toggleState) => {
     }
 }
 
-export const markAsActive = async (id) => {
+export const markAsActive = async (id, timestamp) => {
     try {
         const documentRef = doc(firestore, 'request', id);
         await setDoc(documentRef, {
-            status: "active"
+            status: "active",
+            date: timestamp
         }, { merge: true });
         return true;
     }

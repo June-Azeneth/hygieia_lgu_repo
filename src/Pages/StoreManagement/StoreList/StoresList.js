@@ -23,7 +23,7 @@ import { useAuth } from '../../../Helpers/Repository/AuthContext';
 
 //assets
 import { MdAdd } from "react-icons/md";
-import { BiSearchAlt } from "react-icons/bi";
+import Placeholder from '../../../Assets/placeholder_image.jpg'
 
 function StoresList() {
     const navigate = useNavigate();
@@ -183,9 +183,21 @@ function StoresList() {
     // headers
     const activeHeader = [
         {
-            key: 1,
+            key: 0,
             title: 'ID',
             dataIndex: 'storeId'
+        },
+        {
+            key: 1,
+            title: 'Profile',
+            dataIndex: 'photo',
+            render: photo => (
+                <div>
+                    <img
+                        src={photo || Placeholder}
+                        className='rounded-full w-8 h-8' />
+                </div>
+            )
         },
         {
             key: 2,
