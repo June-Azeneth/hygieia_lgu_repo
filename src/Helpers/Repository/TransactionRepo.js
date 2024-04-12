@@ -73,10 +73,6 @@ export const getTransactions = async () => {
             transactions.push(transaction);
             totalTransactions++;
         }
-
-        //Calculate total commision fee
-        // const transactionFee = totalTransactions * 0.2;
-
         return { transactions };
     } catch (error) {
         throw error;

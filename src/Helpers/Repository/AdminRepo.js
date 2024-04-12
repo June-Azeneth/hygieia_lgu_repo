@@ -1,4 +1,4 @@
-import { query, getDocs, setDoc, doc, collection, where } from "firebase/firestore";
+import { query, getDocs, setDoc, doc, collection, getDoc,where } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { updateCurrentUser } from "firebase/auth";
 import { firestore, auth } from '../Utils/Firebase'
@@ -21,25 +21,21 @@ export const getAllAdmins = async () => {
 
 export const getAdminById = async (id) => {
     try {
-        const ref = collection(firestore, 'user');
-        const userQuery = query(ref, where('id', '==', id),);
+        const docRef = doc(collection(firestore, 'user'), id);
+        const docSnapshot = await getDoc(docRef);
 
-        const userDocument = await getDocs(userQuery);
-
-        if (!userDocument.empty) {
-            const doc = userDocument.docs[0];
+        if (docSnapshot.exists()) {
             return {
-                id: doc.id,
-                ...doc.data()
+                id: docSnapshot.id,
+                ...docSnapshot.data()
             };
         } else {
             return null;
         }
+    } catch (error) {
+        throw error;
     }
-    catch (error) {
-        throw error
-    }
-}
+};
 
 export const addAdmin = async (email, password, data) => {
     const originalUser = auth.currentUser;
@@ -74,32 +70,32 @@ export const addAdmin = async (email, password, data) => {
 
 export const deleteAdmin = async (id) => {
     try {
-        const querySnapshot = await getDocs(query(collection(firestore, 'user'), where('id', '==', id)));
-        if (!querySnapshot.empty) {
-            const docRef = querySnapshot.docs[0].ref;
+        const docRef = doc(collection(firestore, 'user'), id);
+        const docSnapshot = await getDoc(docRef);
+
+        if (docSnapshot.exists()) {
             await setDoc(docRef, { status: "deleted" }, { merge: true });
             return true;
         } else {
-            throw new Error('Client not found');
+            throw new Error('Admin not found');
         }
+    } catch (error) {
+        throw error;
     }
-    catch (error) {
-        throw error
-    }
-}
+};
 
 export const editAdmin = async (id, update) => {
     try {
-        const querySnapshot = await getDocs(query(collection(firestore, 'user'), where('id', '==', id)));
-        if (!querySnapshot.empty) {
-            const docRef = querySnapshot.docs[0].ref;
+        const docRef = doc(collection(firestore, 'user'), id);
+        const docSnapshot = await getDoc(docRef);
+
+        if (docSnapshot.exists()) {
             await setDoc(docRef, update, { merge: true });
-            return true
+            return true;
         } else {
-            throw new Error('Client not found');
+            throw new Error('Admin not found');
         }
+    } catch (error) {
+        throw error;
     }
-    catch (error) {
-        throw error
-    }
-}
+};

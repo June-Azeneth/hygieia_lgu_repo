@@ -11,6 +11,9 @@ import Placeholder from '../../Assets/placeholder_image.jpg'
 import { showLoader, formatDate } from '../../Helpers/Utils/Common';
 import { AiOutlineClose } from "react-icons/ai";
 import { PulseLoader } from 'react-spinners';
+import { MdOutlineLocationOn } from "react-icons/md";
+import { MdOutlineMailOutline } from "react-icons/md";
+import { MdPhoneAndroid } from "react-icons/md";
 
 //QUERIES
 import {
@@ -31,26 +34,11 @@ function StoreProfile() {
   const [toggleState, setToggleState] = useState('rewards')
   const [isModalOpen, seTIsModalOpen] = useState(false)
   const [shopName, setShopName] = useState(store.name);
-  const [sitio, setSitio] = useState("");
-  const [barangay, setBarangay] = useState("");
-  const [city, setCity] = useState("");
-  const [province, setProvince] = useState("");
+  const [address, setAddress] = useState("");
   const [recyclables, setRecyclables] = useState("");
 
   const handleShopNameChange = (event) => {
     setShopName(event.target.value);
-  }
-
-  const handleBarangayChange = (event) => {
-    setBarangay(event.target.value);
-  }
-
-  const handleCityChange = (event) => {
-    setCity(event.target.value);
-  }
-
-  const handleProvinceChange = (event) => {
-    setProvince(event.target.value);
   }
 
   const toggleTab = (tab) => {
@@ -102,9 +90,7 @@ function StoreProfile() {
   function handleEditClick() {
     seTIsModalOpen(true)
     setShopName(store.name);
-    setBarangay(store.address.barangay);
-    setCity(store.address.city);
-    setProvince(store.address.province);
+    setAddress(store.address)
     setRecyclables(store.recyclable ? store.recyclable.join(', ') : "");
   }
 
@@ -112,18 +98,12 @@ function StoreProfile() {
     try {
       if (
         shopName !== store.name ||
-        barangay !== store.address.barangay ||
-        city !== store.address.city ||
-        province !== store.address.province ||
+        address !== store.address ||
         recyclables !== (store.recyclable ? store.recyclable.join(', ') : '')
       ) {
         const updatedStoreData = {
           name: shopName,
-          address: {
-            barangay,
-            city,
-            province
-          },
+          address: address,
           recyclable: recyclables.split(',').map(item => item.trim())
         };
 
@@ -166,11 +146,14 @@ function StoreProfile() {
                 alt=""
                 className='w-52 h-52 object-cover rounded-md shadow-md'
               />
-              <div>
+              <div className='fkex flex-col text-start justify-start items-start'>
                 <p className='font-bold text-2xl'>{store.name}</p>
                 <p>ID: {store.storeId}</p>
-                <p className='mt-5'>Address: {store.address.sitio + " " + store.address.barangay + ", " + store.address.city + ", " + store.address.province}</p>
-                <p>Email: {store.email}</p>
+                <a href={store.googleMapLocation} target="_blank" rel="noopener noreferrer" className="w-full flex mt-3 flex-row">
+                  <span className="text-xl m-0 pe-2"><MdOutlineLocationOn /></span> {store.address}
+                </a>
+                <p className="w-full flex flex-row items-center"> <span className="text-xl m-0 pe-2"><MdOutlineMailOutline /></span> {store.email}</p>
+                <p className="w-full flex flex-row items-center"> <span className="text-xl m-0 pe-2"><MdPhoneAndroid /></span>{store.phone}</p>
                 <p className='mt-3'>Recyclables:</p>
                 <div className='flex flex-row gap-2'>
                   {store.recyclable && store.recyclable.map((item, index) => (
@@ -256,29 +239,14 @@ function StoreProfile() {
                 />
                 <p className="text-sm mt-2 text-gray">Address</p>
                 <div className="flex flex-wrap gap-2">
-                  <input
-                    id='barangay'
-                    name='barangay'
+                  <textarea
+                    id='address'
+                    name='address'
                     type="text"
-                    value={barangay}
-                    onChange={handleBarangayChange}
-                    className='input-field'
-                  />
-                  <input
-                    id='city'
-                    name='city'
-                    type="text"
-                    value={city}
-                    onChange={handleCityChange}
-                    className='input-field'
-                  />
-                  <input
-                    id='province'
-                    name='province'
-                    type="text"
-                    value={province}
-                    onChange={handleProvinceChange}
-                    className='input-field'
+                    value={address}
+                    placeholder='Enter address'
+                    onChange={(e) => setAddress(e.target.value)}
+                    className='input-field w-full'
                   />
                 </div>
                 <p className="text-sm mt-2 text-gray">Recyclables (separate by comma)</p>

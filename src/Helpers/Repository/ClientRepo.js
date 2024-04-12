@@ -1,4 +1,4 @@
-import { query, getDocs, setDoc, doc, collection, where } from "firebase/firestore";
+import { query, getDocs, setDoc, doc, collection, getDoc, where } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { currentDateTimestamp } from '../Utils/Common'
 import { updateCurrentUser } from "firebase/auth";
@@ -40,24 +40,27 @@ export const getClients = async () => {
 
 export const updateClient = async (clientId, update) => {
     try {
-        const querySnapshot = await getDocs(query(collection(firestore, 'user'), where('id', '==', clientId)));
-        if (!querySnapshot.empty) {
-            const docRef = querySnapshot.docs[0].ref;
+        const docRef = doc(collection(firestore, 'user'), clientId);
+        const docSnapshot = await getDoc(docRef);
+
+        if (docSnapshot.exists()) {
             await setDoc(docRef, update, { merge: true });
-            return true
+            return true;
         } else {
             throw new Error('Client not found');
         }
     } catch (error) {
         throw error;
     }
-}
+};
+
 
 export const deleteClient = async (clientId) => {
     try {
-        const querySnapshot = await getDocs(query(collection(firestore, 'user'), where('id', '==', clientId)));
-        if (!querySnapshot.empty) {
-            const docRef = querySnapshot.docs[0].ref;
+        const docRef = doc(collection(firestore, 'user'), clientId);
+        const docSnapshot = await getDoc(docRef);
+
+        if (docSnapshot.exists()) {
             await setDoc(docRef, { status: "deleted" }, { merge: true });
             return true;
         } else {
@@ -68,28 +71,25 @@ export const deleteClient = async (clientId) => {
     }
 };
 
+
 export const getClientById = async (searchId) => {
     try {
-        const ref = collection(firestore, 'user');
-        const userQuery = query(ref, where('id', '==', searchId),);
+        const docRef = doc(collection(firestore, 'user'), searchId);
+        const userDocument = await getDoc(docRef);
 
-        const userDocument = await getDocs(userQuery);
-
-        if (!userDocument.empty) {
-            const doc = userDocument.docs[0];
+        if (userDocument.exists()) {
             return {
-                id: doc.id,
-                ...doc.data()
+                id: userDocument.id,
+                ...userDocument.data()
             };
         } else {
             return null;
         }
     }
     catch (error) {
-        throw error
+        throw error;
     }
 }
-
 
 
 export const addClient = async (email, password, data) => {
@@ -110,7 +110,7 @@ export const addClient = async (email, password, data) => {
         const user = userCredential.user;
         const uid = user.uid;
 
-        const newClient = await setDoc(doc(userCollectionRef, uid), {
+        await setDoc(doc(userCollectionRef, uid), {
             ...data,
             id: uid,
             email: email,

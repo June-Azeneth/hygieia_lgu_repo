@@ -33,7 +33,6 @@ export const getStores = async (userDetails, toggleState) => {
         }));
         return data;
     } catch (error) {
-        console.error('Error fetching stores:', error);
         return [];
     }
 };
@@ -86,7 +85,6 @@ export const updateStore = async (storeId, updatedStoreData) => {
     try {
         await setDoc(doc(firestore, 'store', storeId), updatedStoreData, { merge: true });
     } catch (error) {
-        console.error("Error updating store:", error);
         throw error;
     }
 };
@@ -103,7 +101,6 @@ export const getStore = async (id) => {
         }
     }
     catch (error) {
-        console.error('Error fetching store:', error);
         throw error;
     }
 }
@@ -123,7 +120,6 @@ export const getRewardsPerStore = async (id) => {
         });
         return rewards;
     } catch (error) {
-        console.error('Error fetching rewards:', error);
         throw error;
     }
 };
@@ -151,7 +147,6 @@ export const getPromosPerStore = async (id) => {
         return promos;
     }
     catch (error) {
-        console.error('Error fetching rewards:', error);
         throw error;
     }
 }
@@ -229,7 +224,6 @@ export const rejectStoreApplication = async (documentId, reason) => {
         }, { merge: true });
     }
     catch (error) {
-        console.error("Error setting reason for rejection:", error);
         throw error;
     }
 }

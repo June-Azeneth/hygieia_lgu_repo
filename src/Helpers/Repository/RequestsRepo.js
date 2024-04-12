@@ -151,7 +151,6 @@ export const getRequests = async (toggleState) => {
             };
             requests.push(request);
         }
-        console.log(requests)
         return requests;
     }
     catch (error) {

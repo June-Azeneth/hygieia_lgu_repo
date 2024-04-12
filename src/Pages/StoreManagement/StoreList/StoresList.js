@@ -37,9 +37,7 @@ function StoresList() {
     const [loader, setLoader] = useState(false)
     const [name, setName] = useState('');
     const [owner, setOwner] = useState('');
-    const [barangay, setBarangay] = useState('');
-    const [city, setCity] = useState('');
-    const [province, setProvince] = useState('');
+    const [address, setAddress] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -64,9 +62,7 @@ function StoresList() {
     const clearFields = () => {
         setName('')
         setEmail('')
-        setBarangay('')
-        setCity('')
-        setProvince('')
+        setAddress('')
         setEmail('')
         setPassword('')
         setOwner('')
@@ -74,36 +70,32 @@ function StoresList() {
 
     const handleSubmitClick = async () => {
         try {
-            if (name === '' || owner === '' || barangay === '' || city === '' || province === '' || email === '' || password === '') {
+            if (name === '' || owner === '' || address === '' || email === '' || password === '') {
                 toast.info("Fill in all the required fields")
                 return;
             }
-            else {
-                const success = await addStore(email, password, {
-                    name,
-                    owner,
-                    address: {
-                        barangay,
-                        city,
-                        province
-                    }
-                });
-                setLoader(true)
-                if (success) {
-                    const emailContent = {
-                        to: email,
-                        subject: 'Welcome to Hygieia',
-                        text: message
-                    };
-                    await axios.post('https://hygieia-back-end-node.onrender.com/send-email', emailContent);
-                    toast.success("Store Added Successfully");
-                    setLoader(false);
-                    setModalOpen(false);
-                    clearFields();
-                    fetchData();
-                } else {
-                    toast.error("Failed to Add Store")
-                }
+
+            setLoader(true)
+            const success = await addStore(email, password, {
+                name,
+                owner,
+                address: address
+            });
+
+            if (success) {
+                toast.success("Store Added Successfully");
+                const emailContent = {
+                    to: email,
+                    subject: 'Welcome to Hygieia',
+                    text: message
+                };
+                await axios.post('https://hygieia-back-end-node.onrender.com/send-email', emailContent);
+                setLoader(false);
+                setModalOpen(false);
+                clearFields();
+                fetchData();
+            } else {
+                toast.error("Failed to Add Store")
             }
         }
         catch (error) {
@@ -210,6 +202,11 @@ function StoresList() {
             dataIndex: 'email'
         },
         {
+            key: 8,
+            title: 'Phone',
+            dataIndex: 'phone'
+        },
+        {
             key: 4,
             title: 'Owner',
             dataIndex: 'owner'
@@ -250,6 +247,11 @@ function StoresList() {
             key: 3,
             title: 'Email',
             dataIndex: 'email'
+        },
+        {
+            key: 8,
+            title: 'Phone',
+            dataIndex: 'phone'
         },
         {
             key: 4,
@@ -294,6 +296,11 @@ function StoresList() {
             dataIndex: 'email'
         },
         {
+            key: 8,
+            title: 'Phone',
+            dataIndex: 'phone'
+        },
+        {
             key: 4,
             title: 'Owner',
             dataIndex: 'owner'
@@ -304,11 +311,6 @@ function StoresList() {
             dataIndex: 'dateRejected'
         },
         {
-            key: 6,
-            title: 'Reason',
-            dataIndex: 'reason'
-        },
-        {
             key: 7,
             title: 'Status',
             dataIndex: 'status'
@@ -316,7 +318,7 @@ function StoresList() {
         {
             key: 8,
             title: 'Actions',
-            render: (text, record) => (
+            render: (record) => (
                 <div>
                     <button className="px-3 w-20 py-1 rounded-md me-3 bg-green text-white" onClick={() => handleViewClick(record)}>View</button>
                 </div>
@@ -330,7 +332,7 @@ function StoresList() {
 
     useEffect(() => {
         fetchData();
-    }, [userDetails, toggleState]);
+    }, [toggleState]);
 
     useEffect(() => {
         setMessage(`Welcome Aboard! \n\nYou are now apart of the Hygieia program. You may use these credentials to login your account. \n\nEmail: ${email} \nPassword: ${password} \n\nYou may leave the password as is, but we recommend that you change it to a more secure password once you have logged in to your account. \n\nThank you and welcome!`);
@@ -351,7 +353,7 @@ function StoresList() {
             <Helmet>
                 <title>Stores</title>
             </Helmet>
-            <ToastContainer />
+            <ToastContainer containerId={"storeList"} />
             <div className='w-full justify-center md:justify-between flex flex-row items-center gap-10 mb-4 h-9'>
                 <div className='flex justify-end flex-row items-center bg-white rounded-md border border-gray ps-2 overflow-hidden'>
                     <input
@@ -445,31 +447,14 @@ function StoresList() {
                                     placeholder='Owner'
                                     className='border rounded-md border-gray p-1'
                                 />
-                                <p className='mt-2 font-bold'>Address</p>
                                 <div className="" flex flew-row gap-2>
-                                    <input
-                                        id='barangay'
+                                    <textarea
+                                        id='address'
                                         type="text"
-                                        value={barangay}
-                                        onChange={(e) => setBarangay(e.target.value)}
-                                        placeholder='Barangay'
-                                        className='border rounded-md border-gray p-1'
-                                    />
-                                    <input
-                                        id='city'
-                                        type="text"
-                                        value={city}
-                                        onChange={(e) => setCity(e.target.value)}
-                                        placeholder='City'
-                                        className='border rounded-md border-gray p-1 mx-2'
-                                    />
-                                    <input
-                                        id='province'
-                                        type="text"
-                                        value={province}
-                                        onChange={(e) => setProvince(e.target.value)}
-                                        placeholder='Province'
-                                        className='border rounded-md border-gray p-1'
+                                        value={address}
+                                        onChange={(e) => setAddress(e.target.value)}
+                                        placeholder='Enter Address'
+                                        className='border rounded-md border-gray p-1 w-full'
                                     />
                                 </div>
                                 <p className='mt-2 font-bold'>Set Credentials</p>

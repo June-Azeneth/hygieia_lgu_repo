@@ -136,12 +136,12 @@ function Dashboard() {
   ]
 
   return (
-    <div className='container text-darkGray'>
+    <div className='page-container text-darkGray'>
       <Helmet>
         <title>Dashboard</title>
       </Helmet>
       <p className="font-bold text-xl">Welcome Back {user}!</p>
-      <div className="mt-4">
+      <div className="mt-4 h-full">
         {loading ? (
           <div className="w-full h-56 flex justify-center items-center">
             {showLoader()}
@@ -248,7 +248,7 @@ function Dashboard() {
                   {showLoader()}
                 </div>
               ) : (
-                <div className="max-h-24 overflow-y-scroll scrollbar-none">
+                <div className="overflow-y-scroll scrollbar-none">
                   {dataSource.map((item, index) => (
                     <div key={index} className={`text-white w-[20rem] cursor-pointer hover:shadow-md rounded-md p-4 ${index % 2 === 0 ? 'bg-oliveGreen' : 'bg-mutedGreen'}`} onClick={() => navigate('/requests')}>
                       <p classname="font-bold">{item.storeName}</p>

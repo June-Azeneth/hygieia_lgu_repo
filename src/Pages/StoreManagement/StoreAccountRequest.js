@@ -164,6 +164,7 @@ const StoreAccountRequest = () => {
                 }, 3000);
             }
         } catch (error) {
+            setLoader(false)
             toast.error("Failed: " + error.message);
         }
     }
@@ -206,10 +207,12 @@ const StoreAccountRequest = () => {
                         <div className='w-full'>
                             <p className='mt-10 mb-5'>General Information</p>
                             <p>Store Name: {requestDetails.name}</p>
-                            <p>Address: {`${requestDetails.address.sitio} ${requestDetails.address.barangay}, ${requestDetails.address.city}, ${requestDetails.address.province}`}</p>
                             <p>Owner: {requestDetails.owner}</p>
                             <p>Email: {requestDetails.email}</p>
-                            <p>LGU ID: {requestDetails.lguId}</p>
+                            <p>Phone Number: {requestDetails.phone}</p>                            
+                            <a href={requestDetails.googleMapLocation} target="_blank" rel="noopener noreferrer" className="w-full flex mt-3 flex-row hover:text-blue-500">
+                                Address: {requestDetails.address}
+                            </a>
                         </div>
                     </div>
                     <p className='mt-5 font-bold'>Valid ID</p>
@@ -239,8 +242,11 @@ const StoreAccountRequest = () => {
                             <button className='py-2 px-3 w-32 rounded-md text-white bg-oliveGreen' onClick={() => handleDecisionClick("approve")}>Approve</button>
                         </div>
                     ) : (
-                        <div className='flex gap-3 flex-row my-10'>
-                            <p>Reason For Rejection: <span className='text-red'>{requestDetails.reason}</span></p>
+                        <div className='flex gap-4 flex-col my-10'>
+                            <p className='font-bold'>Reason For Rejection: <br /> <span className='m-0 text-red'>{requestDetails.reason}</span></p>
+                            <div className='flex gap-3 flex-row justify-center md:justify-end'>
+                                <button className='py-2 px-3 w-32 rounded-md  hover:bg-gray hover:text-white border border-gray' onClick={() => handleCancelClick("cancel_action")}>Back</button>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -249,7 +255,9 @@ const StoreAccountRequest = () => {
             <Modal open={isModalOpen} onClose={() => seTIsModalOpen(false)}>
                 {requestDetails != null ? (
                     <div className="flex w-screen h-screen justify-center items-center" onClick={() => seTIsModalOpen(false)}>
-                        <img src={side === "front" ? requestDetails.validIdFront : requestDetails.validIdBack} alt={side === "front" ? "valid id front" : "valid id back"} />
+                        <div className='w-[50rem] flex justify-center items-center'>
+                            <img src={side === "front" ? requestDetails.validIdFront : requestDetails.validIdBack} alt={side === "front" ? "valid id front" : "valid id back"} />
+                        </div>
                     </div>
                 ) : (
                     <div>Loading...</div>

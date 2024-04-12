@@ -142,6 +142,11 @@ function Requests() {
   //   }
   // }
 
+  const handleCancelClick = () => {
+    setAddRequestModal(false)
+    clearFields()
+  }
+
   const acceptClick = (record) => {
     setSelectedRow(record)
     setSelectedDate(record.date)
@@ -156,6 +161,12 @@ function Requests() {
 
   const acceptRequest = async () => {
     try {
+
+      if (selectedDate == null) {
+        toast.info("Select a date and time")
+        return
+      }
+
       setLoader(true)
       const success = await markAsActive(selectedRow.id, selectedDate)
       if (success) {
@@ -175,10 +186,20 @@ function Requests() {
     }
   }
 
+  const clearFields = () => {
+    setStoreId("")
+    setPhone("")
+    setBarangay("")
+    setCity("")
+    setProvince("")
+    setSelectedDate(null)
+    setNotes("")
+  }
+
   const createRequestClick = () => {
     try {
 
-      if (!storeId || !phone || !barangay || !city || !province) {
+      if (!storeId || !phone || !barangay || !city || !province || selectedDate === null) {
         toast.info("Fill in all the required fields.")
         return
       }
@@ -206,6 +227,7 @@ function Requests() {
         toast.success("Schedule successfully created!")
         setLoader(false)
         setAddRequestModal(false)
+        clearFields()
         fetchData()
       }
       else {
@@ -324,14 +346,14 @@ function Requests() {
       render: (record) => (
         <div className='flex flex-row gap-3'>
           {toggleState === "today" && (
-            <div>
+            <div className='flex flex-col gap-3'>
               <button className="warning-btn me-3" onClick={() => editClick(record)}>Edit</button>
               <button className="view-btn" onClick={() => markAsDoneClick(record)}>Mark As Done</button>
             </div>
           )}
           {toggleState === "upcoming" && (
-            <div>
-              <button className="warning-btn me-3" onClick={() => editClick(record)}>Edit</button>
+            <div className='flex flex-col lg:flex-row gap-3'>
+              <button className="warning-btn w-24" onClick={() => editClick(record)}>Edit</button>
               <button className="view-btn" onClick={() => markAsDoneClick(record)}>Mark As Done</button>
             </div>
           )}
@@ -435,8 +457,8 @@ function Requests() {
           <button type="button" className='bg-green py-1 text-white px-3' onClick={() => handleSearch()}>Search</button>
         </div> */}
         <div className='flex flex-row justify-end gap-3 items-center mt-7 md:mt-0'>
-          <button className='bg-orange hover:shadow-md items-center flex flex-row text-sm text-white py-2 px-4 rounded-md w-fit' onClick={() => setAddRequestModal(true)}><span className='p-0 text-lg m-0 me-2'><MdAdd /></span>Add Consumer</button>
           <LuRefreshCw className='cursor-pointer text-2xl me-4' onClick={() => fetchData()} />
+          <button className='bg-orange hover:shadow-md items-center flex flex-row text-sm text-white py-2 px-4 rounded-md w-fit' onClick={() => setAddRequestModal(true)}><span className='p-0 text-lg m-0 me-2'><MdAdd /></span>Add Schedule</button>
           {/* <button className='bg-orange hover:shadow-md items-center flex flex-row text-sm text-white py-2 px-4 rounded-md w-fit' onClick={() => handleAddClientClick(true)}><span className='p-0 text-lg m-0 me-2'><MdAdd /></span>Add Client</button> */}
         </div>
       </div>
@@ -645,10 +667,21 @@ function Requests() {
                       name="notes"
                       placeholder='Notes'
                       value={notes}
-                      onChange={(e) => setProvince(e.target.value)}
+                      onChange={(e) => setNotes(e.target.value)}
                       required
                       className='input-field w-full'>
                     </textarea>
+                  </div>
+                  <div className='mt-3'>
+                    <p className="text-sm text-gray mt-3">Select A Date<span className='text-red m-0'>*</span></p>
+                    <DatePicker
+                      placeholderText='Select a date'
+                      selected={selectedDate}
+                      value={selectedDate}
+                      onChange={handleDateChange}
+                      dateFormat="MMMM dd, yyyy - hh : mm a"
+                      showTimeInput={true}
+                      className='w-[20rem] input-field h-[2.5rem]' />
                   </div>
                   <div className='w-full justify-end gap-3 flex flex-row mt-5'>
                     {loader ? (
@@ -661,7 +694,7 @@ function Requests() {
                     <button
                       type='button'
                       className='cancel-btn w-24'
-                      onClick={() => setAddRequestModal(false)}>
+                      onClick={() => handleCancelClick()}>
                       Cancel
                     </button>
                     <button
