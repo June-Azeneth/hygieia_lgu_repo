@@ -6,6 +6,8 @@ import { Helmet } from 'react-helmet';
 import Modal from '@mui/material/Modal';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import FullCalendar from '@fullcalendar/react'
+import dayGridPlugin from '@fullcalendar/daygrid'
 
 //HELPERS
 import {
@@ -17,28 +19,28 @@ import { getRequests, markAsCompleted, markAsActive, getRequestCounts, markAsRej
 
 //ASSETS
 import { LuRefreshCw } from "react-icons/lu";
-import { render } from '@testing-library/react';
 import { MdAdd } from "react-icons/md";
-// import { AiOutlineClose } from "react-icons/ai";
 
 function Requests() {
   const { currentUser } = useAuth();
   const [dataSource, setDataSource] = useState([]);
+  const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loader, setLoader] = useState(false);
   const [pagination, setPagination] = useState({ pageSize: 8 });
   const [toggleState, setToggleState] = useState('today');
-  const [dialog, setDialog] = useState(false)
-  const [storeId, setStoreId] = useState("")
-  const [notes, setNotes] = useState("")
-  const [phone, setPhone] = useState("")
-  const [barangay, setBarangay] = useState("")
-  const [city, setCity] = useState("")
-  const [province, setProvince] = useState("")
-  const [addRequestModal, setAddRequestModal] = useState(false)
-  const [selectedRow, setSelectedRow] = useState([])
+  const [dialog, setDialog] = useState(false);
+  const [storeId, setStoreId] = useState("");
+  const [notes, setNotes] = useState("");
+  const [phone, setPhone] = useState("");
+  const [barangay, setBarangay] = useState("");
+  const [city, setCity] = useState("");
+  const [province, setProvince] = useState("");
+  const [addRequestModal, setAddRequestModal] = useState(false);
+  const [selectedRow, setSelectedRow] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [isPhoneValid, setIsPhoneValid] = useState(false);
+  const [display, setDisplay] = useState("list")
   const [requestCounts, setRequestCounts] = useState({
     today: 0,
     upcoming: 0,
@@ -74,6 +76,13 @@ function Requests() {
           };
         });
         setDataSource(formattedData);
+
+        const eventData = response.map(item => ({
+          title: item.storeName, // Set the title of the event to the store name
+          start: new Date(item.date.seconds * 1000), // Convert the date to a JavaScript Date object
+        }));
+        setEvents(eventData)
+
       } else {
         toast.error("An error occurred: No data returned");
       }
@@ -82,7 +91,7 @@ function Requests() {
     } finally {
       setTimeout(() => {
         setLoading(false);
-      }, 3000); // Delay setLoading(false) by 3 seconds
+      }, 3000);
     }
   };
 
@@ -297,12 +306,7 @@ function Requests() {
     {
       key: 2,
       title: 'Address',
-      dataIndex: 'address',
-      render: address => (
-        <div>
-          <p>{`${address.barangay}, ${address.city}, ${address.province}`}</p>
-        </div>
-      )
+      dataIndex: 'address'
     },
     {
       key: 3,
@@ -440,276 +444,294 @@ function Requests() {
   }, [requestCounts]);
 
   return (
-    <div className="p-5 md:pl-24 text-darkGray">
+    <div className="p-5 md:pl-24 text-darkGray ">
       <Helmet>
         <title>Garbage Collection</title>
       </Helmet>
       <ToastContainer />
-      <div className='w-full justify-end flex-col md:gap-0 md:flex-row flex mb-5'>
-        {/* <div className='rounded-md border border-gray h-fit overflow-hidden w-fit'>
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by ID"
-            className='p-1 focus-within:bg-white outline-none w-56'
-          />
-          <button type="button" className='bg-green py-1 text-white px-3' onClick={() => handleSearch()}>Search</button>
-        </div> */}
+      <div className='w-full justify-between flex-col md:gap-0 md:flex-row flex mb-5'>
+        <div className="flex flex-row gap-3">
+          <button
+            type='button'
+            className={display === 'list' ? "border text-white bg-gray h-full border-gray rounded-md w-24" : "border h-full border-gray rounded-md w-24 hover:bg-gray hover:text-white"}
+            onClick={() => setDisplay("list")}>
+            List
+          </button>
+          <button
+            type='button'
+            className={display === 'calendar' ? "border text-white bg-gray h-full border-gray rounded-md w-24" : "border h-full border-gray rounded-md w-24 hover:bg-gray hover:text-white"}
+            onClick={() => setDisplay("calendar")}>
+            Calendar
+          </button>
+        </div>
         <div className='flex flex-row justify-end gap-3 items-center mt-7 md:mt-0'>
           <LuRefreshCw className='cursor-pointer text-2xl me-4' onClick={() => fetchData()} />
           <button className='bg-orange hover:shadow-md items-center flex flex-row text-sm text-white py-2 px-4 rounded-md w-fit' onClick={() => setAddRequestModal(true)}><span className='p-0 text-lg m-0 me-2'><MdAdd /></span>Add Schedule</button>
-          {/* <button className='bg-orange hover:shadow-md items-center flex flex-row text-sm text-white py-2 px-4 rounded-md w-fit' onClick={() => handleAddClientClick(true)}><span className='p-0 text-lg m-0 me-2'><MdAdd /></span>Add Client</button> */}
         </div>
       </div>
-      <div className='w-full flex-row gap-1 flex'>
-        <div
-          className={toggleState === 'today' ? "tabs active-tab" : "tabs"}
-          onClick={() => toggleTab('today')}>
-          Today
-          <span className={requestCounts.today != 0 ? "bg-red rounded-full px-2 text-white inline-flex text-sm" : "hidden"}>{requestCounts.today}</span>
-        </div>
-        <div
-          className={toggleState === 'upcoming' ? "tabs active-tab" : "tabs"}
-          onClick={() => toggleTab('upcoming')}>
-          Upcoming
-          <span className={requestCounts.upcoming != 0 ? "bg-red rounded-full px-2 text-white inline-flex text-sm" : "hidden"}>{requestCounts.upcoming}</span>
-        </div>
-        <div
-          className={toggleState === 'pending' ? "tabs active-tab" : "tabs"}
-          onClick={() => toggleTab('pending')}>
-          Pending
-          <span className={requestCounts.pending != 0 ? "bg-red rounded-full px-2 text-white inline-flex text-sm" : "hidden"}>{requestCounts.pending}</span>
-        </div>
-        <div
-          className={toggleState === 'done' ? "tabs active-tab" : "tabs"}
-          onClick={() => toggleTab('done')}>
-          Completed
-        </div>
-      </div>
-      {loading ? (
-        <div className='w-full h-full flex justify-center p-10 bg-white rounded-tr-md rounded-b-md'>
-          {showLoader()}
-        </div>) : (
-        <div className='overflow-x-scroll w-full scrollbar-none'>
-          <div className={toggleState === "today" ? "content active-content" : "content"}>
-            {loading ? (
-              <div className='w-full h-full flex justify-center p-10 shadow-md'>
-                {showLoader()}
-              </div>) : (
-              <div className='overflow-x-scroll w-full scrollbar-none h-full'>
-                <Table
-                  columns={headers}
-                  dataSource={dataSource}
-                  pagination={pagination}
-                  onChange={handleTableChange}>
-                </Table>
-              </div>
-            )}
-          </div>
-          <div className={toggleState === "upcoming" ? "content active-content" : "content"}>
-            {loading ? (
-              <div className='w-full h-full flex justify-center p-10 shadow-md'>
-                {showLoader()}
-              </div>) : (
-              <div className='overflow-x-scroll w-full scrollbar-none h-full'>
-                <Table
-                  columns={headers}
-                  dataSource={dataSource}
-                  pagination={pagination}
-                  onChange={handleTableChange}>
-                </Table>
-              </div>
-            )}
-          </div>
-          <div className={toggleState === "pending" ? "content active-content" : "content"}>
-            {loading ? (
-              <div className='w-full h-full flex justify-center p-10 shadow-md'>
-                {showLoader()}
-              </div>) : (
-              <div className='overflow-x-scroll w-full scrollbar-none h-full'>
-                <Table
-                  columns={headers}
-                  dataSource={dataSource}
-                  pagination={pagination}
-                  onChange={handleTableChange}>
-                </Table>
-              </div>
-            )}
-          </div>
-          <div className={toggleState === "done" ? "content active-content" : "content"}>
-            {loading ? (
-              <div className='w-full h-full flex justify-center p-10 shadow-md'>
-                {showLoader()}
-              </div>) : (
-              <div className='overflow-x-scroll w-full scrollbar-none h-full'>
-                <Table
-                  columns={headers}
-                  dataSource={dataSource}
-                  pagination={pagination}
-                  onChange={handleTableChange}>
-                </Table>
-              </div>
-            )}
-          </div>
-          <Modal open={dialog} onClose={() => setDialog(false)}>
-            <div className="flex justify-center items-center w-screen h-screen">
-              <div className='bg-white rounded-md p-6 text-darkGray'>
-                <p className='font-bold text-xl'>Set the time and date for collection</p>
-                <div className="flex flex-row gap-3 my-3">
-                  <div>
-                    <p>Select Date and Time</p>
-                    <DatePicker
-                      placeholderText='Select a date'
-                      selected={selectedDate}
-                      value={selectedDate}
-                      onChange={handleDateChange}
-                      dateFormat="MMMM dd, yyyy - hh : mm a"
-                      showTimeInput={true}
-                      className='w-[20rem] input-field h-[2.5rem]' />
-                  </div>
-                </div>
-                <div className='w-full justify-end gap-3 flex flex-row mt-5'>
-                  {loader ? (
-                    <div>
-                      {showLoader()}
-                    </div>
-                  ) : (
-                    <div></div>
-                  )}
-                  <button
-                    type='button'
-                    className='cancel-btn w-24'
-                    onClick={() => setDialog(false)}>
-                    Cancel
-                  </button>
-                  <button
-                    type='button'
-                    className='view-btn w-24'
-                    onClick={() => acceptRequest()}>
-                    Submit
-                  </button>
-                </div>
-              </div>
+      {display === "list" ? (
+        <div>
+          <div className='w-full flex-row gap-1 flex'>
+            <div
+              className={toggleState === 'today' ? "tabs active-tab" : "tabs"}
+              onClick={() => toggleTab('today')}>
+              Today
+              <span className={requestCounts.today != 0 ? "bg-red rounded-full px-2 text-white inline-flex text-sm" : "hidden"}>{requestCounts.today}</span>
             </div>
-          </Modal>
-          <Modal open={addRequestModal} onClose={() => setAddRequestModal(false)}>
-            <div className="flex justify-center items-center w-screen h-screen">
-              <div className='bg-white rounded-md p-6 text-darkGray'>
-                <p className="text-xl font-bold mb-3">Add a pick up collection schedule</p>
-                <form>
-                  <div>
-                    <p className="text-sm text-gray">Store ID<span className='text-red m-0'>*</span></p>
-                    <input
-                      type="text"
-                      id="storeId"
-                      name="storeId"
-                      placeholder='Enter store ID'
-                      value={storeId}
-                      onChange={(e) => setStoreId(e.target.value)}
-                      required
-                      className='input-field' />
+            <div
+              className={toggleState === 'upcoming' ? "tabs active-tab" : "tabs"}
+              onClick={() => toggleTab('upcoming')}>
+              Upcoming
+              <span className={requestCounts.upcoming != 0 ? "bg-red rounded-full px-2 text-white inline-flex text-sm" : "hidden"}>{requestCounts.upcoming}</span>
+            </div>
+            <div
+              className={toggleState === 'pending' ? "tabs active-tab" : "tabs"}
+              onClick={() => toggleTab('pending')}>
+              Pending
+              <span className={requestCounts.pending != 0 ? "bg-red rounded-full px-2 text-white inline-flex text-sm" : "hidden"}>{requestCounts.pending}</span>
+            </div>
+            <div
+              className={toggleState === 'done' ? "tabs active-tab" : "tabs"}
+              onClick={() => toggleTab('done')}>
+              Completed
+            </div>
+          </div>
+          {loading ? (
+            <div className='w-full h-full flex justify-center p-10 bg-white rounded-tr-md rounded-b-md'>
+              {showLoader()}
+            </div>) : (
+            <div className='overflow-x-scroll w-full scrollbar-none'>
+              <div className={toggleState === "today" ? "content active-content" : "content"}>
+                {loading ? (
+                  <div className='w-full h-full flex justify-center p-10 shadow-md'>
+                    {showLoader()}
+                  </div>) : (
+                  <div className='overflow-x-scroll w-full scrollbar-none h-full'>
+                    <Table
+                      columns={headers}
+                      dataSource={dataSource}
+                      pagination={pagination}
+                      onChange={handleTableChange}>
+                    </Table>
                   </div>
-                  <p className="text-sm text-gray mt-3">Address<span className='text-red m-0'>*</span></p>
-                  <div className='flex flex-row gap-3'>
-                    <div>
-                      <input
-                        type="text"
-                        id="barangay"
-                        name="barangay"
-                        placeholder='Barangay'
-                        value={barangay}
-                        onChange={(e) => setBarangay(e.target.value)}
-                        required
-                        className='input-field' />
-                    </div>
-                    <div>
-                      <input
-                        type="text"
-                        id="city"
-                        name="city"
-                        placeholder='City'
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        required
-                        className='input-field' />
-                    </div>
-                    <div>
-                      <input
-                        type="text"
-                        id="province"
-                        name="province"
-                        placeholder='Province'
-                        value={province}
-                        onChange={(e) => setProvince(e.target.value)}
-                        required
-                        className='input-field' />
-                    </div>
+                )}
+              </div>
+              <div className={toggleState === "upcoming" ? "content active-content" : "content"}>
+                {loading ? (
+                  <div className='w-full h-full flex justify-center p-10 shadow-md'>
+                    {showLoader()}
+                  </div>) : (
+                  <div className='overflow-x-scroll w-full scrollbar-none h-full'>
+                    <Table
+                      columns={headers}
+                      dataSource={dataSource}
+                      pagination={pagination}
+                      onChange={handleTableChange}>
+                    </Table>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray mt-3">Phone<span className='text-red m-0'>*</span></p>
-                    <input
-                      type="phone"
-                      id="phone"
-                      name="phone"
-                      placeholder='Phone'
-                      value={phone}
-                      onChange={handlePhoneNumberChange}
-                      required
-                      className='input-field' >
-                    </input>
+                )}
+              </div>
+              <div className={toggleState === "pending" ? "content active-content" : "content"}>
+                {loading ? (
+                  <div className='w-full h-full flex justify-center p-10 shadow-md'>
+                    {showLoader()}
+                  </div>) : (
+                  <div className='overflow-x-scroll w-full scrollbar-none h-full'>
+                    <Table
+                      columns={headers}
+                      dataSource={dataSource}
+                      pagination={pagination}
+                      onChange={handleTableChange}>
+                    </Table>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray mt-3">Notes</p>
-                    <textarea
-                      type="text"
-                      id="notes"
-                      name="notes"
-                      placeholder='Notes'
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      required
-                      className='input-field w-full'>
-                    </textarea>
+                )}
+              </div>
+              <div className={toggleState === "done" ? "content active-content" : "content"}>
+                {loading ? (
+                  <div className='w-full h-full flex justify-center p-10 shadow-md'>
+                    {showLoader()}
+                  </div>) : (
+                  <div className='overflow-x-scroll w-full scrollbar-none h-full'>
+                    <Table
+                      columns={headers}
+                      dataSource={dataSource}
+                      pagination={pagination}
+                      onChange={handleTableChange}>
+                    </Table>
                   </div>
-                  <div className='mt-3'>
-                    <p className="text-sm text-gray mt-3">Select A Date<span className='text-red m-0'>*</span></p>
-                    <DatePicker
-                      placeholderText='Select a date'
-                      selected={selectedDate}
-                      value={selectedDate}
-                      onChange={handleDateChange}
-                      dateFormat="MMMM dd, yyyy - hh : mm a"
-                      showTimeInput={true}
-                      className='w-[20rem] input-field h-[2.5rem]' />
-                  </div>
-                  <div className='w-full justify-end gap-3 flex flex-row mt-5'>
-                    {loader ? (
+                )}
+              </div>
+              <Modal open={dialog} onClose={() => setDialog(false)}>
+                <div className="flex justify-center items-center w-screen h-screen">
+                  <div className='bg-white rounded-md p-6 text-darkGray'>
+                    <p className='font-bold text-xl'>Set the time and date for collection</p>
+                    <div className="flex flex-row gap-3 my-3">
                       <div>
-                        {showLoader()}
+                        <p>Select Date and Time</p>
+                        <DatePicker
+                          placeholderText='Select a date'
+                          selected={selectedDate}
+                          value={selectedDate}
+                          onChange={handleDateChange}
+                          dateFormat="MMMM dd, yyyy - hh : mm a"
+                          showTimeInput={true}
+                          className='w-[20rem] input-field h-[2.5rem]' />
                       </div>
-                    ) : (
-                      <div></div>
-                    )}
-                    <button
-                      type='button'
-                      className='cancel-btn w-24'
-                      onClick={() => handleCancelClick()}>
-                      Cancel
-                    </button>
-                    <button
-                      type='button'
-                      className='view-btn w-24'
-                      onClick={() => createRequestClick()}>
-                      Submit
-                    </button>
+                    </div>
+                    <div className='w-full justify-end gap-3 flex flex-row mt-5'>
+                      {loader ? (
+                        <div>
+                          {showLoader()}
+                        </div>
+                      ) : (
+                        <div></div>
+                      )}
+                      <button
+                        type='button'
+                        className='cancel-btn w-24'
+                        onClick={() => setDialog(false)}>
+                        Cancel
+                      </button>
+                      <button
+                        type='button'
+                        className='view-btn w-24'
+                        onClick={() => acceptRequest()}>
+                        Submit
+                      </button>
+                    </div>
                   </div>
-                </form>
-              </div>
+                </div>
+              </Modal>
             </div>
-          </Modal>
+          )}
+        </div>
+      ) : (
+        <div className='pb-5'>
+          <FullCalendar
+            plugins={[dayGridPlugin]}
+            initialView="dayGridMonth"
+            weekends={true}
+            fixedWeekCount={false}
+            weekNumbers={false}
+            events={events}
+          />
         </div>
       )}
+      <Modal open={addRequestModal} onClose={() => setAddRequestModal(false)}>
+        <div className="flex justify-center items-center w-screen h-screen">
+          <div className='bg-white rounded-md p-6 text-darkGray'>
+            <p className="text-xl font-bold mb-3">Add a pick up collection schedule</p>
+            <form>
+              <div>
+                <p className="text-sm text-gray">Store ID<span className='text-red m-0'>*</span></p>
+                <input
+                  type="text"
+                  id="storeId"
+                  name="storeId"
+                  placeholder='Enter store ID'
+                  value={storeId}
+                  onChange={(e) => setStoreId(e.target.value)}
+                  required
+                  className='input-field' />
+              </div>
+              <p className="text-sm text-gray mt-3">Address<span className='text-red m-0'>*</span></p>
+              <div className='flex flex-row gap-3'>
+                <div>
+                  <input
+                    type="text"
+                    id="barangay"
+                    name="barangay"
+                    placeholder='Barangay'
+                    value={barangay}
+                    onChange={(e) => setBarangay(e.target.value)}
+                    required
+                    className='input-field' />
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    id="city"
+                    name="city"
+                    placeholder='City'
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    required
+                    className='input-field' />
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    id="province"
+                    name="province"
+                    placeholder='Province'
+                    value={province}
+                    onChange={(e) => setProvince(e.target.value)}
+                    required
+                    className='input-field' />
+                </div>
+              </div>
+              <div>
+                <p className="text-sm text-gray mt-3">Phone<span className='text-red m-0'>*</span></p>
+                <input
+                  type="phone"
+                  id="phone"
+                  name="phone"
+                  placeholder='Phone'
+                  value={phone}
+                  onChange={handlePhoneNumberChange}
+                  required
+                  className='input-field' >
+                </input>
+              </div>
+              <div>
+                <p className="text-sm text-gray mt-3">Notes</p>
+                <textarea
+                  type="text"
+                  id="notes"
+                  name="notes"
+                  placeholder='Notes'
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  required
+                  className='input-field w-full'>
+                </textarea>
+              </div>
+              <div className='mt-3'>
+                <p className="text-sm text-gray mt-3">Select A Date<span className='text-red m-0'>*</span></p>
+                <DatePicker
+                  placeholderText='Select a date'
+                  selected={selectedDate}
+                  value={selectedDate}
+                  onChange={handleDateChange}
+                  dateFormat="MMMM dd, yyyy - hh : mm a"
+                  showTimeInput={true}
+                  className='w-[20rem] input-field h-[2.5rem]' />
+              </div>
+              <div className='w-full justify-end gap-3 flex flex-row mt-5'>
+                {loader ? (
+                  <div>
+                    {showLoader()}
+                  </div>
+                ) : (
+                  <div></div>
+                )}
+                <button
+                  type='button'
+                  className='cancel-btn w-24'
+                  onClick={() => handleCancelClick()}>
+                  Cancel
+                </button>
+                <button
+                  type='button'
+                  className='view-btn w-24'
+                  onClick={() => createRequestClick()}>
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </Modal>
     </div >
   );
 }

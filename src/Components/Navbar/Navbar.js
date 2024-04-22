@@ -131,7 +131,7 @@ function Navbar() {
                 <div>
                     <div className='hidden md:flex'>
                         <IconContext.Provider value={{ color: '#fff' }}>
-                            <nav className='absolute top-0 left-0 w-16 h-screen bg-oliveGreen flex flex-col justify-between'>
+                            <nav className='fixed top-0 left-0 w-16 h-screen bg-oliveGreen flex flex-col justify-between'>
                                 <div>
                                     <img src={Logo} alt="logo" className='w-10 bg-white rounded-md mx-auto mt-1 cursor-pointer' onClick={showSideBar} />
                                     <ul className='flex flex-col items-center gap-1 mt-8'>

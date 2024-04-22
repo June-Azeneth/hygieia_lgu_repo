@@ -67,3 +67,27 @@ input:focus {
 .input-field {
   @apply border border-gray rounded-md p-1;
 }
+
+
+/* Calendar Override */
+.fc-toolbar-title{
+  @apply text-darkGray
+}
+
+.fc .fc-button-primary {
+  @apply bg-oliveGreen border-darkGreen hover:bg-darkGreen
+}
+
+.fc-direction-ltr {
+  direction: ltr;
+  text-align: left;
+  height: auto;
+}
+
+:root{
+  --fc-event-border-color: #567d34;
+}
+
+/* .fc-direction-ltr .fc-daygrid-event.fc-event-end, .fc-direction-rtl .fc-daygrid-event.fc-event-start{
+  @apply bg-oliveGreen text-white
+} */
