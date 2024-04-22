@@ -15,7 +15,7 @@ import {
   showLoader,
 } from '../../Helpers/Utils/Common'
 import { useAuth } from '../../Helpers/Repository/AuthContext';
-import { getRequests, markAsCompleted, markAsActive, getRequestCounts, markAsRejected, createRequest } from '../../Helpers/Repository/RequestsRepo'
+import { editRequestDetails, getRequests, markAsCompleted, markAsActive, getRequestCounts, markAsRejected, createRequest } from '../../Helpers/Repository/RequestsRepo'
 
 //ASSETS
 import { LuRefreshCw } from "react-icons/lu";
@@ -33,9 +33,8 @@ function Requests() {
   const [storeId, setStoreId] = useState("");
   const [notes, setNotes] = useState("");
   const [phone, setPhone] = useState("");
-  const [barangay, setBarangay] = useState("");
-  const [city, setCity] = useState("");
-  const [province, setProvince] = useState("");
+  const [address, setAddress] = useState("");
+  const [action, setAction] = useState();
   const [addRequestModal, setAddRequestModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -63,35 +62,43 @@ function Requests() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await getRequests(toggleState);
-      console.log(response)
-      if (response) {
-        const formattedData = response.map(item => {
-          const date = new Date(item.date.seconds * 1000);
-          const timeString = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-          return {
-            ...item,
-            date: formatDate(item.date),
-            time: timeString
-          };
-        });
-        setDataSource(formattedData);
-
-        const eventData = response.map(item => ({
-          title: item.storeName, // Set the title of the event to the store name
-          start: new Date(item.date.seconds * 1000), // Convert the date to a JavaScript Date object
-        }));
-        setEvents(eventData)
-
-      } else {
-        toast.error("An error occurred: No data returned");
+      if (display === "list") {
+        const response = await getRequests(toggleState);
+        if (response) {
+          const formattedData = response.map(item => {
+            const date = new Date(item.date.seconds * 1000);
+            const timeString = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+            return {
+              ...item,
+              date: formatDate(item.date),
+              time: timeString,
+              dateAndTime: date
+            };
+          });
+          setDataSource(formattedData);
+          setLoading(false);
+        } else {
+          toast.error("An error occurred: No data returned");
+        }
+      }
+      else {
+        const response = await getRequests("all");
+        if (response) {
+          const eventData = response.map(item => ({
+            title: item.storeName,
+            start: new Date(item.date.seconds * 1000),
+          }));
+          setEvents(eventData)
+        } else {
+          toast.error("An error occurred: No data returned");
+        }
       }
     } catch (error) {
       toast.error("An error occurred: " + error);
     } finally {
       setTimeout(() => {
         setLoading(false);
-      }, 3000);
+      }, 5000);
     }
   };
 
@@ -164,8 +171,18 @@ function Requests() {
 
   const editClick = record => {
     setSelectedRow(record)
-    setSelectedDate(record.date)
-    setDialog(true)
+    setAddress(record.address)
+    setStoreId(record.storeId)
+    setPhone(record.phone)
+    setNotes(record.notes)
+    setSelectedDate(record.dateAndTime)
+    setAction("edit")
+    setAddRequestModal(true)
+  }
+
+  const handleAddScehduleClick = () => {
+    setAction("add")
+    setAddRequestModal(true)
   }
 
   const acceptRequest = async () => {
@@ -198,17 +215,53 @@ function Requests() {
   const clearFields = () => {
     setStoreId("")
     setPhone("")
-    setBarangay("")
-    setCity("")
-    setProvince("")
+    setAddress("")
     setSelectedDate(null)
     setNotes("")
   }
 
-  const createRequestClick = () => {
+  const editRequest = async () => {
     try {
+      if (!storeId || !phone || !address || selectedDate === null) {
+        toast.info("Fill in all the required fields.")
+        return
+      }
 
-      if (!storeId || !phone || !barangay || !city || !province || selectedDate === null) {
+      if (!isPhoneValid) {
+        toast.info("Invalid phone number")
+        return
+      }
+
+      setLoader(true)
+      const data = {
+        date: selectedDate,
+        phone: phone,
+        notes: notes,
+        address: address
+      }
+      const response = await editRequestDetails(selectedRow.id, data)
+      if (response) {
+        toast.success("Schedule updated successfully!")
+        setLoader(false)
+        setAddRequestModal(false)
+        clearFields()
+        fetchData()
+      }
+      else {
+        toast.error("An error occured")
+        setLoader(false)
+      }
+
+    }
+    catch (error) {
+      setLoader(false)
+      toast.error("An error occured: " + error)
+    }
+  }
+
+  const createRequestClick = async () => {
+    try {
+      if (!storeId || !phone || !address || selectedDate === null) {
         toast.info("Fill in all the required fields.")
         return
       }
@@ -225,13 +278,9 @@ function Requests() {
         phone: phone,
         storeId: storeId,
         notes: notes,
-        address: {
-          barangay: barangay,
-          city: city,
-          province: province
-        }
+        address: address
       }
-      const response = createRequest(data)
+      const response = await createRequest(data)
       if (response) {
         toast.success("Schedule successfully created!")
         setLoader(false)
@@ -246,6 +295,7 @@ function Requests() {
 
     }
     catch (error) {
+      setLoader(false)
       toast.error("An error occured: " + error)
     }
   }
@@ -316,7 +366,8 @@ function Requests() {
     {
       key: 4,
       title: 'Time',
-      dataIndex: 'time'
+      dataIndex: 'time',
+      render: (time, record) => record.status !== 'pending' && time
     },
     {
       key: 5,
@@ -378,57 +429,9 @@ function Requests() {
     }
   ]
 
-  // const adminHeaders = [
-  //   {
-  //     key: 1,
-  //     title: 'Req. ID',
-  //     dataIndex: 'id'
-  //   },
-  //   {
-  //     key: 2,
-  //     title: 'Requester',
-  //     dataIndex: 'storeName'
-  //   },
-  //   {
-  //     key: 2,
-  //     title: 'Requested To',
-  //     dataIndex: 'client'
-  //   },
-  //   {
-  //     key: 3,
-  //     title: 'Address',
-  //     dataIndex: ['address', 'city'],
-  //   },
-  //   {
-  //     key: 4,
-  //     title: 'Date',
-  //     dataIndex: 'date'
-  //   },
-  //   {
-  //     key: 5,
-  //     title: 'Notes',
-  //     dataIndex: 'notes'
-  //   },
-  //   {
-  //     key: 6,
-  //     title: 'Status',
-  //     dataIndex: 'status'
-  //   },
-  //   {
-  //     key: 7,
-  //     title: 'Actions',
-  //     render: (text, record) => (
-  //       <div className='flex flex-row gap-3'>
-  //         <button className="warning-btn">Acknowledge</button>
-  //         <button className="view-btn">Mark as Done</button>
-  //       </div>
-  //     )
-  //   },
-  // ]
-
   useEffect(() => {
     fetchData();
-  }, [currentUser, toggleState]);
+  }, [currentUser, toggleState, display]);
 
   useEffect(() => {
     async function fetchCount() {
@@ -466,7 +469,7 @@ function Requests() {
         </div>
         <div className='flex flex-row justify-end gap-3 items-center mt-7 md:mt-0'>
           <LuRefreshCw className='cursor-pointer text-2xl me-4' onClick={() => fetchData()} />
-          <button className='bg-orange hover:shadow-md items-center flex flex-row text-sm text-white py-2 px-4 rounded-md w-fit' onClick={() => setAddRequestModal(true)}><span className='p-0 text-lg m-0 me-2'><MdAdd /></span>Add Schedule</button>
+          <button className='bg-orange hover:shadow-md items-center flex flex-row text-sm text-white py-2 px-4 rounded-md w-fit' onClick={() => handleAddScehduleClick()}><span className='p-0 text-lg m-0 me-2'><MdAdd /></span>Add Schedule</button>
         </div>
       </div>
       {display === "list" ? (
@@ -476,19 +479,19 @@ function Requests() {
               className={toggleState === 'today' ? "tabs active-tab" : "tabs"}
               onClick={() => toggleTab('today')}>
               Today
-              <span className={requestCounts.today != 0 ? "bg-red rounded-full px-2 text-white inline-flex text-sm" : "hidden"}>{requestCounts.today}</span>
+              <span className={requestCounts.today !== 0 ? "bg-red rounded-full px-2 text-white inline-flex text-sm" : "hidden"}>{requestCounts.today}</span>
             </div>
             <div
               className={toggleState === 'upcoming' ? "tabs active-tab" : "tabs"}
               onClick={() => toggleTab('upcoming')}>
               Upcoming
-              <span className={requestCounts.upcoming != 0 ? "bg-red rounded-full px-2 text-white inline-flex text-sm" : "hidden"}>{requestCounts.upcoming}</span>
+              <span className={requestCounts.upcoming !== 0 ? "bg-red rounded-full px-2 text-white inline-flex text-sm" : "hidden"}>{requestCounts.upcoming}</span>
             </div>
             <div
               className={toggleState === 'pending' ? "tabs active-tab" : "tabs"}
               onClick={() => toggleTab('pending')}>
               Pending
-              <span className={requestCounts.pending != 0 ? "bg-red rounded-full px-2 text-white inline-flex text-sm" : "hidden"}>{requestCounts.pending}</span>
+              <span className={requestCounts.pending !== 0 ? "bg-red rounded-full px-2 text-white inline-flex text-sm" : "hidden"}>{requestCounts.pending}</span>
             </div>
             <div
               className={toggleState === 'done' ? "tabs active-tab" : "tabs"}
@@ -620,7 +623,7 @@ function Requests() {
       <Modal open={addRequestModal} onClose={() => setAddRequestModal(false)}>
         <div className="flex justify-center items-center w-screen h-screen">
           <div className='bg-white rounded-md p-6 text-darkGray'>
-            <p className="text-xl font-bold mb-3">Add a pick up collection schedule</p>
+            <p className="text-xl font-bold mb-3">{action === "edit" ? 'Edit Schedule Details' : 'Add Schedule'}</p>
             <form>
               <div>
                 <p className="text-sm text-gray">Store ID<span className='text-red m-0'>*</span></p>
@@ -630,44 +633,23 @@ function Requests() {
                   name="storeId"
                   placeholder='Enter store ID'
                   value={storeId}
+                  disabled={action === 'edit' ? true : false}
                   onChange={(e) => setStoreId(e.target.value)}
                   required
-                  className='input-field' />
+                  className='input-field w-full' />
               </div>
               <p className="text-sm text-gray mt-3">Address<span className='text-red m-0'>*</span></p>
               <div className='flex flex-row gap-3'>
-                <div>
-                  <input
+                <div className='w-full'>
+                  <textarea
                     type="text"
-                    id="barangay"
-                    name="barangay"
-                    placeholder='Barangay'
-                    value={barangay}
-                    onChange={(e) => setBarangay(e.target.value)}
+                    id="address"
+                    name="address"
+                    placeholder='Address'
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
                     required
-                    className='input-field' />
-                </div>
-                <div>
-                  <input
-                    type="text"
-                    id="city"
-                    name="city"
-                    placeholder='City'
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    required
-                    className='input-field' />
-                </div>
-                <div>
-                  <input
-                    type="text"
-                    id="province"
-                    name="province"
-                    placeholder='Province'
-                    value={province}
-                    onChange={(e) => setProvince(e.target.value)}
-                    required
-                    className='input-field' />
+                    className='input-field w-full' />
                 </div>
               </div>
               <div>
@@ -680,7 +662,7 @@ function Requests() {
                   value={phone}
                   onChange={handlePhoneNumberChange}
                   required
-                  className='input-field' >
+                  className='input-field w-full' >
                 </input>
               </div>
               <div>
@@ -721,12 +703,21 @@ function Requests() {
                   onClick={() => handleCancelClick()}>
                   Cancel
                 </button>
-                <button
-                  type='button'
-                  className='view-btn w-24'
-                  onClick={() => createRequestClick()}>
-                  Submit
-                </button>
+                {action === "edit" ? (
+                  <button
+                    type='button'
+                    className='view-btn w-24'
+                    onClick={() => editRequest()}>
+                    Edit
+                  </button>
+                ) : (
+                  <button
+                    type='button'
+                    className='view-btn w-24'
+                    onClick={() => createRequestClick()}>
+                    Add
+                  </button>
+                )}
               </div>
             </form>
           </div>

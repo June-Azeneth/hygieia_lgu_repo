@@ -5,6 +5,7 @@ import { LuRefreshCw } from "react-icons/lu";
 import { ToastContainer, toast } from 'react-toastify';
 import Modal from '@mui/material/Modal';
 import 'react-toastify/dist/ReactToastify.css';
+import { Helmet } from 'react-helmet';
 
 import {
     showLoader,
@@ -190,6 +191,9 @@ const Announcement = () => {
     return (
         <div className="page-container flex flex-col md:flex-row gap-6">
             <ToastContainer />
+            <Helmet>
+                <title>Announcements</title>
+            </Helmet>
             <div className='w-full md:w-[50rem]'>
                 <form>
                     <div className="mb-3">

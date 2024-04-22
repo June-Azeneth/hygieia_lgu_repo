@@ -3,6 +3,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom'
 import { FadeLoader } from 'react-spinners';
+import { Helmet } from "react-helmet";
 
 import { useAuth } from '../../Helpers/Repository/AuthContext'
 
@@ -62,6 +63,9 @@ function Login() {
 
   return (
     <div className="flex flex-col justify-center items-center h-screen md:flex-row bg-oliveGreen">
+      <Helmet>
+        <title>Hygieia</title>
+      </Helmet>
       <div className="w-full justify-center items-center flex text-center px-10 max-w-screen-sm">
         <div className="bg-mutedFlesh rounded-md ring-gray-50 w-full px-8 lg:px-20 py-10">
           <img src={Logo} alt="waste-management" className="w-28 h-28 mx-auto" />

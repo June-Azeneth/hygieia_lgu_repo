@@ -1,25 +1,24 @@
 import React from 'react'
-import * as FaIcons from "react-icons/fa"
-// import * as AiIcons from "react-icons/ai"
-import * as IoIcons from "react-icons/io"
-// import { ImStatsDots } from "react-icons/im";
-import { RiAdminFill } from "react-icons/ri";
-import { IoPeople } from "react-icons/io5";
-import { PiTruckFill } from "react-icons/pi";
-import { FaBuildingColumns } from "react-icons/fa6";
-import { BiSolidMegaphone } from "react-icons/bi";
+import { LiaTruckSolid } from "react-icons/lia";
+import { GrUserAdmin } from "react-icons/gr";
+import { GoPeople } from "react-icons/go";
+import { HiOutlineBuildingStorefront } from "react-icons/hi2";
+import { TfiAnnouncement } from "react-icons/tfi";
+import { PiBuildings } from "react-icons/pi";
+import { GrHistory } from "react-icons/gr";
+import { SlHome } from "react-icons/sl";
 
 export const client = [
     {
         title: 'Dashboard',
         path: '/home',
-        icon: <FaIcons.FaHome />,
+        icon: <SlHome />,
         cName: 'nav-text'
     },
     {
         title: 'Transaction History',
         path: '/transactions',
-        icon: <FaIcons.FaHistory />,
+        icon: <GrHistory />,
         cName: 'nav-text'
     },
     // {
@@ -29,15 +28,15 @@ export const client = [
     //     cName: 'nav-text'
     // },
     {
-        title: 'Manage Stores',
-        path: '/store',
-        icon: <FaIcons.FaStoreAlt />,
+        title: 'Garbage Collection',
+        path: '/requests',
+        icon: <LiaTruckSolid />,
         cName: 'nav-text'
     },
     {
-        title: 'Garbage Pickup Requests',
-        path: '/requests',
-        icon: <PiTruckFill />,
+        title: 'Manage Stores',
+        path: '/store',
+        icon: <HiOutlineBuildingStorefront />,
         cName: 'nav-text'
     },
     // {
@@ -52,13 +51,13 @@ export const admin = [
     {
         title: 'Dashboard',
         path: '/home',
-        icon: <FaIcons.FaHome />,
+        icon: <SlHome />,
         cName: 'nav-text'
     },
     {
         title: 'Transaction History',
         path: '/transactions',
-        icon: <FaIcons.FaHistory />,
+        icon: <GrHistory />,
         cName: 'nav-text'
     },
     // {
@@ -68,39 +67,39 @@ export const admin = [
     //     cName: 'nav-text'
     // },
     {
-        title: 'Manage Stores',
-        path: '/store',
-        icon: <FaIcons.FaStoreAlt />,
-        cName: 'nav-text'
-    },
-    {
-        title: 'Garbage Pickup Requests',
+        title: 'Garbage Collection',
         path: '/requests',
-        icon: <PiTruckFill />,
-        cName: 'nav-text'
-    },
-    {
-        title: 'Manage Clients',
-        path: '/clients',
-        icon: <FaBuildingColumns />,
-        cName: 'nav-text'
-    },
-    {
-        title: 'Manage Consumer',
-        path: '/consumers',
-        icon: <IoPeople />,
-        cName: 'nav-text'
-    },
-    {
-        title: 'Manage Admins',
-        path: '/admin',
-        icon: <RiAdminFill />,
+        icon: <LiaTruckSolid />,
         cName: 'nav-text'
     },
     {
         title: 'Announcements',
         path: '/announcements',
-        icon: <BiSolidMegaphone />,
+        icon: <TfiAnnouncement />,
+        cName: 'nav-text'
+    },
+    {
+        title: 'Manage Stores',
+        path: '/store',
+        icon: <HiOutlineBuildingStorefront />,
+        cName: 'nav-text'
+    },
+    {
+        title: 'Manage Clients',
+        path: '/clients',
+        icon: <PiBuildings />,
+        cName: 'nav-text'
+    },
+    {
+        title: 'Manage Consumer',
+        path: '/consumers',
+        icon: <GoPeople />,
+        cName: 'nav-text'
+    },
+    {
+        title: 'Manage Admins',
+        path: '/admin',
+        icon: <GrUserAdmin />,
         cName: 'nav-text'
     },
 ]

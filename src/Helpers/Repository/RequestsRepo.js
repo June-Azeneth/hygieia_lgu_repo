@@ -63,6 +63,19 @@ export const createRequest = async (data) => {
     }
 }
 
+export const editRequestDetails = async (id, data) => {
+    try {
+        const documentRef = doc(firestore, 'request', id);
+        await setDoc(documentRef, {
+            ...data
+        }, { merge: true });
+        return true;
+    }
+    catch (error) {
+        throw error
+    }
+}
+
 export const getRequestCounts = async () => {
     try {
         const currentDate = new Date();
@@ -132,6 +145,13 @@ export const getRequests = async (toggleState) => {
             requestQuery = query(requestQuery, where('status', '==', 'pending'));
         } else if (toggleState === 'done') {
             requestQuery = query(requestQuery, where('status', '==', 'completed'));
+        } else if (toggleState === 'all') {
+            const todayStart = startOfDay(currentDate);
+            const futureEnd = endOfDay(addMonths(currentDate, 1));
+            requestQuery = query(requestQuery,
+                where('status', '==', 'active'),
+                where('date', '>=', todayStart),
+                where('date', '<=', futureEnd));
         }
 
         const querySnapshot = await getDocs(requestQuery);

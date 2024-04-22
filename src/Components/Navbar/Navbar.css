@@ -32,7 +32,7 @@
 }
 
 .nav-menu{
-    background-color: #617C49;
+    @apply bg-oliveGreen;
     width: 230px;  
     height: 100vh;
     display: flex;
@@ -55,7 +55,7 @@
 
 .nav-menu.active{
     left: 0;
-    transition: 350ms;    
+    transition: 300ms;    
 }
 
 .nav-text{

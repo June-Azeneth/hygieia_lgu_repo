@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import * as FaIcons from "react-icons/fa";
 import { IconContext } from 'react-icons';
 import { useAuth } from '../../Helpers/Repository/AuthContext'
-import { IoLogOut } from "react-icons/io5";
+import { FiLogOut } from "react-icons/fi";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -16,7 +16,6 @@ import './Navbar.css';
 function Navbar() {
     const { logout, userDetails } = useAuth()
     const [user, setUser] = useState("Unauthenticated Access");
-    const [address, setAddress] = useState("")
     const [id, setId] = useState("")
     const [sideBar, setSideBar] = useState(false);
     const showSideBar = () => setSideBar(!sideBar);
@@ -40,7 +39,6 @@ function Navbar() {
     useEffect(() => {
         if (userDetails) {
             setUser(userDetails.name || "");
-            setAddress(userDetails.address || "");
             setId(userDetails.id || "");
         }
     }, [userDetails]);
@@ -49,12 +47,16 @@ function Navbar() {
         <div className='relative z-50'>
             <ToastContainer />
             {userDetails && userDetails.type === "client" ? (
-                <div>
-                    <div className='hidden md:flex'>
+                <div className='relative'>
+                    <div
+                        className={sideBar ? 'bg-black opacity-30 w-screen h-screen absolute inline' : 'bg-black opacity-30 w-screen h-screen absolute hidden'}
+                        onClick={showSideBar}>
+                    </div>
+                    <div className='hidden md:flex absolute'>
                         <IconContext.Provider value={{ color: '#fff' }}>
-                            <nav className='absolute top-0 left-0 w-16 h-screen bg-oliveGreen flex flex-col justify-between'>
+                            <nav className='fixed top-0 left-0 w-16 h-screen bg-oliveGreen flex flex-col justify-between'>
                                 <div>
-                                    <img src={Logo} alt="logo" className='w-10 bg-white rounded-md mx-auto mt-1 cursor-pointer' onClick={showSideBar} />
+                                    <img src={Logo} alt="logo" className='w-10 bg-white mx-auto mt-1 cursor-pointer rounded-full' onClick={showSideBar} />
                                     <ul className='flex flex-col items-center gap-1 mt-8'>
                                         {client.map((item, index) => {
                                             return (
@@ -68,7 +70,7 @@ function Navbar() {
                                     </ul>
                                 </div>
                                 <div className='flex justify-center items-center p-3 hover:bg-mutedGreen mb-3 cursor-pointer rounded-md'>
-                                    <IoLogOut onClick={handleLogout} />
+                                    <FiLogOut onClick={handleLogout} />
                                 </div>
                             </nav>
                         </IconContext.Provider>
@@ -88,9 +90,8 @@ function Navbar() {
                                         <span className='page-title'>{currentPage ? currentPage.title : 'Unknown Page'}</span>
                                     )}
                                 </div>
-                                <div className='current-user pr-2'>
-                                    <span className='user-name'>{user}</span>
-                                    <span className='lgu-name'>{address && typeof address === 'object' ? address.city : ''}</span>
+                                <div>
+
                                 </div>
                             </div>
                         </IconContext.Provider>
@@ -99,15 +100,24 @@ function Navbar() {
                         <nav className={sideBar ? 'nav-menu active' : 'nav-menu'} onClick={showSideBar}>
                             <div className='flex flex-col justify-between' onClick={showSideBar}>
                                 <div className='text-white flex justify-center flex-col items-center pt-6'>
-                                    <img src={Logo} alt="logo" className='w-20 bg-white rounded-md' />
-                                    <div className='text-center w-full'>
+                                    <img src={Logo} alt="logo" className='w-20 bg-white rounded-full' />
+                                    <div className='text-center w-full mt-3'>
                                         <p>{user}</p>
                                         <p className='text-xs tracking-tight font-thin'>ID: {id}</p>
                                     </div>
                                     <div>
                                         <ul className='mt-5 overflow-y-scroll scrollbar-none' onClick={showSideBar}>
-                                            {client.map((item, index) => (
-                                                <li key={index} className={isCurrentPage(item.path) ? 'bg-mutedGreen nav-text h-8' : 'h-8 hover:bg-mutedGreen nav-text'}>
+                                            {client.slice(0, 3).map((item, index) => (
+                                                <li key={index} className={isCurrentPage(item.path) ? 'bg-mutedGreen nav-text my-1 h-8 rounded-md' : 'h-8 my-1 hover:bg-mutedGreen rounded-md nav-text'}>
+                                                    <Link to={item.path}>
+                                                        {item.icon}
+                                                        <span>{item.title}</span>
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                            <li className="text-xs mt-5">Manage</li>
+                                            {client.slice(3).map((item, index) => (
+                                                <li key={index} className={isCurrentPage(item.path) ? 'bg-mutedGreen nav-text my-1 h-8 rounded-md' : 'h-8 my-1 hover:bg-mutedGreen rounded-md nav-text'}>
                                                     <Link to={item.path}>
                                                         {item.icon}
                                                         <span>{item.title}</span>
@@ -117,23 +127,30 @@ function Navbar() {
                                         </ul>
                                     </div>
                                 </div>
-                                <div onClick={handleLogout} className="nav-text mb-1">
-                                    <Link to="#">
-                                        <IoLogOut />
-                                        <span className='text-white'>Logout</span>
-                                    </Link>
+                                <div>
+                                    <p className="text-xs mt-3 text-white">Session</p>
+                                    <div onClick={handleLogout} className="h-8 my-1 hover:bg-mutedGreen rounded-md nav-text">
+                                        <Link to="#">
+                                            <FiLogOut />
+                                            <span className='text-white'>Logout</span>
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
                         </nav>
                     </IconContext.Provider>
                 </div >
             ) : (
-                <div>
-                    <div className='hidden md:flex'>
+                <div className='relative'>
+                    <div
+                        className={sideBar ? 'bg-black opacity-30 w-full h-screen absolute inline' : 'bg-black opacity-30 w-screen h-screen absolute hidden'}
+                        onClick={showSideBar}>
+                    </div>
+                    <div className='hidden md:flex absolute'>
                         <IconContext.Provider value={{ color: '#fff' }}>
                             <nav className='fixed top-0 left-0 w-16 h-screen bg-oliveGreen flex flex-col justify-between'>
                                 <div>
-                                    <img src={Logo} alt="logo" className='w-10 bg-white rounded-md mx-auto mt-1 cursor-pointer' onClick={showSideBar} />
+                                    <img src={Logo} alt="logo" className='w-10 bg-white rounded-full mx-auto mt-1 cursor-pointer' onClick={showSideBar} />
                                     <ul className='flex flex-col items-center gap-1 mt-8'>
                                         {admin.map((item, index) => {
                                             return (
@@ -147,7 +164,7 @@ function Navbar() {
                                     </ul>
                                 </div>
                                 <div className='flex justify-center items-center p-3 hover:bg-mutedGreen mb-3 cursor-pointer rounded-md'>
-                                    <IoLogOut onClick={handleLogout} />
+                                    <FiLogOut onClick={handleLogout} />
                                 </div>
                             </nav>
                         </IconContext.Provider>
@@ -167,9 +184,8 @@ function Navbar() {
                                         <span className='page-title'>{currentAdminPage ? currentAdminPage.title : 'Unknown Page'}</span>
                                     )}
                                 </div>
-                                <div className='current-user pr-2'>
-                                    <span className='user-name'>{user}</span>
-                                    <span className='lgu-name'>{address && typeof address === 'object' ? address.city : ''}</span>
+                                <div>
+
                                 </div>
                             </div>
                         </IconContext.Provider>
@@ -177,17 +193,26 @@ function Navbar() {
                     <IconContext.Provider value={{ color: '#fff' }}>
                         <nav className={sideBar ? 'nav-menu active' : 'nav-menu'} onClick={showSideBar}>
                             <div className='flex flex-col justify-between' onClick={showSideBar}>
-                                <div className='text-white flex justify-center flex-col items-center pt-6'>
-                                    <img src={Logo} alt="logo" className='w-20 bg-white rounded-md' />
-                                    <div className='text-center w-full'>
+                                <div className='text-white flex justify-start flex-col items-center pt-6'>
+                                    <img src={Logo} alt="logo" className='w-20 bg-white rounded-full' />
+                                    <div className='text-center w-full mt-3'>
                                         <p>{user}</p>
                                         <p className='text-xs tracking-tight font-thin'>ID: {id}</p>
                                     </div>
-                                    <div>
+                                    <div className='overflow-scroll scrollbar-none'>
                                         <ul className='mt-5 overflow-y-scroll scrollbar-none' onClick={showSideBar}>
-                                            {admin.map((item, index) => (
-                                                <li key={index} className={isCurrentPage(item.path) ? 'bg-mutedGreen nav-text my-1 h-8' : 'h-8 my-1 hover:bg-mutedGreen nav-text'}>
-                                                    <Link to={item.path}>
+                                            {admin.slice(0, 4).map((item, index) => (
+                                                <li key={index} className={isCurrentPage(item.path) ? 'bg-mutedGreen nav-text my-1 h-8 rounded-md' : 'h-8 my-1 hover:bg-mutedGreen rounded-md nav-text'}>
+                                                    <Link to={item.path} className='p-0'>
+                                                        {item.icon}
+                                                        <span>{item.title}</span>
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                            <li className="text-xs mt-3">Manage</li>
+                                            {admin.slice(4).map((item, index) => (
+                                                <li key={index} className={isCurrentPage(item.path) ? 'bg-mutedGreen nav-text my-1 h-8 rounded-md' : 'h-8 my-1 hover:bg-mutedGreen rounded-md nav-text'}>
+                                                    <Link to={item.path} className='p-0'>
                                                         {item.icon}
                                                         <span>{item.title}</span>
                                                     </Link>
@@ -196,11 +221,14 @@ function Navbar() {
                                         </ul>
                                     </div>
                                 </div>
-                                <div onClick={handleLogout} className="nav-text mb-1">
-                                    <Link to="#">
-                                        <IoLogOut />
-                                        <span className='text-white'>Logout</span>
-                                    </Link>
+                                <div>
+                                    <p className="text-xs mt-3 text-white">Session</p>
+                                    <div onClick={handleLogout} className="h-8 mb-1 hover:bg-mutedGreen rounded-md nav-text">
+                                        <Link to="#">
+                                            <FiLogOut />
+                                            <span className='text-white'>Logout</span>
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
                         </nav>

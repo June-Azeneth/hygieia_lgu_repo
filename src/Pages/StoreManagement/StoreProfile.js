@@ -14,6 +14,7 @@ import { PulseLoader } from 'react-spinners';
 import { MdOutlineLocationOn } from "react-icons/md";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { MdPhoneAndroid } from "react-icons/md";
+import { FaRegUser } from "react-icons/fa6";
 
 //QUERIES
 import {
@@ -34,8 +35,21 @@ function StoreProfile() {
   const [toggleState, setToggleState] = useState('rewards')
   const [isModalOpen, seTIsModalOpen] = useState(false)
   const [shopName, setShopName] = useState(store.name);
+  const [owner, setOwner] = useState('')
+  const [phone, setPhone] = useState('')
   const [address, setAddress] = useState("");
+  const [mapLink, setMapLink] = useState("");
   const [recyclables, setRecyclables] = useState("");
+
+  const [isPhoneValid, setIsPhoneValid] = useState(false);
+
+  const handlePhoneNumberChange = (event) => {
+    const number = event.target.value;
+    setPhone(number);
+    // Regular expression for validating phone numbers (supports numbers with or without country code)
+    const phonePattern = /^\+?([0-9]{1,4})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+    setIsPhoneValid(phonePattern.test(number));
+  };
 
   const handleShopNameChange = (event) => {
     setShopName(event.target.value);
@@ -91,6 +105,9 @@ function StoreProfile() {
     seTIsModalOpen(true)
     setShopName(store.name);
     setAddress(store.address)
+    setOwner(store.owner)
+    setPhone(store.phone)
+    setMapLink(store.googleMapLocation)
     setRecyclables(store.recyclable ? store.recyclable.join(', ') : "");
   }
 
@@ -99,11 +116,17 @@ function StoreProfile() {
       if (
         shopName !== store.name ||
         address !== store.address ||
+        owner !== store.owner ||
+        phone !== store.phone ||
+        mapLink !== store.googleMapLocation ||
         recyclables !== (store.recyclable ? store.recyclable.join(', ') : '')
       ) {
         const updatedStoreData = {
           name: shopName,
           address: address,
+          owner: owner,
+          phone: phone,
+          googleMapLocation: mapLink,
           recyclable: recyclables.split(',').map(item => item.trim())
         };
 
@@ -140,32 +163,36 @@ function StoreProfile() {
       ) : (
         <div>
           <div className="flex flex-col md:flex-row gap-5">
-            <div className='flex flex-row gap-5'>
+            <div className='flex flex-col md:flex-row gap-5 w-full'>
               <img
                 src={store.photo || Placeholder}
                 alt=""
                 className='w-52 h-52 object-cover rounded-md shadow-md'
               />
-              <div className='fkex flex-col text-start justify-start items-start'>
+              <div className='flex flex-col text-start justify-start items-start w-full'>
                 <p className='font-bold text-2xl'>{store.name}</p>
                 <p>ID: {store.storeId}</p>
-                <a href={store.googleMapLocation} target="_blank" rel="noopener noreferrer" className="w-full flex mt-3 flex-row">
-                  <span className="text-xl m-0 pe-2"><MdOutlineLocationOn /></span> {store.address}
-                </a>
-                <p className="w-full flex flex-row items-center"> <span className="text-xl m-0 pe-2"><MdOutlineMailOutline /></span> {store.email}</p>
-                <p className="w-full flex flex-row items-center"> <span className="text-xl m-0 pe-2"><MdPhoneAndroid /></span>{store.phone}</p>
-                <p className='mt-3'>Recyclables:</p>
-                <div className='flex flex-row gap-2'>
-                  {store.recyclable && store.recyclable.map((item, index) => (
-                    <div className='bg-white border border-orange rounded-lg py-1 px-3 w-29' key={index}>{item}</div>
-                  ))}
+                <div className='flex flex-col md:flex-row gap-3 mt-3'>
+                  <div className='w-full'>
+                    <p className="w-full flex flex-row items-center"> <span className="text-xl m-0 pe-2"><FaRegUser /></span> {store.owner}</p>
+                    <p className="w-full flex flex-row items-center"> <span className="text-xl m-0 pe-2"><MdOutlineMailOutline /></span> {store.email}</p>
+                    <p className="w-full flex flex-row items-center"> <span className="text-xl m-0 pe-2"><MdPhoneAndroid /></span>{store.phone}</p>
+                  </div>
+                  <div className='w-full'>
+                    <a href={store.googleMapLocation} target="_blank" rel="noopener noreferrer" className="w-full flex flex-row">
+                      <span className="text-xl m-0 pe-2"><MdOutlineLocationOn /></span> {store.address}
+                    </a>
+                  </div>
                 </div>
+                <button className='bg-oliveGreen h-fit rounded-md hover:shadow-md py-2 w-28 text-white mt-5' onClick={() => handleEditClick()}>Edit Store</button>
               </div>
             </div>
-            <div className='ms-auto flex flex-row gap-3'>
-              <button className='bg-oliveGreen h-fit rounded-md hover:shadow-md py-2 w-28 text-white' onClick={() => handleEditClick()}>Edit Store</button>
-              {/* <button className='bg-oliveGreen h-fit rounded-md hover:shadow-md py-2 px-3 w-fit text-white'>Change Password</button> */}
-            </div>
+          </div>
+          <p className='mt-5'>Recyclables:</p>
+          <div className='flex flex-row gap-2'>
+            {store.recyclable && store.recyclable.map((item, index) => (
+              <div className='bg-white border border-orange rounded-lg py-1 px-3 w-29' key={index}>{item}</div>
+            ))}
           </div>
           <div className='flex flex-row gap-1 text-sm mt-6'>
             <div className={toggleState === 'rewards' ? "tabs active-tab" : "tabs"} onClick={() => toggleTab('rewards')}>Rewards</div>
@@ -222,21 +249,47 @@ function StoreProfile() {
       <Modal open={isModalOpen} onClose={() => seTIsModalOpen(false)}>
         <div className="modal-content flex justify-center items-center w-screen h-screen text-darkGray">
           {store != null && (
-            <div className='bg-white rounded-md p-5 text-darkGray w-[40rem]'>
+            <div className='bg-white rounded-md p-5 text-darkGray w-[20rem] md:w-fit'>
               <div className='flex justify-between'>
                 <p className='font-bold text-lg mb-2'>Edit Store Information</p>
                 <AiOutlineClose onClick={() => seTIsModalOpen(false)} className="cursor-pointer hover:text-red text-xl" />
               </div>
               <form>
-                <p className="text-sm text-gray">Shop Name</p>
-                <input
-                  id='shop_name'
-                  name='shop_name'
-                  type="text"
-                  value={shopName}
-                  onChange={handleShopNameChange}
-                  className='input-field'
-                />
+                <div className="flex flex-col md:flex-row gap-3">
+                  <div>
+                    <p className="text-sm text-gray">Shop Name</p>
+                    <input
+                      id='shop_name'
+                      name='shop_name'
+                      type="text"
+                      value={shopName}
+                      onChange={handleShopNameChange}
+                      className='input-field'
+                    />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray">Owner</p>
+                    <input
+                      id='shop_name'
+                      name='shop_name'
+                      type="text"
+                      value={owner}
+                      onChange={(e) => setOwner(e.target.value)}
+                      className='input-field'
+                    />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray">Phone Number</p>
+                    <input
+                      id='shop_name'
+                      name='shop_name'
+                      type="text"
+                      value={phone}
+                      onChange={(e) => handlePhoneNumberChange(e)}
+                      className='input-field'
+                    />
+                  </div>
+                </div>
                 <p className="text-sm mt-2 text-gray">Address</p>
                 <div className="flex flex-wrap gap-2">
                   <textarea
@@ -247,6 +300,18 @@ function StoreProfile() {
                     placeholder='Enter address'
                     onChange={(e) => setAddress(e.target.value)}
                     className='input-field w-full'
+                  />
+                </div>
+                <p className="text-sm mt-2 text-gray">Google Map Link</p>
+                <div className="flex flex-wrap gap-2">
+                  <textarea
+                    id='mapLink'
+                    name='mapLink'
+                    type="text"
+                    value={mapLink}
+                    placeholder='Enter Link'
+                    onChange={(e) => setMapLink(e.target.value)}
+                    className='input-field w-full h-28'
                   />
                 </div>
                 <p className="text-sm mt-2 text-gray">Recyclables (separate by comma)</p>

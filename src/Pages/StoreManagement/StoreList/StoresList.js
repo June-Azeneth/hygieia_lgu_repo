@@ -39,9 +39,20 @@ function StoresList() {
     const [owner, setOwner] = useState('');
     const [address, setAddress] = useState('');
     const [email, setEmail] = useState('');
+    const [mapLink, setMapLink] = useState('')
+    const [phone, setPhone] = useState('')
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const [placeholderText, setPlaceHolderText] = useState('')
+    const [isPhoneValid, setIsPhoneValid] = useState(false);
+
+    const handlePhoneNumberChange = (event) => {
+        const number = event.target.value;
+        setPhone(number);
+        // Regular expression for validating phone numbers (supports numbers with or without country code)
+        const phonePattern = /^\+?([0-9]{1,4})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+        setIsPhoneValid(phonePattern.test(number));
+    };
 
     const handleViewClick = (record) => {
         if (toggleState === 'active') {
@@ -66,12 +77,20 @@ function StoresList() {
         setEmail('')
         setPassword('')
         setOwner('')
+        setPhone('')
+        setMapLink('')
+        setLoader(false)
     }
 
     const handleSubmitClick = async () => {
         try {
-            if (name === '' || owner === '' || address === '' || email === '' || password === '') {
+            if (name === '' || owner === '' || address === '' || email === '' || password === '' || phone === '') {
                 toast.info("Fill in all the required fields")
+                return;
+            }
+
+            if (!isPhoneValid) {
+                toast.info("Invalid phone number")
                 return;
             }
 
@@ -79,11 +98,12 @@ function StoresList() {
             const success = await addStore(email, password, {
                 name,
                 owner,
-                address: address
+                address: address,
+                phone: phone,
+                googleMapLocation: mapLink
             });
 
             if (success) {
-                toast.success("Store Added Successfully");
                 const emailContent = {
                     to: email,
                     subject: 'Welcome to Hygieia',
@@ -92,6 +112,7 @@ function StoresList() {
                 await axios.post('https://hygieia-back-end-node.onrender.com/send-email', emailContent);
                 setLoader(false);
                 setModalOpen(false);
+                toast.success("Store Added Successfully");
                 clearFields();
                 fetchData();
             } else {
@@ -353,6 +374,7 @@ function StoresList() {
             <Helmet>
                 <title>Stores</title>
             </Helmet>
+            {/* <ToastContainer containerId={"storeList"} /> */}
             <ToastContainer containerId={"storeList"} />
             <div className='w-full justify-center md:justify-between flex flex-row items-center gap-10 mb-4 h-9'>
                 <div className='flex justify-end flex-row items-center bg-white rounded-md border border-gray ps-2 overflow-hidden'>
@@ -447,16 +469,30 @@ function StoresList() {
                                     placeholder='Owner'
                                     className='border rounded-md border-gray p-1'
                                 />
-                                <div className="" flex flew-row gap-2>
-                                    <textarea
-                                        id='address'
-                                        type="text"
-                                        value={address}
-                                        onChange={(e) => setAddress(e.target.value)}
-                                        placeholder='Enter Address'
-                                        className='border rounded-md border-gray p-1 w-full'
-                                    />
-                                </div>
+                                <textarea
+                                    id='address'
+                                    type="text"
+                                    value={address}
+                                    onChange={(e) => setAddress(e.target.value)}
+                                    placeholder='Enter Address'
+                                    className='border rounded-md border-gray p-1 w-full'
+                                />
+                                <textarea
+                                    id='googleMapLink'
+                                    type="text"
+                                    value={mapLink}
+                                    onChange={(e) => setMapLink(e.target.value)}
+                                    placeholder='Enter Google Map Link'
+                                    className='border rounded-md border-gray p-1 w-full'
+                                />
+                                <input
+                                    id='phone'
+                                    type="text"
+                                    value={phone}
+                                    onChange={(e) => handlePhoneNumberChange(e)}
+                                    placeholder='+63'
+                                    className='border rounded-md border-gray p-1'
+                                />
                                 <p className='mt-2 font-bold'>Set Credentials</p>
                                 <div className='flex gap-2'>
                                     <input
