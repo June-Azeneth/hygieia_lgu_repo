@@ -31,9 +31,7 @@ export default function ClientManager() {
     const [modalOpen, setModalOpen] = useState(false);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
-    const [barangay, setBarangay] = useState('');
-    const [city, setCity] = useState('');
-    const [province, setProvince] = useState('');
+    const [address, setAddress] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('')
     const [search, setSearch] = useState('')
@@ -103,9 +101,7 @@ export default function ClientManager() {
     const clearFields = () => {
         setName('')
         setEmail('')
-        setBarangay('')
-        setCity('')
-        setProvince('')
+        setAddress('')
         setEmail('')
         setPassword('')
     }
@@ -118,18 +114,14 @@ export default function ClientManager() {
     const handleAddClient = async () => {
         try {
             setLoader(true)
-            if (!name || !barangay || !city || !province || !email || !password) {
+            if (!name || !address || !email || !password) {
                 setLoader(false)
                 toast.info("Fill in all required fields")
             }
             else {
                 const success = await addClient(email, password, {
                     name,
-                    address: {
-                        barangay,
-                        city,
-                        province
-                    }
+                    address: address
                 });
 
                 if (success) {
@@ -163,9 +155,7 @@ export default function ClientManager() {
             setAction("update")
             setSelectedRow(record)
             setName(record.name)
-            setBarangay(record.address.barangay)
-            setCity(record.address.city)
-            setProvince(record.address.province)
+            setAddress(record.address)
         }
         catch (error) {
             toast.error("Error: " + error)
@@ -175,16 +165,10 @@ export default function ClientManager() {
         try {
             setLoader(true)
             if (name !== selectedRow.name ||
-                barangay !== selectedRow.address.barangay ||
-                city !== selectedRow.address.city ||
-                province !== selectedRow.address.province) {
+                address !== selectedRow.address) {
                 const success = await updateClient(selectedRow.id, {
                     name,
-                    address: {
-                        barangay,
-                        city,
-                        province
-                    }
+                    address: address
                 });
 
                 if (success) {
@@ -247,8 +231,7 @@ export default function ClientManager() {
         {
             key: 3,
             title: 'Address',
-            dataIndex: 'address',
-            render: address => `${address.barangay}, ${address.city}, ${address.province}`
+            dataIndex: 'address'
         },
         {
             key: 4,
@@ -264,9 +247,9 @@ export default function ClientManager() {
             key: 5,
             title: 'Actions',
             render: (record) => (
-                <div>
-                    <button className="view-btn w-fit" onClick={() => handleUpdateClick(record)}>Edit</button>
-                    <button className="danger-btn ms-3 w-fit" onClick={() => handleDeleteClick(record)}>Delete</button>
+                <div className='flex gap-3'>
+                    <button className="view-btn w-full" onClick={() => handleUpdateClick(record)}>Edit</button>
+                    <button className="danger-btn w-full" onClick={() => handleDeleteClick(record)}>Delete</button>
                 </div>
             )
         }
@@ -343,26 +326,12 @@ export default function ClientManager() {
                                     />
                                     <p className='font-bold mt-3'>Address</p>
                                     <div className='flex flex-row gap-2'>
-                                        <input
+                                        <textarea
                                             type="text"
-                                            placeholder="Barangay"
-                                            value={barangay}
-                                            onChange={(e) => setBarangay(e.target.value)}
-                                            className='input-field'
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="City"
-                                            value={city}
-                                            onChange={(e) => setCity(e.target.value)}
-                                            className='input-field'
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Province"
-                                            value={province}
-                                            onChange={(e) => setProvince(e.target.value)}
-                                            className='input-field'
+                                            placeholder="Enter address"
+                                            value={address}
+                                            onChange={(e) => setAddress(e.target.value)}
+                                            className='input-field w-full'
                                         />
                                     </div>
                                     <p className='font-bold mt-3'>Set Credentials</p>
@@ -395,7 +364,7 @@ export default function ClientManager() {
                                     </div>
                                 </div>
                             ) : (
-                                <div>
+                                <div className='w-[23rem]'>
                                     <div className="flex flex-row justify-between">
                                         <p className='text-lg font-bold'>Update Client Information</p>
                                         <AiOutlineClose className="hover:text-red text-2xl" onClick={() => handleCancelClick()} />
@@ -410,26 +379,12 @@ export default function ClientManager() {
                                     />
                                     <p className='font-bold mt-3'>Address</p>
                                     <div className='flex flex-row gap-2'>
-                                        <input
+                                        <textarea
                                             type="text"
-                                            placeholder="Barangay"
-                                            value={barangay}
-                                            onChange={(e) => setBarangay(e.target.value)}
-                                            className='input-field'
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="City"
-                                            value={city}
-                                            onChange={(e) => setCity(e.target.value)}
-                                            className='input-field'
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Province"
-                                            value={province}
-                                            onChange={(e) => setProvince(e.target.value)}
-                                            className='input-field'
+                                            placeholder="Enter Address"
+                                            value={address}
+                                            onChange={(e) => setAddress(e.target.value)}
+                                            className='input-field w-full'
                                         />
                                     </div>
                                     <div className="flex justify-end gap-3 mt-9">

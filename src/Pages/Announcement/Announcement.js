@@ -203,9 +203,10 @@ const Announcement = () => {
                             name='title'
                             type="text"
                             value={title}
+                            placeholder='Enter title'
                             onChange={(e) => setTitle(e.target.value)}
                             required
-                            className='input-field w-1/2'
+                            className='input-field w-full'
                         />
                     </div>
                     <div>
@@ -214,10 +215,11 @@ const Announcement = () => {
                             id='body'
                             name='body'
                             type="text"
+                            placeholder='Enter announcement details'
                             value={body}
                             onChange={(e) => setBody(e.target.value)}
                             required
-                            className='input-field w-full h-32'
+                            className='input-field w-full h-[25rem]'
                         />
                     </div>
                     <div className='flex flex-row gap-3 w-full justify-end mt-3 py-3 ps-5'>

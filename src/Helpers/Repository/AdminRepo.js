@@ -1,7 +1,19 @@
-import { query, getDocs, setDoc, doc, collection, getDoc,where } from "firebase/firestore";
+import { query, getDocs, setDoc, doc, collection, getDoc, where } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { updateCurrentUser } from "firebase/auth";
 import { firestore, auth } from '../Utils/Firebase'
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+
+export const resetAccountPassword = async (email) => {
+    const authentication = getAuth();
+    sendPasswordResetEmail(authentication, email)
+        .then(() => {
+            return "Password recovery email sent"
+        })
+        .catch((error) => {
+            return error.message
+        });
+}
 
 export const getAllAdmins = async () => {
     try {

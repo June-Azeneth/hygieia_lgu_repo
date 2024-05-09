@@ -151,7 +151,7 @@ function Dashboard() {
             <div className="flex flex-col gap-9 w-full">
               <div>
                 <p className="text-lg">Users Breakdown</p>
-                <div className="flex flex-row gap-4">
+                <div className="flex flex-col lg:flex-row gap-4 w-full justify-center md:justify-start items-center">
                   {userBreakdown.map(item => (
                     <div key={item.index} className="bg-white rounded-md w-[15rem] p-5 flex flex-row items-center gap-4 hover:shadow-md cursor-pointer" onClick={() => handleClick(item.path)}>
                       {/* <item.icon className="text-[3.5rem] text-oliveGreen" /> */}
@@ -168,7 +168,7 @@ function Dashboard() {
               </div>
               <div>
                 <p className="text-lg">Garbage Collection</p>
-                <div className="flex flex-row gap-4">
+                <div className="flex flex-col lg:flex-row gap-4 w-full justify-center md:justify-start items-center">
                   {garbagePickUpBreakDown.map(item => (
                     <div key={item.index} className="bg-white rounded-md w-[15rem] p-5 flex flex-row items-center gap-4 hover:shadow-md cursor-pointer" onClick={() => handleClick(item.path)}>
                       <div className="text-[3rem] text-orange">
@@ -184,7 +184,7 @@ function Dashboard() {
               </div>
               <div>
                 <p className="text-lg">Store Account Registration Requests</p>
-                <div className="flex flex-row gap-4">
+                <div className="flex flex-col lg:flex-row gap-4 w-full justify-center md:justify-start items-center">
                   {storesRequests.map(item => (
                     <div key={item.index} className="bg-white rounded-md w-[15rem] p-5 flex flex-row items-center gap-4 hover:shadow-md cursor-pointer" onClick={() => handleClick(item.path)}>
                       <div className="text-[3rem] text-green">

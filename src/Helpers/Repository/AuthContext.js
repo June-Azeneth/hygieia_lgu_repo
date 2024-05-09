@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { auth, firestore } from '../Utils/Firebase';
+import { sendPasswordResetEmail } from "firebase/auth";
 import { doc, getDoc, query, getDocs, where, collection } from 'firebase/firestore';
 import {
     signInWithEmailAndPassword,
@@ -51,7 +52,6 @@ export function AuthProvider({ children }) {
         } catch (error) {
             await signOut(auth);
             setCurrentUser(null);
-            console.error('Error signing in:', error);
             throw error;
         }
     }
@@ -99,7 +99,7 @@ export function AuthProvider({ children }) {
         isAdmin,
         login,
         signUp,
-        logout
+        logout,
     };
 
     return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;

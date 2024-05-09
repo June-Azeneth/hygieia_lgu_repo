@@ -17,6 +17,7 @@ function Navbar() {
     const { logout, userDetails } = useAuth()
     const [user, setUser] = useState("Unauthenticated Access");
     const [id, setId] = useState("")
+    const [photo, setPhoto] = useState("")
     const [sideBar, setSideBar] = useState(false);
     const showSideBar = () => setSideBar(!sideBar);
     const navigate = useNavigate()
@@ -40,12 +41,13 @@ function Navbar() {
         if (userDetails) {
             setUser(userDetails.name || "");
             setId(userDetails.id || "");
+            setPhoto(userDetails.photo || "");
         }
     }, [userDetails]);
 
     return (
         <div className='relative z-50'>
-            <ToastContainer />
+            <ToastContainer containerId={"profile"} />
             {userDetails && userDetails.type === "client" ? (
                 <div className='relative'>
                     <div
@@ -56,7 +58,7 @@ function Navbar() {
                         <IconContext.Provider value={{ color: '#fff' }}>
                             <nav className='fixed top-0 left-0 w-16 h-screen bg-oliveGreen flex flex-col justify-between'>
                                 <div>
-                                    <img src={Logo} alt="logo" className='w-10 bg-white mx-auto mt-1 cursor-pointer rounded-full' onClick={showSideBar} />
+                                    <img src={photo} alt="profile" className='w-10 h-10 bg-white mx-auto mt-1 cursor-pointer rounded-full' onClick={showSideBar} />
                                     <ul className='flex flex-col items-center gap-1 mt-8'>
                                         {client.map((item, index) => {
                                             return (
@@ -86,6 +88,8 @@ function Navbar() {
                                         <span className='page-title'>Store Profile</span>
                                     ) : location.pathname.includes("/account-request") ? (
                                         <span className='page-title'>Account Request Form</span>
+                                    ) : location.pathname.includes("/profile") ? (
+                                        <span className='page-title'>User Profile</span>
                                     ) : (
                                         <span className='page-title'>{currentPage ? currentPage.title : 'Unknown Page'}</span>
                                     )}
@@ -100,7 +104,7 @@ function Navbar() {
                         <nav className={sideBar ? 'nav-menu active' : 'nav-menu'} onClick={showSideBar}>
                             <div className='flex flex-col justify-between' onClick={showSideBar}>
                                 <div className='text-white flex justify-center flex-col items-center pt-6'>
-                                    <img src={Logo} alt="logo" className='w-20 bg-white rounded-full' />
+                                    <img src={photo} alt="profile" className='w-20 h-20 cursor-pointer bg-white rounded-full' onClick={() => navigate('/profile')} />
                                     <div className='text-center w-full mt-3'>
                                         <p>{user}</p>
                                         <p className='text-xs tracking-tight font-thin'>ID: {id}</p>
@@ -150,7 +154,7 @@ function Navbar() {
                         <IconContext.Provider value={{ color: '#fff' }}>
                             <nav className='fixed top-0 left-0 w-16 h-screen bg-oliveGreen flex flex-col justify-between'>
                                 <div>
-                                    <img src={Logo} alt="logo" className='w-10 bg-white rounded-full mx-auto mt-1 cursor-pointer' onClick={showSideBar} />
+                                    <img src={photo} alt="profile" className='w-10 h-10 bg-white rounded-full mx-auto mt-1 cursor-pointer' onClick={showSideBar} />
                                     <ul className='flex flex-col items-center gap-1 mt-8'>
                                         {admin.map((item, index) => {
                                             return (
@@ -180,12 +184,16 @@ function Navbar() {
                                         <span className='page-title'>Store Profile</span>
                                     ) : location.pathname.includes("/account-request") ? (
                                         <span className='page-title'>Account Request Form</span>
+                                    ) : location.pathname.includes("/profile") ? (
+                                        <span className='page-title'>User Profile</span>
                                     ) : (
                                         <span className='page-title'>{currentAdminPage ? currentAdminPage.title : 'Unknown Page'}</span>
-                                    )}
+                                    )
+                                    }
                                 </div>
-                                <div>
-
+                                <div className='flex flex-row gap-1 justify-center items-center pe-3'>
+                                    <img src={Logo} alt="logo" className='w-8 h-8 object-cover' />
+                                    <p className="font-bold text-oliveGreen text-lg">HYGIEIA</p>
                                 </div>
                             </div>
                         </IconContext.Provider>
@@ -194,7 +202,7 @@ function Navbar() {
                         <nav className={sideBar ? 'nav-menu active' : 'nav-menu'} onClick={showSideBar}>
                             <div className='flex flex-col justify-between' onClick={showSideBar}>
                                 <div className='text-white flex justify-start flex-col items-center pt-6'>
-                                    <img src={Logo} alt="logo" className='w-20 bg-white rounded-full' />
+                                    <img src={photo} alt="profile" className='w-20 h-20 cursor-pointer bg-white rounded-full' onClick={() => navigate('/profile')} />
                                     <div className='text-center w-full mt-3'>
                                         <p>{user}</p>
                                         <p className='text-xs tracking-tight font-thin'>ID: {id}</p>

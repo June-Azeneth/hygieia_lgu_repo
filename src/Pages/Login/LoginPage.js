@@ -9,8 +9,8 @@ import { useAuth } from '../../Helpers/Repository/AuthContext'
 
 //assets
 import Logo from '../../Assets/logo_final.png'
-import { FaUser } from "react-icons/fa";
-import { RiLockPasswordFill } from "react-icons/ri";
+import { PiUserCircleLight } from "react-icons/pi";
+import { IoKeyOutline } from "react-icons/io5";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -34,15 +34,15 @@ function Login() {
 
     // Validation logic
     if (!email && !password) {
-      toast.error("Fill in all the required fields");
+      toast.info("Fill in all the required fields");
       return;
     }
     if (!email) {
-      toast.error("Email is required");
+      toast.info("Email is required");
       return;
     }
     if (!password) {
-      toast.error("Password is required");
+      toast.info("Password is required");
       return;
     }
 
@@ -67,7 +67,7 @@ function Login() {
         <title>Hygieia</title>
       </Helmet>
       <div className="w-full justify-center items-center flex text-center px-10 max-w-screen-sm">
-        <div className="bg-mutedFlesh rounded-md ring-gray-50 w-full px-8 lg:px-20 py-10">
+        <div className="bg-white rounded-md ring-gray-50 w-full px-8 lg:px-20 py-10">
           <img src={Logo} alt="waste-management" className="w-28 h-28 mx-auto" />
           <p className="mb-6 font-bold text-green tracking-widest">Hygieia Web Service</p>
           <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
@@ -79,9 +79,9 @@ function Login() {
                 value={email}
                 onChange={handleEmailChange}
                 autoComplete="off"
-                className="rounded border-2 border-mutedFlesh py-2 pl-9 w-full"
+                className="rounded border border-gray py-2 pl-9 w-full"
               />
-              <FaUser className='absolute top-0 text-darkGreen h-full left-3' />
+              <PiUserCircleLight className='absolute top-0 text-xl text-darkGreen h-full left-3' />
             </div>
             <div className="relative">
               <input
@@ -91,10 +91,11 @@ function Login() {
                 value={password}
                 onChange={handlePasswordChange}
                 autoComplete="off"
-                className="rounded border-2 border-mutedFlesh py-2 pl-9 w-full"
+                className="rounded border border-gray py-2 pl-9 w-full"
               />
-              <RiLockPasswordFill className='absolute top-0 text-darkGreen h-full left-3' />
+              <IoKeyOutline className='absolute top-0 text-darkGreen h-full left-3' />
             </div>
+            <p className="me-auto text-darkGray hover:cursor-pointer hover:text-orange" onClick={() => navigate('/forgot-password')}>Forgot Password</p>
             <div className="flex justify-center">
               {loading ? (
                 <div className="mt-3">
@@ -104,7 +105,7 @@ function Login() {
                 </div>
               ) : (
                 <div>
-                  <button type="submit" className="bg-oliveGreen hover:bg-green mt-3 text-white rounded-md py-2 w-32">Login</button>
+                  <button type="submit" className="bg-oliveGreen hover:shadow-md mt-3 text-white rounded-md py-2 w-32">Login</button>
                 </div>
               )}
             </div>

@@ -2,9 +2,10 @@ import { query, getDocs, setDoc, doc, collection, getDoc, where } from "firebase
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { currentDateTimestamp } from '../Utils/Common'
 import { updateCurrentUser } from "firebase/auth";
-import { firestore, auth } from '../Utils/Firebase'
+import { firestore, auth, storage } from '../Utils/Firebase'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-export const getStores = async (userDetails) => {
+export const getStores = async () => {
     try {
         // const storesQuery = query(collection(firestore, 'store'), where('lguId', '==', userDetails.id));
         const storesQuery = query(collection(firestore, 'store'));
@@ -53,6 +54,43 @@ export const updateClient = async (clientId, update) => {
         throw error;
     }
 };
+
+export const updateUserPhoto = async (imageUrl, id) => {
+    try {
+        const storageRef = ref(storage, `lgu/${id}_photo`);
+        const profilePhotoSnapshot = await uploadBytes(storageRef, imageUrl, 'data_url');
+        const downloadURL = await getDownloadURL(profilePhotoSnapshot.ref);
+
+        const docRef = doc(collection(firestore, 'user'), id);
+        const docSnapshot = await getDoc(docRef);
+
+        if (docSnapshot.exists()) {
+            await setDoc(docRef, { photo: downloadURL }, { merge: true });
+            return true;
+        } else {
+            throw new Error('Client not found');
+        }
+    }
+    catch (error) {
+        throw error
+    }
+}
+
+export const updateUserProfile = async (data, id) => {
+    try {
+        const docRef = doc(collection(firestore, 'user'), id);
+        const docSnapshot = await getDoc(docRef);
+
+        if (docSnapshot.exists()) {
+            await setDoc(docRef, data, { merge: true });
+            return true;
+        } else {
+            throw new Error('User not found');
+        }
+    } catch (error) {
+        throw error
+    }
+}
 
 
 export const deleteClient = async (clientId) => {

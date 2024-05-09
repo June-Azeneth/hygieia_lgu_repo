@@ -1,6 +1,6 @@
 import { collection, query, getDocs, where, doc, addDoc, setDoc } from 'firebase/firestore';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
-import { createUserWithEmailAndPassword, sendSignInLinkToEmail } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { firestore, auth, storage } from '../Utils/Firebase'
 import { currentDateTimestamp } from '../Utils/Common'
 // import QRCode from 'qrcode.react';

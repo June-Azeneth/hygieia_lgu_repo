@@ -20,6 +20,8 @@ import Announcement from './Pages/Announcement/Announcement';
 
 import { useAuth } from './Helpers/Repository/AuthContext'
 import { useEffect, useState } from 'react';
+import Profile from './Pages/Profile/Profile';
+import ChangePassword from './Pages/ChangePassword/ChangePassword';
 
 function App() {
   // const { currentUser } = useAuth()
@@ -45,6 +47,7 @@ function App() {
       <Router>
         <Routes>
           <Route path='/' element={<Login />} />
+          <Route path='/forgot-password' element={<ChangePassword />} />
           <Route
             path='/*'
             element={
@@ -64,6 +67,7 @@ function App() {
                     <Route path='/consumers' element={<ConsumerList />} />
                     <Route path='/admin' element={<AdminManager />} />
                     <Route path='/announcements' element={<Announcement />} />
+                    <Route path='/profile' element={<Profile />} />
                   </Route>
                 </Routes>
               </>

@@ -376,8 +376,8 @@ function StoresList() {
             </Helmet>
             {/* <ToastContainer containerId={"storeList"} /> */}
             <ToastContainer containerId={"storeList"} />
-            <div className='w-full justify-center md:justify-between flex flex-row items-center gap-10 mb-4 h-9'>
-                <div className='flex justify-end flex-row items-center bg-white rounded-md border border-gray ps-2 overflow-hidden'>
+            <div className='md:mb-5 w-full me-auto justify-center md:justify-between flex flex-col gap-5 md:flex-row items-center'>
+                <div className='flex me-auto justify-end flex-row items-center bg-white rounded-md border border-gray ps-2 overflow-hidden'>
                     <input
                         type="text"
                         value={search}
@@ -388,7 +388,7 @@ function StoresList() {
                     <button type="button" className='bg-green h-full py-1 text-white px-3' onClick={() => fetchStoreByID()}>Search</button>
                     {/* <BiSearchAlt className="text-oliveGreen text-lg cursor-pointer" onClick={() => fetchStoreByID()} /> */}
                 </div>
-                <button className='warning-btn flex justify-center items-center h-full pe-1' onClick={() => setModalOpen(true)}>
+                <button className='warning-btn flex mb-3 md:mb-0 ms-auto justify-center items-center h-full pe-1' onClick={() => setModalOpen(true)}>
                     <span className='p-0 text-lg m-0 me-2'><MdAdd /></span>
                     Add Store
                 </button>
