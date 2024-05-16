@@ -505,7 +505,7 @@ function StoresList() {
                                         <p className="text-sm text-gray">Phone<span className='text-red m-0'>*</span></p>
                                         <input
                                             id='phone'
-                                            type="text"
+                                            type="number"
                                             value={phone}
                                             onChange={(e) => handlePhoneNumberChange(e)}
                                             className='border rounded-md border-gray p-1'
@@ -537,7 +537,7 @@ function StoresList() {
                                     <div>
                                         <p className="text-sm text-gray">Latitude<span className='text-red m-0'>*</span></p>
                                         <input
-                                            type="text"
+                                            type="number"
                                             id="lat"
                                             name="lat"
                                             value={latitude}
@@ -548,7 +548,7 @@ function StoresList() {
                                     <div>
                                         <p className="text-sm text-gray">Longitude<span className='text-red m-0'>*</span></p>
                                         <input
-                                            type="text"
+                                            type="number"
                                             id="long"
                                             name="long"
                                             value={longitude}

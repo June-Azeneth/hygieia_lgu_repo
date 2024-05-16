@@ -152,6 +152,9 @@ export const getRequests = async (toggleState) => {
                 where('status', '==', 'active'),
                 where('date', '>=', todayStart),
                 where('date', '<=', futureEnd));
+        }else if(toggleState === 'passed'){
+            const todayStart = startOfDay(currentDate);
+            requestQuery = query(requestQuery, where('status', '==', 'active'), where('date', '<', todayStart));
         }
 
         const querySnapshot = await getDocs(requestQuery);

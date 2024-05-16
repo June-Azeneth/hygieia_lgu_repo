@@ -54,7 +54,6 @@ function Requests() {
   const handlePhoneNumberChange = (event) => {
     const number = event.target.value;
     setPhone(number);
-    // Regular expression for validating phone numbers (supports numbers with or without country code)
     const phonePattern = /^\+?([0-9]{1,4})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
     setIsPhoneValid(phonePattern.test(number));
   };
@@ -64,13 +63,14 @@ function Requests() {
       setLoading(true);
       if (display === "list") {
         const response = await getRequests(toggleState);
+        console.log(response)
         if (response) {
           const formattedData = response.map(item => {
             const date = new Date(item.date.seconds * 1000);
             const timeString = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
             return {
               ...item,
-              date: formatDate(item.date),
+              dateMMDDYYYY: formatDate(item.date),
               time: timeString,
               dateAndTime: date
             };
@@ -361,7 +361,7 @@ function Requests() {
     {
       key: 3,
       title: 'Date',
-      dataIndex: 'date'
+      dataIndex: 'dateMMDDYYYY'
     },
     {
       key: 4,
@@ -383,17 +383,25 @@ function Requests() {
       key: 7,
       title: 'Status',
       dataIndex: 'status',
-      render: status => (
-        <div>
-          {status === "active" ? (
-            <p className='font-bold text-blue-600'>ACTIVE</p>
-          ) : status === "pending" ? (
-            <p className='font-bold text-orange'>PENDING</p>
-          ) : status === "completed" ? (
-            <p className='font-bold text-green'>COMPLETED</p>
-          ) : null}
-        </div>
-      )
+      render: (status, record) => {
+        const currentDate = new Date();
+        const recordDate = new Date(record.date);
+        if (status === "active" && recordDate < currentDate) {
+          return <p className='font-bold text-green'>PASSED</p>;
+        } else {
+          <div>
+            {status === "active" ? (
+              <p className='font-bold text-blue-600'>ACTIVE</p>
+            ) : status === "pending" ? (
+              <p className='font-bold text-orange'>PENDING</p>
+            ) : status === "completed" ? (
+              <p className='font-bold text-green'>COMPLETED</p>
+            ) : status === "passed" ? (
+              <p className='font-bold text-green'>PASSED</p>
+            ) : null}
+          </div>
+        }
+      }
     },
     {
       key: 8,
@@ -401,6 +409,12 @@ function Requests() {
       render: (record) => (
         <div className='flex flex-row gap-3'>
           {toggleState === "today" && (
+            <div className='flex flex-col gap-3'>
+              <button className="warning-btn me-3" onClick={() => editClick(record)}>Edit</button>
+              <button className="view-btn" onClick={() => markAsDoneClick(record)}>Mark As Done</button>
+            </div>
+          )}
+          {toggleState === "passed" && (
             <div className='flex flex-col gap-3'>
               <button className="warning-btn me-3" onClick={() => editClick(record)}>Edit</button>
               <button className="view-btn" onClick={() => markAsDoneClick(record)}>Mark As Done</button>
@@ -498,6 +512,11 @@ function Requests() {
               onClick={() => toggleTab('done')}>
               Completed
             </div>
+            <div
+              className={toggleState === 'passed' ? "tabs active-tab" : "tabs"}
+              onClick={() => toggleTab('passed')}>
+              Passed
+            </div>
           </div>
           {loading ? (
             <div className='w-full h-full flex justify-center p-10 bg-white rounded-tr-md rounded-b-md'>
@@ -550,6 +569,21 @@ function Requests() {
                 )}
               </div>
               <div className={toggleState === "done" ? "content active-content" : "content"}>
+                {loading ? (
+                  <div className='w-full h-full flex justify-center p-10 shadow-md'>
+                    {showLoader()}
+                  </div>) : (
+                  <div className='overflow-x-scroll w-full scrollbar-none h-full'>
+                    <Table
+                      columns={headers}
+                      dataSource={dataSource}
+                      pagination={pagination}
+                      onChange={handleTableChange}>
+                    </Table>
+                  </div>
+                )}
+              </div>
+              <div className={toggleState === "passed" ? "content active-content" : "content"}>
                 {loading ? (
                   <div className='w-full h-full flex justify-center p-10 shadow-md'>
                     {showLoader()}

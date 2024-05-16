@@ -16,7 +16,8 @@ import { TiDocumentAdd } from "react-icons/ti";
 
 import {
   showLoader,
-  formatDate
+  formatDate,
+  dateAndTime
 } from '../../Helpers/Utils/Common'
 
 import {
@@ -35,7 +36,7 @@ function Dashboard() {
   const [consumerCount, setCounsumerCount] = useState(0)
   const [activeStoresCount, setActiveStores] = useState(0)
   const [pickUpRequestsCount, setRequests] = useState(0)
-  const [pickUpTodayCount, setPickUpTodayCount] = useState(0)
+  const [upcomingPickUp, setUpcomingPickUp] = useState(0)
   const [clientCount, setClientCount] = useState(0)
   const [storeReq, setStoreReq] = useState(0)
   const navigate = useNavigate()
@@ -53,13 +54,13 @@ function Dashboard() {
       setCounsumerCount(consumers.length)
       setClientCount(clients.length)
       setRequests(pickUpRequests.pending)
-      setPickUpTodayCount(pickUpRequests.today)
+      setUpcomingPickUp(pickUpRequests.upcoming)
 
-      const response = await getRequests("upcoming")
+      const response = await getRequests("today")
       if (response) {
         const formattedData = response.map(item => ({
           ...item,
-          date: formatDate(item.date)
+          date: dateAndTime(item.date)
         }));
         setDataSource(formattedData);
       }
@@ -119,8 +120,8 @@ function Dashboard() {
     {
       index: 1,
       icon: <IoTodayOutline />,
-      title: 'Today',
-      count: pickUpTodayCount,
+      title: 'Upcoming',
+      count: upcomingPickUp,
       path: '/requests'
     }
   ]
@@ -199,8 +200,8 @@ function Dashboard() {
                 </div>
               </div>
             </div>
-            <div className="w-full">
-              <p className="mb-2">Upcoming Garbage Collection</p>
+            <div className="w-full md:w-1/2">
+              <p className="mb-2">Today's Garbage Collection Schedule</p>
               {dataSource.length === 0 ? (
                 <div>
                   <p className="rounded-md shadow-md bg-white p-3 h-[30rem] flex justify-center items-center w-full"> No Data</p>

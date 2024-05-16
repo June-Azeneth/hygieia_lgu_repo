@@ -42,7 +42,7 @@ export function AuthProvider({ children }) {
                 } else {
                     await signOut(auth);
                     setCurrentUser(null);
-                    throw new Error('Account inactive');
+                    throw new Error('Account not found');
                 }
             } else {
                 await signOut(auth);

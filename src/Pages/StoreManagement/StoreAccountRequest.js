@@ -205,7 +205,7 @@ const StoreAccountRequest = () => {
                             <p>Status: <span className={`uppercase font-bold ${requestDetails.status === 'pending' ? 'text-orange' : requestDetails.status === 'rejected' ? 'text-red' : ''}`}>{requestDetails.status}</span></p>
                         </div>
                         <div className='w-full'>
-                            <p className='mt-10 mb-5'>General Information</p>
+                            <p className='mt-10 mb-5 font-bold text-lg'>General Information</p>
                             <p>Store Name: {requestDetails.name}</p>
                             <p>Owner: {requestDetails.owner}</p>
                             <p>Email: {requestDetails.email}</p>
