@@ -51,7 +51,6 @@ export const getTransactions = async () => {
 
         const querySnapshot = await getDocs(transactionQuery);
         const transactions = [];
-        let totalTransactions = 0;
 
         for (const docSnapshot of querySnapshot.docs) {
             const transactionData = docSnapshot.data();
@@ -64,22 +63,38 @@ export const getTransactions = async () => {
             const storeData = await getField('store', 'storeId', storeId);
             const storeName = storeData.length > 0 ? storeData[0].name : 'Unknown Store';
 
-            const transaction = {
-                id: docSnapshot.id,
-                customerName: customerName,
-                storeName: storeName,
-                ...transactionData
-            };
-            transactions.push(transaction);
-            totalTransactions++;
+            // Check if the transaction has a grant type or promo name
+            if (transactionData.type !== "grant" && !transactionData.promoName) {
+                // Fetch products only if they exist
+                const productsCollection = collection(docSnapshot.ref, 'products');
+                const productsQuery = await getDocs(productsCollection);
+                const products = productsQuery.docs.map(doc => doc.data());
+
+                const transaction = {
+                    id: docSnapshot.id,
+                    customerName: customerName,
+                    storeName: storeName,
+                    products: products.length > 0 ? products : [], // Add products if available, otherwise empty array
+                    ...transactionData
+                };
+                transactions.push(transaction);
+            } else {
+                // Transaction has a grant type or promo name, include it without products
+                const transaction = {
+                    id: docSnapshot.id,
+                    customerName: customerName,
+                    storeName: storeName,
+                    products: [], // No products for this transaction
+                    ...transactionData
+                };
+                transactions.push(transaction);
+            }
         }
         return { transactions };
     } catch (error) {
         throw error;
     }
 };
-
-
 
 export const getTransactionByID = async (searchID) => {
     try {

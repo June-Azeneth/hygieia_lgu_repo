@@ -8,7 +8,7 @@ import { Helmet } from 'react-helmet';
 
 //ASSETS
 import Placeholder from '../../Assets/placeholder_image.jpg'
-import { showLoader, formatDate } from '../../Helpers/Utils/Common';
+import { showLoader, formatDate, validateGoogleMapLink, validateCoordinates } from '../../Helpers/Utils/Common';
 import { AiOutlineClose } from "react-icons/ai";
 import { PulseLoader } from 'react-spinners';
 import { MdOutlineLocationOn } from "react-icons/md";
@@ -23,6 +23,10 @@ import {
   getPromosPerStore,
   updateStore
 } from '../../Helpers/Repository/StoreRepo';
+
+import {
+  validatePhone
+} from '../../Helpers/Utils/Common'
 
 function StoreProfile() {
   const { id } = useParams();
@@ -40,6 +44,8 @@ function StoreProfile() {
   const [address, setAddress] = useState("");
   const [mapLink, setMapLink] = useState("");
   const [recyclables, setRecyclables] = useState("");
+  const [latitude, setLatitude] = useState()
+  const [longitude, setLongitude] = useState()
 
   const [isPhoneValid, setIsPhoneValid] = useState(false);
 
@@ -108,18 +114,42 @@ function StoreProfile() {
     setOwner(store.owner)
     setPhone(store.phone)
     setMapLink(store.googleMapLocation)
+    setLatitude(store.coordinates.latitude)
+    setLongitude(store.coordinates.longitude)
     setRecyclables(store.recyclable ? store.recyclable.join(', ') : "");
   }
 
   const handleSubmit = async () => {
     try {
+      if (!shopName || !address || !owner || !phone || !mapLink) {
+        toast.info("Fill in all the required fields");
+        return;
+      }
+
+      if (validatePhone(phone) === false) {
+        toast.info("Invalid phone number");
+        return;
+      }
+
+      if (validateGoogleMapLink(mapLink) === false) {
+        toast.info("Invalid Google Map link");
+        return;
+      }
+
+      if (validateCoordinates(latitude, longitude) === false) {
+        toast.info("Invalid coordinates. Only numbers and a period are allowed.");
+        return;
+      }
+
       if (
         shopName !== store.name ||
         address !== store.address ||
         owner !== store.owner ||
         phone !== store.phone ||
         mapLink !== store.googleMapLocation ||
-        recyclables !== (store.recyclable ? store.recyclable.join(', ') : '')
+        recyclables !== (store.recyclable ? store.recyclable.join(', ') : '') ||
+        latitude !== store.coordinates.latitude ||
+        longitude !== store.coordinates.longitude
       ) {
         const updatedStoreData = {
           name: shopName,
@@ -127,7 +157,11 @@ function StoreProfile() {
           owner: owner,
           phone: phone,
           googleMapLocation: mapLink,
-          recyclable: recyclables.split(',').map(item => item.trim())
+          recyclable: recyclables.split(',').map(item => item.trim()),
+          coordinates: {
+            latitude: latitude,
+            longitude: longitude
+          }
         };
 
         setUpdateLoad(true)
@@ -142,6 +176,7 @@ function StoreProfile() {
         toast.info("No changes detected.");
       }
     } catch (error) {
+      setUpdateLoad(true)
       toast.error("An error occurred while updating store information: " + error.message);
     }
   }
@@ -188,12 +223,16 @@ function StoreProfile() {
               </div>
             </div>
           </div>
-          <p className='mt-5'>Recyclables:</p>
-          <div className='flex flex-row gap-2'>
-            {store.recyclable && store.recyclable.map((item, index) => (
-              <div className='bg-white border border-orange rounded-lg py-1 px-3 w-29' key={index}>{item}</div>
-            ))}
-          </div>
+          {store.recyclable && store.recyclable.length !== 0 && (
+            <div>
+              <p className='mt-5'>Recyclables:</p>
+              <div className='flex flex-row gap-2'>
+                {store.recyclable && store.recyclable.map((item, index) => (
+                  <div className='bg-white border border-orange rounded-lg py-1 px-3 w-29' key={index}>{item}</div>
+                ))}
+              </div>
+            </div>
+          )}
           <div className='flex flex-row gap-1 text-sm mt-6'>
             <div className={toggleState === 'rewards' ? "tabs active-tab" : "tabs"} onClick={() => toggleTab('rewards')}>Rewards</div>
             <div className={toggleState === 'promos' ? "tabs active-tab" : "tabs"} onClick={() => toggleTab('promos')}>Promos</div>
@@ -257,7 +296,7 @@ function StoreProfile() {
               <form>
                 <div className="flex flex-col md:flex-row gap-3">
                   <div>
-                    <p className="text-sm text-gray">Shop Name</p>
+                    <p className="text-sm text-gray">Shop Name<span className='text-red m-0'>*</span></p>
                     <input
                       id='shop_name'
                       name='shop_name'
@@ -268,7 +307,7 @@ function StoreProfile() {
                     />
                   </div>
                   <div>
-                    <p className="text-sm text-gray">Owner</p>
+                    <p className="text-sm text-gray">Owner<span className='text-red m-0'>*</span></p>
                     <input
                       id='shop_name'
                       name='shop_name'
@@ -279,7 +318,7 @@ function StoreProfile() {
                     />
                   </div>
                   <div>
-                    <p className="text-sm text-gray">Phone Number</p>
+                    <p className="text-sm text-gray">Phone number<span className='text-red m-0'>*</span></p>
                     <input
                       id='shop_name'
                       name='shop_name'
@@ -290,7 +329,7 @@ function StoreProfile() {
                     />
                   </div>
                 </div>
-                <p className="text-sm mt-2 text-gray">Address</p>
+                <p className="text-sm mt-3 text-gray">Address<span className='text-red m-0'>*</span></p>
                 <div className="flex flex-wrap gap-2">
                   <textarea
                     id='address'
@@ -302,7 +341,7 @@ function StoreProfile() {
                     className='input-field w-full'
                   />
                 </div>
-                <p className="text-sm mt-2 text-gray">Google Map Link</p>
+                <p className="text-sm mt-3 text-gray">Google Map Link<span className='text-red m-0'>*</span></p>
                 <div className="flex flex-wrap gap-2">
                   <textarea
                     id='mapLink'
@@ -311,8 +350,32 @@ function StoreProfile() {
                     value={mapLink}
                     placeholder='Enter Link'
                     onChange={(e) => setMapLink(e.target.value)}
-                    className='input-field w-full h-28'
+                    className='input-field w-full h-8'
                   />
+                </div>
+                <div className='mt-3 flex flex-row gap-3'>
+                  <div className="flex flex-col">
+                    <p className="text-sm text-gray">Latitude<span className='text-red m-0'>*</span></p>
+                    <input
+                      id='lat'
+                      name='lat'
+                      type="lat"
+                      value={latitude}
+                      onChange={(e) => setLatitude(e.target.value)}
+                      className='input-field h-8'
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <p className="text-sm text-gray">Longitude<span className='text-red m-0'>*</span></p>
+                    <input
+                      id='long'
+                      name='long'
+                      type="long"
+                      value={longitude}
+                      onChange={(e) => setLongitude(e.target.value)}
+                      className='input-field h-8'
+                    />
+                  </div>
                 </div>
                 <p className="text-sm mt-2 text-gray">Recyclables (separate by comma)</p>
                 <textarea
@@ -335,7 +398,7 @@ function StoreProfile() {
                     <div></div>
                   )}
                   <button type='button' className='hover:bg-red py-1 px-4 border border-red text-red hover:text-white rounded-md' onClick={() => seTIsModalOpen(false)}>Cancel</button>
-                  <button type='button' className='bg-oliveGreen py-1 px-4 text-white rounded-md' onClick={() => handleSubmit()}>Submit</button>
+                  <button type='button' className='view-btn' onClick={() => handleSubmit()}>Submit</button>
                 </div>
               </form>
             </div>

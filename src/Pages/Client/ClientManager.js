@@ -163,9 +163,15 @@ export default function ClientManager() {
     }
     const handleUpdateClientInfo = async () => {
         try {
-            setLoader(true)
+            if (!name || !address) {
+                setLoader(false)
+                toast.info("Fill in all required fields")
+                return;
+            }
+
             if (name !== selectedRow.name ||
                 address !== selectedRow.address) {
+                setLoader(true)
                 const success = await updateClient(selectedRow.id, {
                     name,
                     address: address
@@ -180,9 +186,11 @@ export default function ClientManager() {
                 }
                 else {
                     setLoader(false)
+                    setLoader(false)
                 }
             }
             else {
+                setLoader(false)
                 toast.info("No Changes Detected")
                 setLoader(false)
             }

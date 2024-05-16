@@ -4,16 +4,18 @@ import { DatePicker } from 'antd';
 import * as XLSX from 'xlsx';
 import { Helmet } from 'react-helmet';
 import { useAuth } from '../../Helpers/Repository/AuthContext';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Modal from '@mui/material/Modal';
 import {
     formatDate,
+    dateAndTime,
     showLoader,
 } from '../../Helpers/Utils/Common'
 
 import { IoMdDownload } from "react-icons/io";
 import { LuRefreshCw } from "react-icons/lu";
-
 import { getTransactions, getTransactionByID } from '../../Helpers/Repository/TransactionRepo'
-import { ToastContainer, toast } from 'react-toastify';
 
 function Transactions() {
     const { userDetails } = useAuth();
@@ -22,7 +24,10 @@ function Transactions() {
     const [pagination, setPagination] = useState({ pageSize: 8 });
     const [dateRange, setDateRange] = useState([]);
     const [search, setSearch] = useState('')
+    const [selectedRow, setSelectedRow] = useState()
     const [transactionFee, setTransactionFee] = useState(0)
+    const [viewDetails, setViewDetials] = useState(false)
+    const [redeemedProducts, setRedeemedProducts] = useState([])
 
     const handleTableChange = pagination => {
         setPagination(pagination);
@@ -43,12 +48,14 @@ function Transactions() {
             // Process transactions
             const formattedData = transactions.map(transaction => {
                 const { addedOn, ...otherFields } = transaction;
-                const formattedDate = formatDate(addedOn);
+                const formattedDate = dateAndTime(addedOn);
                 return {
                     ...otherFields,
-                    addedOn: formattedDate
+                    addedOn: formattedDate,
                 };
             });
+
+            console.log(formattedData)
 
             // Filter transactions based on date range
             const filteredData = formattedData.filter(transaction => {
@@ -73,6 +80,11 @@ function Transactions() {
             toast.error("An error occurred: " + error);
         }
     };
+
+    const handleViewClick = (record) => {
+        setViewDetials(true)
+        setSelectedRow(record)
+    }
 
 
     const columns = [
@@ -102,24 +114,13 @@ function Transactions() {
             dataIndex: 'type'
         },
         {
-            key: 6,
-            title: 'Reward',
-            dataIndex: 'product'
-        },
-        {
-            key: 7,
-            title: 'Promo',
-            dataIndex: 'promoName'
-        },
-        {
             key: 8,
-            title: 'Points Earned',
-            dataIndex: 'pointsEarned'
-        },
-        {
-            key: 9,
-            title: 'Points Spent',
-            dataIndex: 'pointsSpent'
+            title: 'Actions',
+            render: (record) => (
+                <div>
+                    <button className="view-btn" onClick={() => handleViewClick(record)}>View</button>
+                </div>
+            )
         },
     ]
 
@@ -257,7 +258,7 @@ function Transactions() {
                 />
                 <div className='flex flex-row text-darkGray items-center mt-4 md:mt-0 justify-end'>
                     <LuRefreshCw className='cursor-pointer text-2xl me-4' onClick={() => fetchData()} />
-                    <button className='bg-orange hover:shadow-md items-center flex flex-row text-sm text-white py-2 px-4 rounded-md w-fit' onClick={() => handleExport()}><span className='p-0 m-0 me-2'><IoMdDownload /></span>Download</button>
+                    <button className='solid-warning-btn' onClick={() => handleExport()}><span className='p-0 m-0 me-2'><IoMdDownload /></span>Download</button>
                 </div>
             </div>
             <div className='bg-white rounded-md overflow-x-scroll scrollbar-none'>
@@ -275,9 +276,85 @@ function Transactions() {
                     </div>
                 )}
             </div>
-            {/* <div className="mt-3">
-                <p>Transaction Fee: ₱{transactionFee}</p>
-            </div> */}
+            <Modal open={viewDetails} onClose={() => setViewDetials(false)}>
+                <div className='w-full h-full flex justify-center items-center' onClick={() => setViewDetials(false)}>
+                    <div className='bg-white w-[34rem]'>
+                        <div className='px-5 py-2 bg-oliveGreen text-white w-full text-center font-bold tracking-wide'>
+                            Transaction details
+                        </div>
+                        {selectedRow ? (
+                            <div>
+                                {selectedRow.type === "grant" ? (
+                                    <div>
+                                        <div className="flex flex-row py-4 px-2 mx-4 text-darkGray">
+                                            <div className="w-full font-bold">
+                                                <p>Trans. ID:</p>
+                                                <p>Date:</p>
+                                                <p>Customer:</p>
+                                                <p>Store:</p>
+                                                <p>Points Granted:</p>
+                                            </div>
+                                            <div className="w-full text-end">
+                                                <p>{selectedRow.id}</p>
+                                                <p>{selectedRow.addedOn}</p>
+                                                <p>{selectedRow.customerName}</p>
+                                                <p>{selectedRow.storeName}</p>
+                                                <p>{selectedRow.pointsEarned}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className='text-darkGray'>
+                                        <div className="flex flex-row py-4 px-2 border-b-darkGray border-b mx-4 ">
+                                            <div className="w-full font-bold">
+                                                <p>Trans. ID:</p>
+                                                <p>Date:</p>
+                                                <p>Customer:</p>
+                                                <p>Store:</p>
+                                            </div>
+                                            <div className="w-full text-end">
+                                                <p>{selectedRow.id}</p>
+                                                <p>{selectedRow.addedOn}</p>
+                                                <p>{selectedRow.customerName}</p>
+                                                <p>{selectedRow.storeName}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-row py-4 px-2 border-b-darkGray border-b mx-4">
+                                            <div className="w-full font-bold">
+                                                <p>Total Price:</p>
+                                                <p>Total Points:</p>
+                                            </div>
+                                            <div className="w-full text-end">
+                                                <p>₱{selectedRow.total}</p>
+                                                <p>{selectedRow.pointsSpent}</p>
+                                            </div>
+                                        </div>
+                                        <p className='px-6 pt-2 font-bold'>Product(s)</p>
+                                        <div className='px-4 py-2 mb-4'>
+                                            <div className='flex flex-row py-1 bg-darkGray mb-2 px-2 text-white'>
+                                                <p className='w-full'>Name</p>
+                                                <p className='w-full text-end'>Pts Required</p>
+                                                <p className='w-full text-end'>Discount</p>
+                                                <p className='w-full text-end'>Price</p>
+                                            </div>
+                                            {selectedRow.products.map(item => (
+                                                <div key={item.name} className="flex flex-row mb-1 px-2 border-b border-b-gray">
+                                                    <p className='w-full'>{item.name}</p>
+                                                    <p className='w-full text-end'>{item.pointsRequired} pts</p>
+                                                    <p className='w-full text-end'>{item.discount}%</p>
+                                                    <p className='w-full text-end'>₱{item.discountedPrice}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <></>
+                        )}
+                    </div>
+                </div>
+            </Modal>
         </div>
     )
 }

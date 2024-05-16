@@ -45,15 +45,19 @@ th {
 }
 
 .view-btn {
-  @apply px-3 py-1 rounded-md hover:shadow-md bg-green text-white;
+  @apply px-3 py-1 rounded-md border hover:shadow-md border-green hover:bg-green text-green hover:text-white
 }
 
 .danger-btn {
-  @apply px-3 py-1 rounded-md hover:shadow-md me-3 bg-red text-white;
+  @apply px-3 py-1 rounded-md hover:shadow-md hover:bg-red hover:text-white text-red ;
 }
 
 .warning-btn {
-  @apply px-3 py-1 rounded-md hover:shadow-md text-white bg-orange;
+  @apply px-3 py-1 rounded-md hover:shadow-md border border-orange hover:text-white hover:bg-orange text-orange;
+}
+
+.solid-warning-btn{
+  @apply bg-orange hover:shadow-md items-center flex flex-row text-sm text-white py-2 px-4 rounded-md w-fit
 }
 
 .cancel-btn {

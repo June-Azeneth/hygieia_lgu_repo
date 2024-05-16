@@ -11,6 +11,10 @@ export function formatDate(timestamp) {
     return new Date(timestamp?.seconds * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
+export function dateAndTime(timestamp) {
+    return new Date(timestamp?.seconds * 1000).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' });
+}
+
 export function formatMomentArray(momentArray) {
     const startDate = momentArray[0].format('YYYY-MMM-DD');
     const endDate = momentArray[momentArray.length - 1].format('YYYY-MMM-DD');
@@ -59,4 +63,20 @@ export function emailSentSuccessfully() {
             color="#5F8604"
         />
     )
+}
+
+export function validatePhone(phoneNumber) {
+    const phonePattern = /^\+?([0-9]{1,4})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+    return phonePattern.test(phoneNumber);
+}
+
+export function validateGoogleMapLink(link) {
+    const mapLinkRegex = /^https:\/\/maps\.app\.goo\.gl\/[^\s]+$/;
+    return mapLinkRegex.test(link);
+}
+
+export function validateCoordinates(latitude, longitude){
+    const latitudeRegex = /^-?([1-8]?[0-9]\.{1}\d+|90(\.0+)?)$/;
+    const longitudeRegex = /^-?((1[0-7]|[1-9])?\d(\.{1}\d+)?|180(\.0+)?)$/;
+    return latitudeRegex.test(latitude) && longitudeRegex.test(longitude);
 }

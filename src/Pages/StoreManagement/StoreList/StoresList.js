@@ -11,9 +11,11 @@ import { Helmet } from 'react-helmet';
 import {
     getStores,
     getStoreByID,
-    addStore
+    addStore,
 } from '../../../Helpers/Repository/StoreRepo'
 import {
+    validateCoordinates,
+    validateGoogleMapLink,
     formatDate,
     showLoader,
 } from '../../../Helpers/Utils/Common'
@@ -42,9 +44,11 @@ function StoresList() {
     const [mapLink, setMapLink] = useState('')
     const [phone, setPhone] = useState('')
     const [password, setPassword] = useState('');
-    const [message, setMessage] = useState('');
-    const [placeholderText, setPlaceHolderText] = useState('')
+    const [message, setMessage] = useState();
+    const [placeholderText, setPlaceHolderText] = useState()
     const [isPhoneValid, setIsPhoneValid] = useState(false);
+    const [latitude, setLatitude] = useState()
+    const [longitude, setLongitude] = useState()
 
     const handlePhoneNumberChange = (event) => {
         const number = event.target.value;
@@ -79,12 +83,14 @@ function StoresList() {
         setOwner('')
         setPhone('')
         setMapLink('')
+        setLatitude('')
+        setLongitude('')
         setLoader(false)
     }
 
     const handleSubmitClick = async () => {
         try {
-            if (name === '' || owner === '' || address === '' || email === '' || password === '' || phone === '') {
+            if (!name || !owner || !address || !email || !password || !phone || !mapLink || !latitude || !longitude) {
                 toast.info("Fill in all the required fields")
                 return;
             }
@@ -94,13 +100,30 @@ function StoresList() {
                 return;
             }
 
+            if (!validateGoogleMapLink(mapLink)) {
+                toast.info("Invalid google map link")
+                return;
+            }
+
+            if (validateCoordinates(latitude, longitude) === false) {
+                toast.info("Latitude and Longitude must contain only numbers");
+                return;
+            }
+
+            const lat = parseFloat(latitude);
+            const long = parseFloat(longitude);
+
             setLoader(true)
             const success = await addStore(email, password, {
                 name,
                 owner,
                 address: address,
                 phone: phone,
-                googleMapLocation: mapLink
+                googleMapLocation: mapLink,
+                coordinates: {
+                    latitude: lat,
+                    longitude: long
+                }
             });
 
             if (success) {
@@ -112,14 +135,16 @@ function StoresList() {
                 await axios.post('https://hygieia-back-end-node.onrender.com/send-email', emailContent);
                 setLoader(false);
                 setModalOpen(false);
-                toast.success("Store Added Successfully");
+                toast.success("Store Added Successfully. Confirmation email sent successfully.");
                 clearFields();
                 fetchData();
             } else {
+                setLoader(false)
                 toast.error("Failed to Add Store")
             }
         }
         catch (error) {
+            setLoader(false)
             toast.error("An error occured: " + error)
         }
     }
@@ -197,7 +222,7 @@ function StoresList() {
     const activeHeader = [
         {
             key: 0,
-            title: 'ID',
+            title: 'Store ID',
             dataIndex: 'storeId'
         },
         {
@@ -234,7 +259,7 @@ function StoresList() {
         },
         {
             key: 5,
-            title: 'Approved On',
+            title: 'Date Joined',
             dataIndex: 'dateJoined'
         },
         {
@@ -247,7 +272,7 @@ function StoresList() {
             title: 'Actions',
             render: (text, record) => (
                 <div>
-                    <button className="px-3 w-20 py-1 rounded-md hover:shadow-md me-3 bg-green text-white" onClick={() => handleViewClick(record)}>View</button>
+                    <button className="view-btn" onClick={() => handleViewClick(record)}>View</button>
                 </div>
             )
         },
@@ -256,7 +281,7 @@ function StoresList() {
     const pendingHeader = [
         {
             key: 1,
-            title: 'ID',
+            title: 'Request ID',
             dataIndex: 'id'
         },
         {
@@ -294,7 +319,7 @@ function StoresList() {
             title: 'Actions',
             render: (text, record) => (
                 <div>
-                    <button className="px-3 w-20 py-1 rounded-md me-3 bg-green text-white" onClick={() => handleViewClick(record)}>View</button>
+                    <button className="view-btn" onClick={() => handleViewClick(record)}>View</button>
                 </div>
             )
         },
@@ -341,7 +366,7 @@ function StoresList() {
             title: 'Actions',
             render: (record) => (
                 <div>
-                    <button className="px-3 w-20 py-1 rounded-md me-3 bg-green text-white" onClick={() => handleViewClick(record)}>View</button>
+                    <button className="view-btn" onClick={() => handleViewClick(record)}>View</button>
                 </div>
             )
         },
@@ -371,11 +396,10 @@ function StoresList() {
 
     return (
         <div className='page-container text-darkGray'>
+            <ToastContainer />
             <Helmet>
                 <title>Stores</title>
             </Helmet>
-            {/* <ToastContainer containerId={"storeList"} /> */}
-            <ToastContainer containerId={"storeList"} />
             <div className='md:mb-5 w-full me-auto justify-center md:justify-between flex flex-col gap-5 md:flex-row items-center'>
                 <div className='flex me-auto justify-end flex-row items-center bg-white rounded-md border border-gray ps-2 overflow-hidden'>
                     <input
@@ -388,7 +412,7 @@ function StoresList() {
                     <button type="button" className='bg-green h-full py-1 text-white px-3' onClick={() => fetchStoreByID()}>Search</button>
                     {/* <BiSearchAlt className="text-oliveGreen text-lg cursor-pointer" onClick={() => fetchStoreByID()} /> */}
                 </div>
-                <button className='warning-btn flex mb-3 md:mb-0 ms-auto justify-center items-center h-full pe-1' onClick={() => setModalOpen(true)}>
+                <button className='bg-orange hover:shadow-md items-center flex flex-row text-sm text-white py-2 px-4 rounded-md w-fit' onClick={() => setModalOpen(true)}>
                     <span className='p-0 text-lg m-0 me-2'><MdAdd /></span>
                     Add Store
                 </button>
@@ -449,68 +473,112 @@ function StoresList() {
                 {/* ADD STORE MODAL */}
                 <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
                     <div className='w-screen h-screen justify-center items-center flex text-sm text-darkGray'>
-                        <div className='bg-white w-fit rounded-md'>
-                            <AiOutlineClose className="hover:text-red text-2xl ms-auto m-2" onClick={() => setModalOpen(false)} />
-                            <form className='px-5 flex flex-col gap-2 pb-5'>
-                                <p className="font-bold text-lg">Add Store</p>
-                                <input
-                                    id='store_name'
-                                    type="text"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    placeholder='Store Name'
-                                    className='border rounded-md border-gray p-1'
-                                />
-                                <input
-                                    id='owner'
-                                    type="text"
-                                    value={owner}
-                                    onChange={(e) => setOwner(e.target.value)}
-                                    placeholder='Owner'
-                                    className='border rounded-md border-gray p-1'
-                                />
-                                <textarea
-                                    id='address'
-                                    type="text"
-                                    value={address}
-                                    onChange={(e) => setAddress(e.target.value)}
-                                    placeholder='Enter Address'
-                                    className='border rounded-md border-gray p-1 w-full'
-                                />
-                                <textarea
-                                    id='googleMapLink'
-                                    type="text"
-                                    value={mapLink}
-                                    onChange={(e) => setMapLink(e.target.value)}
-                                    placeholder='Enter Google Map Link'
-                                    className='border rounded-md border-gray p-1 w-full'
-                                />
-                                <input
-                                    id='phone'
-                                    type="text"
-                                    value={phone}
-                                    onChange={(e) => handlePhoneNumberChange(e)}
-                                    placeholder='+63'
-                                    className='border rounded-md border-gray p-1'
-                                />
-                                <p className='mt-2 font-bold'>Set Credentials</p>
-                                <div className='flex gap-2'>
-                                    <input
-                                        id='email'
-                                        type="email"
-                                        placeholder='Email'
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        className='border rounded-md border-gray p-1'
-                                    />
-                                    <input
-                                        id='password'
+                        <div className='bg-white w-fit rounded-b-md'>
+                            <div className='bg-oliveGreen text-white flex justify-between items-center p-3'>
+                                <p className='font-bold text-base tracking-wide'>Add Store</p>
+                                <AiOutlineClose className="hover:text-red text-2xl text-white" onClick={() => setModalOpen(false)} />
+                            </div>
+                            <form className='px-5 flex flex-col gap-2 py-5'>
+                                <p className='font-bold'>General Information</p>
+                                <div className='flex flex-row gap-3'>
+                                    <div>
+                                        <p className="text-sm text-gray">Store Name<span className='text-red m-0'>*</span></p>
+                                        <input
+                                            id='store_name'
+                                            type="text"
+                                            value={name}
+                                            onChange={(e) => setName(e.target.value)}
+                                            className='border rounded-md border-gray p-1'
+                                        />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray">Owner<span className='text-red m-0'>*</span></p>
+                                        <input
+                                            id='owner'
+                                            type="text"
+                                            value={owner}
+                                            onChange={(e) => setOwner(e.target.value)}
+                                            className='border rounded-md border-gray p-1'
+                                        />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray">Phone<span className='text-red m-0'>*</span></p>
+                                        <input
+                                            id='phone'
+                                            type="text"
+                                            value={phone}
+                                            onChange={(e) => handlePhoneNumberChange(e)}
+                                            className='border rounded-md border-gray p-1'
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray">Address<span className='text-red m-0'>*</span></p>
+                                    <textarea
+                                        id='address'
                                         type="text"
-                                        placeholder='Password'
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        className='border rounded-md border-gray p-1'
+                                        value={address}
+                                        onChange={(e) => setAddress(e.target.value)}
+                                        className='border rounded-md border-gray p-1 w-full'
                                     />
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray">Google Map link<span className='text-red m-0'>*</span></p>
+                                    <textarea
+                                        id='googleMapLink'
+                                        type="text"
+                                        value={mapLink}
+                                        onChange={(e) => setMapLink(e.target.value)}
+                                        className='border rounded-md border-gray p-1 w-full'
+                                    />
+                                </div>
+                                <p className='mt-2 font-bold'>Location Coordinates</p>
+                                <div className='flex flex-row gap-3'>
+                                    <div>
+                                        <p className="text-sm text-gray">Latitude<span className='text-red m-0'>*</span></p>
+                                        <input
+                                            type="text"
+                                            id="lat"
+                                            name="lat"
+                                            value={latitude}
+                                            onChange={(e) => setLatitude(e.target.value)}
+                                            required
+                                            className='input-field' />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray">Longitude<span className='text-red m-0'>*</span></p>
+                                        <input
+                                            type="text"
+                                            id="long"
+                                            name="long"
+                                            value={longitude}
+                                            onChange={(e) => setLongitude(e.target.value)}
+                                            required
+                                            className='input-field' />
+                                    </div>
+                                </div>
+                                <p className='mt-2 font-bold'>Set Credentials</p>
+                                <div className='flex gap-3'>
+                                    <div>
+                                        <p className="text-sm text-gray">Email<span className='text-red m-0'>*</span></p>
+                                        <input
+                                            id='email'
+                                            type="email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            className='border rounded-md border-gray p-1'
+                                        />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray">Password<span className='text-red m-0'>*</span></p>
+                                        <input
+                                            id='password'
+                                            type="text"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            className='border rounded-md border-gray p-1'
+                                        />
+                                    </div>
                                 </div>
                                 <div className="flex justify-end gap-3 mt-5">
                                     <div>
