@@ -63,7 +63,7 @@ function Requests() {
       setLoading(true);
       if (display === "list") {
         const response = await getRequests(toggleState);
-        console.log(response)
+        // console.log(response)
         if (response) {
           const formattedData = response.map(item => {
             const date = new Date(item.date.seconds * 1000);
@@ -165,7 +165,7 @@ function Requests() {
 
   const acceptClick = (record) => {
     setSelectedRow(record)
-    setSelectedDate(record.date)
+    setSelectedDate(record.dateAndTime)
     setDialog(true)
   }
 

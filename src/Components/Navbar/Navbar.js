@@ -58,7 +58,7 @@ function Navbar() {
                         <IconContext.Provider value={{ color: '#fff' }}>
                             <nav className='fixed top-0 left-0 w-16 h-screen bg-oliveGreen flex flex-col justify-between'>
                                 <div>
-                                    <img src={photo} alt="profile" className='w-10 h-10 bg-white mx-auto mt-1 cursor-pointer rounded-full' onClick={showSideBar} />
+                                    <img src={photo} alt="profile" className='w-10 h-10 object-cover bg-white mx-auto mt-1 cursor-pointer rounded-full' onClick={showSideBar} />
                                     <ul className='flex flex-col items-center gap-1 mt-8'>
                                         {client.map((item, index) => {
                                             return (
@@ -104,7 +104,7 @@ function Navbar() {
                         <nav className={sideBar ? 'nav-menu active' : 'nav-menu'} onClick={showSideBar}>
                             <div className='flex flex-col justify-between' onClick={showSideBar}>
                                 <div className='text-white flex justify-center flex-col items-center pt-6'>
-                                    <img src={photo} alt="profile" className='w-20 h-20 cursor-pointer bg-white rounded-full' onClick={() => navigate('/profile')} />
+                                    <img src={photo} alt="profile" className='w-20 object-cover h-20 cursor-pointer bg-white rounded-full' onClick={() => navigate('/profile')} />
                                     <div className='text-center w-full mt-3'>
                                         <p>{user}</p>
                                         <p className='text-xs tracking-tight font-thin'>ID: {id}</p>
@@ -202,7 +202,7 @@ function Navbar() {
                         <nav className={sideBar ? 'nav-menu active' : 'nav-menu'} onClick={showSideBar}>
                             <div className='flex flex-col justify-between' onClick={showSideBar}>
                                 <div className='text-white flex justify-start flex-col items-center pt-6'>
-                                    <img src={photo} alt="profile" className='w-20 h-20 cursor-pointer bg-white rounded-full' onClick={() => navigate('/profile')} />
+                                    <img src={photo} alt="profile" className='w-20 object-cover h-20 cursor-pointer bg-white rounded-full' onClick={() => navigate('/profile')} />
                                     <div className='text-center w-full mt-3'>
                                         <p>{user}</p>
                                         <p className='text-xs tracking-tight font-thin'>ID: {id}</p>
