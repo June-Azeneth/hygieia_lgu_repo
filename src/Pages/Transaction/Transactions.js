@@ -34,7 +34,10 @@ function Transactions() {
     };
 
     const handleDateChange = dates => {
-        setDateRange(dates);
+        console.log(dates)
+        if (dates && dates.length === 2) {
+            setDateRange(dates);
+        }
     };
 
     const fetchData = async () => {
@@ -45,21 +48,23 @@ function Transactions() {
             }
             const { transactions } = await getTransactions(userDetails);
 
+            console.log(transactions)
+
             // Process transactions
             const formattedData = transactions.map(transaction => {
                 const { addedOn, ...otherFields } = transaction;
                 const formattedDate = dateAndTime(addedOn);
+                const date = formatDate(addedOn);
                 return {
                     ...otherFields,
+                    date: date,
                     addedOn: formattedDate,
                 };
             });
 
-            console.log(formattedData)
-
             // Filter transactions based on date range
             const filteredData = formattedData.filter(transaction => {
-                const transactionDate = new Date(transaction.addedOn).getTime();
+                const transactionDate = new Date(transaction.date).getTime();
                 const startDate = dateRange[0] ? dateRange[0].startOf('day').toDate().getTime() : null;
                 const endDate = dateRange[1] ? dateRange[1].endOf('day').toDate().getTime() : null;
                 // Check if both start and end dates are defined
@@ -329,22 +334,37 @@ function Transactions() {
                                                 <p>{selectedRow.pointsSpent}</p>
                                             </div>
                                         </div>
-                                        <p className='px-6 pt-2 font-bold'>Product(s)</p>
                                         <div className='px-4 py-2 mb-4'>
-                                            <div className='flex flex-row py-1 bg-darkGray mb-2 px-2 text-white'>
-                                                <p className='w-full'>Name</p>
-                                                <p className='w-full text-end'>Pts Required</p>
-                                                <p className='w-full text-end'>Discount</p>
-                                                <p className='w-full text-end'>Price</p>
-                                            </div>
-                                            {selectedRow.products.map(item => (
-                                                <div key={item.name} className="flex flex-row mb-1 px-2 border-b border-b-gray">
-                                                    <p className='w-full'>{item.name}</p>
-                                                    <p className='w-full text-end'>{item.pointsRequired} pts</p>
-                                                    <p className='w-full text-end'>{item.discount}%</p>
-                                                    <p className='w-full text-end'>₱{item.discountedPrice}</p>
+                                            {selectedRow.promoName ? (
+                                                <div className='flex flex-row'>
+                                                    <div className="w-full font-bold">
+                                                        <p>Promo Name:</p>
+                                                        <p>Product:</p>
+                                                    </div>
+                                                    <div className="w-full text-end">
+                                                        <p>{selectedRow.promoName}</p>
+                                                        <p>{selectedRow.product}</p>
+                                                    </div>
                                                 </div>
-                                            ))}
+                                            ) : (
+                                                <div>
+                                                    <p className='px-6 pt-2 font-bold'>Product(s)</p>
+                                                    <div className='flex flex-row py-1 bg-darkGray mb-2 px-2 text-white'>
+                                                        <p className='w-full'>Name</p>
+                                                        <p className='w-full text-end'>Pts Required</p>
+                                                        <p className='w-full text-end'>Discount</p>
+                                                        <p className='w-full text-end'>Price</p>
+                                                    </div>
+                                                    {selectedRow.products.map(item => (
+                                                        <div key={item.name} className="flex flex-row mb-1 px-2 border-b border-b-gray">
+                                                            <p className='w-full'>{item.name}</p>
+                                                            <p className='w-full text-end'>{item.pointsRequired} pts</p>
+                                                            <p className='w-full text-end'>{item.discount}%</p>
+                                                            <p className='w-full text-end'>₱{item.discountedPrice}</p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 )}

@@ -1,48 +1,6 @@
 import { collection, query, getDocs, getDoc, doc, where, orderBy } from 'firebase/firestore';
 import { firestore } from '../Utils/Firebase';
 
-// export const getTransactions = async () => {
-//     try {
-//         const transactionCollection = collection(firestore, 'transaction');
-//         const transactionQuery = query(transactionCollection);
-
-//         const querySnapshot = await getDocs(transactionQuery);
-//         const transactions = [];
-
-//         for (const docSnapshot of querySnapshot.docs) {
-//             const transactionData = docSnapshot.data();
-//             const customerId = transactionData.customerId;
-//             const storeId = transactionData.storeId;
-
-//             // const userType = userDetails.type;
-//             // const id = userDetails.id
-
-//             const customerData = await getField('consumer', 'id', customerId);
-//             const customerName = customerData.length > 0 ? `${customerData[0].firstName} ${customerData[0].lastName}` : 'Unknown Customer';
-
-//             const storeData = await getField('store', 'storeId', storeId);
-//             // const storeLguId = storeData.length > 0 ? storeData[0].lguId : null;
-//             const storeName = storeData.length > 0 ? storeData[0].name : 'Unknown Store';
-
-//             // if (userType === 'client' && id !== storeLguId) {
-//             //     continue;
-//             // }    
-
-//             const transaction = {
-//                 id: docSnapshot.id,
-//                 customerName: customerName,
-//                 storeName: storeName,
-//                 ...transactionData
-//             };
-//             transactions.push(transaction);
-//         }
-//         return transactions;
-//     } catch (error) {
-//         throw error
-//         return [];
-//     }
-// };
-
 
 export const getTransactions = async () => {
     try {
@@ -138,7 +96,6 @@ export const getField = async (collectionName, fieldName, fieldValue) => {
         return documents;
     } catch (error) {
         throw error
-        return [];
     }
 };
 
